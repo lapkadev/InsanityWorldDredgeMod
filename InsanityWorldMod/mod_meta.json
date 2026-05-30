@@ -1,0 +1,9 @@
+{
+	"Author": "lapkadev",
+	"Name": "Insanity World",
+	"ModGUID": "lapkadev.InsanityWorldMod",
+	"Version": "0.0.1",
+	"ModAssembly": "InsanityWorldMod.dll",
+	"MinWinchVersion": "0.6.1",
+	"Entrypoint": "InsanityWorldMod.Loader/Initialize"
+}
