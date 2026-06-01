@@ -2,7 +2,7 @@
 	"Author": "lapkadev",
 	"Name": "Insanity World",
 	"ModGUID": "lapkadev.InsanityWorldMod",
-	"Version": "0.1.0",
+	"Version": "0.2.0",
 	"ModAssembly": "InsanityWorldMod.dll",
 	"MinWinchVersion": "0.6.1",
 	"Entrypoint": "InsanityWorldMod.Loader/Initialize"
