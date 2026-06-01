@@ -73,7 +73,6 @@ StyleCopReport.xml
 *_p.c
 *_h.h
 *.ilk
-*.meta
 *.obj
 *.iobj
 *.pch
@@ -196,12 +195,6 @@ PublishScripts/
 *.nupkg
 # NuGet Symbol Packages
 *.snupkg
-# The packages folder can be ignored because of Package Restore
-**/[Pp]ackages/*
-# except build/, which is used as an MSBuild target.
-!**/[Pp]ackages/build/
-# Uncomment if necessary however generally it will be regenerated when needed
-#!**/[Pp]ackages/repositories.config
 # NuGet v3's project.json files produces more ignorable files
 *.nuget.props
 *.nuget.targets
@@ -399,9 +392,36 @@ FodyWeavers.xsd
 
 .idea
 
-# === InsanityWorld Mod build artifacts ===
-#InsanityWorldMod/InsanityWorldMod.Api.dll
-#InsanityWorldMod/InsanityWorldMod.Api.pdb
-#InsanityWorldMod/InsanityWorldMod.Core.dll
-#InsanityWorldMod/InsanityWorldMod.Core.pdb
-#InsanityWorldMod/Assets/Bundles/
+# ============================================================
+# 		InsanityWorld mod-repo: project-specific rules	
+# ============================================================
+
+# ModLoader/
+ModLoader/**/[Bb]in/
+ModLoader/**/[Oo]bj/
+ModLoader/**/*.user
+ModLoader/**/*.suo
+
+# ModUnity/ (Unity project sources)
+ModUnity/[Ll]ibrary/
+ModUnity/[Tt]emp/
+ModUnity/[Oo]bj/
+ModUnity/[Bb]uild/
+ModUnity/[Bb]uilds/
+ModUnity/[Ll]ogs/
+ModUnity/[Uu]ser[Ss]ettings/
+ModUnity/[Mm]emory[Cc]aptures/
+ModUnity/[Rr]ecordings/
+# Unity auto-generates these
+ModUnity/*.csproj
+ModUnity/*.sln
+ModUnity/*.unityproj
+ModUnity/*.suo
+ModUnity/*.opendb
+ModUnity/sysinfo.txt
+
+# Proprietary DLLs
+ModUnity/Assets/Plugins/Dredge/*.dll
+
+# Mod release artifacts
+release-archives/

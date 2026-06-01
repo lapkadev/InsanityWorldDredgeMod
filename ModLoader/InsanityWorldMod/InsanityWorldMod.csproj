@@ -24,11 +24,8 @@
 
   <ItemGroup>
     <Reference Include="InsanityWorldMod.Api">
-      <HintPath>InsanityWorldMod.Api.dll</HintPath>
+      <HintPath>bin\$(Configuration)\InsanityWorldMod.Api.dll</HintPath>
     </Reference>
-    <None Include="InsanityWorldMod.Core.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
