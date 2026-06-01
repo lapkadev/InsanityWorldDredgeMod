@@ -19,9 +19,6 @@
     <None Include="mod_meta.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\**\*.*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="InsanityWorldMod.csproj.user" />
   </ItemGroup>
 

@@ -400,8 +400,8 @@ FodyWeavers.xsd
 .idea
 
 # === InsanityWorld Mod build artifacts ===
-InsanityWorldMod/InsanityWorldMod.Api.dll
-InsanityWorldMod/InsanityWorldMod.Api.pdb
-InsanityWorldMod/InsanityWorldMod.Core.dll
-InsanityWorldMod/InsanityWorldMod.Core.pdb
-InsanityWorldMod/Assets/Bundles/
+#InsanityWorldMod/InsanityWorldMod.Api.dll
+#InsanityWorldMod/InsanityWorldMod.Api.pdb
+#InsanityWorldMod/InsanityWorldMod.Core.dll
+#InsanityWorldMod/InsanityWorldMod.Core.pdb
+#InsanityWorldMod/Assets/Bundles/
