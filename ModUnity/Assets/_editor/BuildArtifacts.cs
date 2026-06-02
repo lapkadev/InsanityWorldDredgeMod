@@ -133,6 +133,7 @@ namespace InsanityWorldMod.EditorTools
         private class LocalConfig
         {
             public string dredgeModsFolder = "";
+            public string unityExePath = @"C:/Program Files/Unity/Hub/Editor/2021.3.5f1/Editor/Unity.exe";
         }
 
         private static string LocalConfigPath => Path.Combine(MOD_REPO_PATH, LOCAL_CONFIG_FILE);
