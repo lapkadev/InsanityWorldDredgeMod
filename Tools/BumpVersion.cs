@@ -4,21 +4,25 @@ namespace InsanityWorldMod.Tools;
 
 public static class BumpVersion
 {
-    private const string ModMetaRelPath = "ModLoader/InsanityWorldMod/mod_meta.json";
-    private const string VersionCsRelPath = "ModUnity/Assets/_game/Scripts/Core/Version.cs";
+    private const string ModMetaRelPath        = "ModLoader/InsanityWorldMod/mod_meta.json";
+    private const string VersionCsRelPath      = "ModUnity/Assets/_game/Scripts/Core/Version.cs";
+    private const string ProjectSettingsRelPath = "ModUnity/ProjectSettings/ProjectSettings.asset";
 
-    private static readonly Regex ModMetaRegex = new(@"""Version""\s*:\s*""(\d+)\.(\d+)\.(\d+)""");
-    private static readonly Regex VersionCsRegex = new(@"(public\s+const\s+string\s+Current\s*=\s*"")(\d+)\.(\d+)\.(\d+)("")");
+    private static readonly Regex ModMetaRegex         = new(@"""Version""\s*:\s*""(\d+)\.(\d+)\.(\d+)""");
+    private static readonly Regex VersionCsRegex       = new(@"(public\s+const\s+string\s+Current\s*=\s*"")(\d+)\.(\d+)\.(\d+)("")");
+    private static readonly Regex ProjectSettingsRegex = new(@"(bundleVersion:\s*)\S+");
 
     // componentIndex: 0=major, 1=minor, 2=patch
     public static int Run(int componentIndex)
     {
-        string repoRoot = RepoLocator.FindModRepoRoot();
-        string metaPath = Path.Combine(repoRoot, ModMetaRelPath.Replace('/', Path.DirectorySeparatorChar));
-        string csPath   = Path.Combine(repoRoot, VersionCsRelPath.Replace('/', Path.DirectorySeparatorChar));
+        string repoRoot       = RepoLocator.FindModRepoRoot();
+        string metaPath       = Path.Combine(repoRoot, ModMetaRelPath.Replace('/',         Path.DirectorySeparatorChar));
+        string csPath         = Path.Combine(repoRoot, VersionCsRelPath.Replace('/',       Path.DirectorySeparatorChar));
+        string settingsPath   = Path.Combine(repoRoot, ProjectSettingsRelPath.Replace('/', Path.DirectorySeparatorChar));
 
-        if (!File.Exists(metaPath)) { Console.Error.WriteLine($"NOT FOUND: {metaPath}"); return 1; }
-        if (!File.Exists(csPath))   { Console.Error.WriteLine($"NOT FOUND: {csPath}");   return 1; }
+        if (!File.Exists(metaPath))     { Console.Error.WriteLine($"NOT FOUND: {metaPath}");     return 1; }
+        if (!File.Exists(csPath))       { Console.Error.WriteLine($"NOT FOUND: {csPath}");       return 1; }
+        if (!File.Exists(settingsPath)) { Console.Error.WriteLine($"NOT FOUND: {settingsPath}"); return 1; }
 
         string json = File.ReadAllText(metaPath);
         var metaMatch = ModMetaRegex.Match(json);
@@ -27,6 +31,9 @@ public static class BumpVersion
         string cs = File.ReadAllText(csPath);
         var csMatch = VersionCsRegex.Match(cs);
         if (!csMatch.Success) { Console.Error.WriteLine($"Version constant not found in {csPath}"); return 1; }
+
+        string settings = File.ReadAllText(settingsPath);
+        if (!ProjectSettingsRegex.IsMatch(settings)) { Console.Error.WriteLine($"bundleVersion not found in {settingsPath}"); return 1; }
 
         string metaVer = $"{metaMatch.Groups[1]}.{metaMatch.Groups[2]}.{metaMatch.Groups[3]}";
         string csVer   = $"{csMatch.Groups[2]}.{csMatch.Groups[3]}.{csMatch.Groups[4]}";
@@ -46,6 +53,9 @@ public static class BumpVersion
 
         File.WriteAllText(csPath, VersionCsRegex.Replace(cs, $"${{1}}{newVer}${{5}}"));
         Console.WriteLine($"OK  {csPath}");
+
+        File.WriteAllText(settingsPath, ProjectSettingsRegex.Replace(settings, $"${{1}}{newVer}"));
+        Console.WriteLine($"OK  {settingsPath}");
 
         return 0;
     }

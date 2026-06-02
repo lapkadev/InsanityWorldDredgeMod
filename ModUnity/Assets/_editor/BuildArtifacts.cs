@@ -373,11 +373,12 @@ namespace InsanityWorldMod.EditorTools
 
             string oldVersion = ReadCurrentVersion();
             string newVersion = ComputeBumpedVersion(oldVersion, componentIndex);
-            var metaPath = Path.Combine(MOD_REPO_PATH, MOD_LOADER_FOLDER, MOD_FOLDER_NAME, "mod_meta.json");
-            var versionCsPath = Path.Combine(MOD_REPO_PATH, "ModUnity", "Assets", "_game", "Scripts", "Core", "Version.cs");
+            var metaPath        = Path.Combine(MOD_REPO_PATH, MOD_LOADER_FOLDER, MOD_FOLDER_NAME, "mod_meta.json");
+            var versionCsPath   = Path.Combine(MOD_REPO_PATH, "ModUnity", "Assets", "_game", "Scripts", "Core", "Version.cs");
+            var settingsPath    = Path.Combine(MOD_REPO_PATH, "ModUnity", "ProjectSettings", "ProjectSettings.asset");
 
             if (!EditorUtility.DisplayDialog("InsanityWorld Bump Version",
-                $"Bump version from {oldVersion} to {newVersion}?\n\nUpdates BOTH:\n  - {metaPath}\n  - {versionCsPath}",
+                $"Bump version from {oldVersion} to {newVersion}?\n\nUpdates:\n  - {metaPath}\n  - {versionCsPath}\n  - {settingsPath}",
                 "Bump", "Cancel"))
                 return;
 
