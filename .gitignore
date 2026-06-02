@@ -428,4 +428,4 @@ ModUnity/sysinfo.txt
 ModUnity/Assets/Plugins/Dredge/*.dll
 
 # Mod release artifacts
-release-archives/
+ReleaseArchives/

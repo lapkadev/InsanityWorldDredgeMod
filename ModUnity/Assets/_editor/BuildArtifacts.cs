@@ -25,7 +25,7 @@ namespace InsanityWorldMod.EditorTools
     ///     Bump Minor (x.Y.0)                           [4.2] edits mod_meta.json - sem-ver minor++
     ///     Bump Major (X.0.0)                           [4.3] edits mod_meta.json - sem-ver major++
     ///     --- separator ---
-    ///     Build Release + Package for GitHub           [5.1] Release + zip in release-archives/
+    ///     Build Release + Package for GitHub           [5.1] Release + zip in ReleaseArchives/
     /// </summary>
     public static class BuildArtifacts
     {
@@ -517,8 +517,8 @@ namespace InsanityWorldMod.EditorTools
             }
             var version = $"{match.Groups[1].Value}.{match.Groups[2].Value}.{match.Groups[3].Value}";
 
-            // Output: <mod-repo>/release-archives/v<version>/
-            var releaseDir = Path.Combine(MOD_REPO_PATH, "release-archives", $"v{version}");
+            // Output: <mod-repo>/ReleaseArchives/v<version>/
+            var releaseDir = Path.Combine(MOD_REPO_PATH, "ReleaseArchives", $"v{version}");
             Directory.CreateDirectory(releaseDir);
 
             // Stage: clean copy with filters
@@ -527,7 +527,7 @@ namespace InsanityWorldMod.EditorTools
             CopyDirectoryFiltered(binDir, stageDir, ExcludedExtensions, ExcludedDirNames);
 
             // Zip stage into InsanityWorld.zip in
-            // <mod-repo>/release-archives/v<version>/
+            // <mod-repo>/ReleaseArchives/v<version>/
             var zipPath = Path.Combine(releaseDir, "InsanityWorld.zip");
             if (File.Exists(zipPath)) File.Delete(zipPath);
             // includeBaseDirectory: false - files end up at zip root
