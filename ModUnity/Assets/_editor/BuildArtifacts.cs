@@ -99,13 +99,13 @@ namespace InsanityWorldMod.EditorTools
         // ==================== Group 4: Bump mod version (sem-ver) ====================
 
         [MenuItem("InsanityWorld/Bump Patch (x.y.Z)", false, 300)]
-        public static void BumpPatch() => BumpVersionInternal(componentIndex: 2);
+        public static void BumpPatch() => ToolsBumpVersion("bump-patch", componentIndex: 2);
 
         [MenuItem("InsanityWorld/Bump Minor (x.Y.0)", false, 301)]
-        public static void BumpMinor() => BumpVersionInternal(componentIndex: 1);
+        public static void BumpMinor() => ToolsBumpVersion("bump-minor", componentIndex: 1);
 
         [MenuItem("InsanityWorld/Bump Major (X.0.0)", false, 302)]
-        public static void BumpMajor() => BumpVersionInternal(componentIndex: 0);
+        public static void BumpMajor() => ToolsBumpVersion("bump-major", componentIndex: 0);
 
         // ==================== Group 5: Build Release + Package for GitHub ====================
 
@@ -359,108 +359,82 @@ namespace InsanityWorldMod.EditorTools
 
         // ==================== Bump version helpers ====================
 
-        // Regex preserves original mod_meta.json formatting (tabs, key order) - JObject
-        // round-trip would re-emit with default formatting and break diffs.
+        // Used by PackageReleaseZipInternal to extract version for the zip output folder name.
         private static readonly Regex ModMetaVersionRegex =
             new Regex(@"""Version""\s*:\s*""(\d+)\.(\d+)\.(\d+)""");
 
-        // Matches the ModVersion.Current constant in ModUnity/Assets/_game/scripts/Core/Version.cs
-        // - embedded into Core.dll's AssemblyVersion metadata at compile time.
-        private static readonly Regex ModVersionConstRegex =
-            new Regex(@"(public\s+const\s+string\s+Current\s*=\s*"")(\d+)\.(\d+)\.(\d+)("")");
-
         /// <summary>
-        /// componentIndex: 0=major, 1=minor, 2=patch. Resets less-significant components to 0.
-        /// Updates BOTH mod_meta.json (ModLoader/InsanityWorldMod/) AND Version.cs (ModUnity/Assets/_game/scripts/Core/).
+        /// Thin wrapper around Tools/BumpVersion. Confirm dialog -> dotnet run -> Refresh
+        /// so Unity picks up the Version.cs change and recompiles Core/Api.
         /// </summary>
-        private static void BumpVersionInternal(int componentIndex)
+        private static void ToolsBumpVersion(string command, int componentIndex)
         {
             if (!ValidateModRepoPath()) return;
 
+            string oldVersion = ReadCurrentVersion();
+            string newVersion = ComputeBumpedVersion(oldVersion, componentIndex);
             var metaPath = Path.Combine(MOD_REPO_PATH, MOD_LOADER_FOLDER, MOD_FOLDER_NAME, "mod_meta.json");
-            var modUnityRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
-            var versionCsPath = Path.Combine(modUnityRoot, "Assets", "_game", "scripts", "Core", "Version.cs");
+            var versionCsPath = Path.Combine(MOD_REPO_PATH, "ModUnity", "Assets", "_game", "Scripts", "Core", "Version.cs");
 
-            if (!File.Exists(metaPath))
-            {
-                EditorUtility.DisplayDialog("InsanityWorld Bump Version",
-                    $"mod_meta.json not found at:\n{metaPath}", "OK");
-                return;
-            }
-            if (!File.Exists(versionCsPath))
-            {
-                EditorUtility.DisplayDialog("InsanityWorld Bump Version",
-                    $"Version.cs not found at:\n{versionCsPath}", "OK");
-                return;
-            }
-
-            // Read both files + parse current version, verify they match.
-            var json = File.ReadAllText(metaPath);
-            var metaMatch = ModMetaVersionRegex.Match(json);
-            if (!metaMatch.Success)
-            {
-                EditorUtility.DisplayDialog("InsanityWorld Bump Version",
-                    $"\"Version\" field with x.y.z format not found in mod_meta.json.\nCurrent contents:\n{json}", "OK");
-                return;
-            }
-
-            var versionCs = File.ReadAllText(versionCsPath);
-            var csMatch = ModVersionConstRegex.Match(versionCs);
-            if (!csMatch.Success)
-            {
-                EditorUtility.DisplayDialog("InsanityWorld Bump Version",
-                    $"public const string Current = \"x.y.z\" not found in Version.cs.\nFile:\n{versionCsPath}", "OK");
-                return;
-            }
-
-            var metaVersion = $"{metaMatch.Groups[1].Value}.{metaMatch.Groups[2].Value}.{metaMatch.Groups[3].Value}";
-            var csVersion = $"{csMatch.Groups[2].Value}.{csMatch.Groups[3].Value}.{csMatch.Groups[4].Value}";
-            if (metaVersion != csVersion)
-            {
-                if (!EditorUtility.DisplayDialog("InsanityWorld Bump Version",
-                    $"Version mismatch detected!\n\nmod_meta.json: {metaVersion}\nVersion.cs:    {csVersion}\n\nBump will use mod_meta.json's value ({metaVersion}) as the source and overwrite Version.cs. Continue?",
-                    "Bump anyway", "Cancel"))
-                {
-                    return;
-                }
-            }
-
-            var parts = new[]
-            {
-                int.Parse(metaMatch.Groups[1].Value),
-                int.Parse(metaMatch.Groups[2].Value),
-                int.Parse(metaMatch.Groups[3].Value),
-            };
-            var oldVersion = $"{parts[0]}.{parts[1]}.{parts[2]}";
-
-            parts[componentIndex]++;
-            for (int i = componentIndex + 1; i < parts.Length; i++) parts[i] = 0;
-            var newVersion = $"{parts[0]}.{parts[1]}.{parts[2]}";
-
-            var componentName = componentIndex == 0 ? "Major" : componentIndex == 1 ? "Minor" : "Patch";
-
-            if (!EditorUtility.DisplayDialog($"InsanityWorld Bump {componentName}",
+            if (!EditorUtility.DisplayDialog("InsanityWorld Bump Version",
                 $"Bump version from {oldVersion} to {newVersion}?\n\nUpdates BOTH:\n  - {metaPath}\n  - {versionCsPath}",
                 "Bump", "Cancel"))
-            {
                 return;
+
+            if (!RunDotnetTools(command)) return;
+            AssetDatabase.Refresh();
+        }
+
+        private static string ReadCurrentVersion()
+        {
+            var metaPath = Path.Combine(MOD_REPO_PATH, MOD_LOADER_FOLDER, MOD_FOLDER_NAME, "mod_meta.json");
+            if (!File.Exists(metaPath)) return "?";
+            var match = ModMetaVersionRegex.Match(File.ReadAllText(metaPath));
+            return match.Success ? $"{match.Groups[1]}.{match.Groups[2]}.{match.Groups[3]}" : "?";
+        }
+
+        private static string ComputeBumpedVersion(string current, int componentIndex)
+        {
+            try
+            {
+                var parts = current.Split('.').Select(int.Parse).ToArray();
+                parts[componentIndex]++;
+                for (int i = componentIndex + 1; i < parts.Length; i++) parts[i] = 0;
+                return string.Join(".", parts);
+            }
+            catch { return "?"; }
+        }
+
+        /// <summary>
+        /// Spawns `dotnet run --project Tools -- &lt;command&gt;` from MOD_REPO_PATH,
+        /// captures stdout/stderr, logs results. Returns true on exit code 0.
+        /// </summary>
+        private static bool RunDotnetTools(string command)
+        {
+            var psi = new System.Diagnostics.ProcessStartInfo("dotnet", $"run --project Tools -- {command}")
+            {
+                WorkingDirectory = MOD_REPO_PATH,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+            };
+
+            using var proc = System.Diagnostics.Process.Start(psi);
+            var output = proc.StandardOutput.ReadToEnd();
+            var error = proc.StandardError.ReadToEnd();
+            proc.WaitForExit();
+
+            if (proc.ExitCode != 0)
+            {
+                Debug.LogError($"[InsanityWorld] dotnet Tools '{command}' failed (exit {proc.ExitCode}).\nStdout:\n{output}\nStderr:\n{error}");
+                EditorUtility.DisplayDialog("InsanityWorld",
+                    $"Tools '{command}' failed (exit {proc.ExitCode}). See Console for details.", "OK");
+                return false;
             }
 
-            // Write back to both files.
-            var updatedJson = ModMetaVersionRegex.Replace(json, $"\"Version\": \"{newVersion}\"");
-            File.WriteAllText(metaPath, updatedJson);
-
-            var updatedCs = ModVersionConstRegex.Replace(versionCs, $"${{1}}{newVersion}${{5}}");
-            File.WriteAllText(versionCsPath, updatedCs);
-
-            // Force Unity to detect the Version.cs change and recompile Core/Api assemblies
-            // immediately. Without this, a subsequent Build menu click would copy the stale
-            // (pre-bump) DLLs out of Library/ScriptAssemblies/. Compile happens async - user
-            // must wait for it before the next build (the Build menus also guard against
-            // EditorApplication.isCompiling).
-            AssetDatabase.Refresh();
-
-            Debug.Log($"[InsanityWorld] Version bumped: {oldVersion} ==> {newVersion} (mod_meta.json + Version.cs). Waiting for Unity to recompile assemblies - watch bottom-right spinner.");
+            Debug.Log($"[InsanityWorld] {output}");
+            return true;
         }
 
         /// <summary>
