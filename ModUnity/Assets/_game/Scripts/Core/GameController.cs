@@ -16,7 +16,7 @@ namespace InsanityWorldMod.Core
         private static GameObject _minimapWidgetHost;
 
         /// <summary>
-        /// Initializes Core state to defaults. Called from `Api.Bootstrap.Initialize()` after setup all hooks.
+        /// Initializes Core state to defaults. Called from `Api.Entry.Initialize()` after setup all hooks.
         /// </summary>
         public static void InitializeState()
         {

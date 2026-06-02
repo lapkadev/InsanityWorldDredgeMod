@@ -8,7 +8,7 @@ namespace InsanityWorldMod.Api
 {
     /// <summary>
     /// MonoBehaviour host for periodic Core ticks (auto-save loop, Run.Tick).
-    /// Spawned and parented to a DontDestroyOnLoad GameObject by <c>Bootstrap.Initialize()</c>.
+    /// Spawned and parented to a DontDestroyOnLoad GameObject by <c>Entry.Initialize()</c>.
     /// </summary>
     public class MainBehaviour : MonoBehaviour
     {

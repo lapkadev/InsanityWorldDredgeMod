@@ -135,21 +135,30 @@ namespace InsanityWorldMod.EditorTools
             public string dredgeModsFolder = "";
         }
 
+        private static string LocalConfigPath => Path.Combine(MOD_REPO_PATH, LOCAL_CONFIG_FILE);
+
+        private static LocalConfig LoadLocalConfig()
+        {
+            if (File.Exists(LocalConfigPath))
+            {
+                try { return JsonUtility.FromJson<LocalConfig>(File.ReadAllText(LocalConfigPath)) ?? new LocalConfig(); }
+                catch { }
+            }
+            return new LocalConfig();
+        }
+
+        private static void SaveLocalConfig(LocalConfig cfg)
+        {
+            File.WriteAllText(LocalConfigPath, JsonUtility.ToJson(cfg, prettyPrint: true));
+        }
+
         /// <summary>
         /// Returns <DREDGE>/Mods/<MOD_ID>. Prompts via folder picker if config
         /// is missing or path is invalid. Returns null on cancel.
         /// </summary>
         private static string GetDredgeDeployFolder()
         {
-            var configPath = Path.Combine(MOD_REPO_PATH, LOCAL_CONFIG_FILE);
-            LocalConfig cfg = null;
-            if (File.Exists(configPath))
-            {
-                try { cfg = JsonUtility.FromJson<LocalConfig>(File.ReadAllText(configPath)); }
-                catch { }
-            }
-            cfg = cfg ?? new LocalConfig();
-
+            var cfg = LoadLocalConfig();
             if (string.IsNullOrEmpty(cfg.dredgeModsFolder) || !Directory.Exists(cfg.dredgeModsFolder))
             {
                 var picked = EditorUtility.OpenFolderPanel(
@@ -161,10 +170,9 @@ namespace InsanityWorldMod.EditorTools
                     return null;
                 }
                 cfg.dredgeModsFolder = picked;
-                File.WriteAllText(configPath, JsonUtility.ToJson(cfg, prettyPrint: true));
-                Debug.Log($"[InsanityWorld] Saved DREDGE Mods folder to {configPath}");
+                SaveLocalConfig(cfg);
+                Debug.Log($"[InsanityWorld] Saved DREDGE Mods folder to {LocalConfigPath}");
             }
-
             return Path.Combine(cfg.dredgeModsFolder, MOD_ID);
         }
 

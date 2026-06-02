@@ -402,6 +402,10 @@ ModLoader/**/[Oo]bj/
 ModLoader/**/*.user
 ModLoader/**/*.suo
 
+# Tools/
+Tools/**/[Bb]in/
+Tools/**/[Oo]bj/
+
 # ModUnity/ (Unity project sources)
 ModUnity/[Ll]ibrary/
 ModUnity/[Tt]emp/

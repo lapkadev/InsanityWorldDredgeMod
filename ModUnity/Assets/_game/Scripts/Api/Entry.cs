@@ -14,7 +14,7 @@ namespace InsanityWorldMod.Api
     /// Wires Core-side delegates (G.Log, DredgeHooks), initializes Core state,
     /// spawns MainBehaviour, registers Harmony patches, subscribes to DREDGE events.
     /// </summary>
-    public static class Bootstrap
+    public static class Entry
     {
         public static void Initialize()
         {
@@ -32,7 +32,7 @@ namespace InsanityWorldMod.Api
             DredgeHooks.FindDockById   = id => DockUtil.GetDock(id);
             DredgeHooks.GetModBasePath = () => ModAssemblyLoader.GetCurrentMod()?.BasePath ?? apiAssemblyDir;
 
-            G.Log.Info("Bootstrap.Initialize: hooks wired");
+            G.Log.Info("Entry.Initialize: hooks wired");
 
             // 3. Initialize Core state
             GameController.InitializeState();
@@ -48,7 +48,7 @@ namespace InsanityWorldMod.Api
             // 6. Subscribe to DREDGE save-loaded event - Core handles UI spawn + Load + StartNewRun.
             ApplicationEvents.Instance.OnGameLoaded += GameController.OnGameLoaded;
 
-            G.Log.Info("Bootstrap.Initialize: done");
+            G.Log.Info("Entry.Initialize: done");
         }
     }
 }

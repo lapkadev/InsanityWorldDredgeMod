@@ -7,7 +7,7 @@ namespace InsanityWorldMod
 		/// </summary>
 		public static void Initialize()
 		{
-			Api.Bootstrap.Initialize();
+			Api.Entry.Initialize();
 		}
 	}
 }
