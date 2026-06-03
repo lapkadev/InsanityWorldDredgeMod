@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -373,12 +374,19 @@ namespace InsanityWorldMod.EditorTools
 
             string oldVersion = ReadCurrentVersion();
             string newVersion = ComputeBumpedVersion(oldVersion, componentIndex);
-            var metaPath        = Path.Combine(MOD_REPO_PATH, MOD_LOADER_FOLDER, MOD_FOLDER_NAME, "mod_meta.json");
-            var versionCsPath   = Path.Combine(MOD_REPO_PATH, "ModUnity", "Assets", "_game", "Scripts", "Core", "Version.cs");
-            var settingsPath    = Path.Combine(MOD_REPO_PATH, "ModUnity", "ProjectSettings", "ProjectSettings.asset");
+
+            var resolvedFiles = ReadVersionFilesFromConfig();
+            if (resolvedFiles == null)
+            {
+                EditorUtility.DisplayDialog("InsanityWorld Bump Version",
+                    "versionFiles array missing in local_dev.json.user. Copy the block from local_dev.json.user.template.",
+                    "OK");
+                return;
+            }
+            var filesList = string.Join("\n", resolvedFiles.Select(p => "  - " + p));
 
             if (!EditorUtility.DisplayDialog("InsanityWorld Bump Version",
-                $"Bump version from {oldVersion} to {newVersion}?\n\nUpdates:\n  - {metaPath}\n  - {versionCsPath}\n  - {settingsPath}",
+                $"Bump version from {oldVersion} to {newVersion}?\n\nUpdates:\n{filesList}",
                 "Bump", "Cancel"))
                 return;
 
@@ -392,6 +400,35 @@ namespace InsanityWorldMod.EditorTools
             if (!File.Exists(metaPath)) return "?";
             var match = ModMetaVersionRegex.Match(File.ReadAllText(metaPath));
             return match.Success ? $"{match.Groups[1]}.{match.Groups[2]}.{match.Groups[3]}" : "?";
+        }
+
+        /// <summary>
+        /// Reads the `versionFiles` array from `local_dev.json.user` and resolves each path to an absolute path.
+        /// Returns null if the array is missing.
+        /// </summary>
+        private static List<string> ReadVersionFilesFromConfig()
+        {
+            var configPath = Path.Combine(MOD_REPO_PATH, "local_dev.json.user");
+            if (!File.Exists(configPath)) return null;
+            var content = File.ReadAllText(configPath);
+
+            var arrayStart = content.IndexOf("\"versionFiles\"");
+            if (arrayStart < 0) return null;
+
+            var openBracket  = content.IndexOf('[', arrayStart);
+            var closeBracket = content.IndexOf(']', openBracket);
+            if (openBracket < 0 || closeBracket < 0) return null;
+
+            var arrayBody = content.Substring(openBracket, closeBracket - openBracket);
+            var matches = Regex.Matches(arrayBody, @"""path""\s*:\s*""([^""]+)""");
+
+            var result = new List<string>();
+            foreach (Match m in matches)
+            {
+                var relPath = m.Groups[1].Value.Replace('/', Path.DirectorySeparatorChar);
+                result.Add(Path.GetFullPath(Path.Combine(MOD_REPO_PATH, relPath)));
+            }
+            return result.Count > 0 ? result : null;
         }
 
         private static string ComputeBumpedVersion(string current, int componentIndex)

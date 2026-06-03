@@ -1,4 +1,9 @@
 {
     "dredgeModsFolder": "C:/Path/To/DREDGE/Mods",
-    "unityExePath": "C:/Program Files/Unity/Hub/Editor/2021.3.5f1/Editor/Unity.exe"
+    "unityExePath": "C:/Program Files/Unity/Hub/Editor/2021.3.5f1/Editor/Unity.exe",
+    "versionFiles": [
+        { "type": "modMeta",              "path": "ModLoader/InsanityWorldMod/mod_meta.json" },
+        { "type": "csharpConst",          "path": "ModUnity/Assets/_game/Scripts/Core/Version.cs" },
+        { "type": "unityProjectSettings", "path": "ModUnity/ProjectSettings/ProjectSettings.asset" }
+    ]
 }
