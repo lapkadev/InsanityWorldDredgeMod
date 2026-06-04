@@ -2,11 +2,14 @@ using System.Security.Cryptography;
 
 namespace InsanityWorldMod.Tools;
 
-public static class Bootstrap
+public static partial class Constants
 {
-    private const string PluginsRelDir = "ModUnity/Assets/Plugins/Dredge";
+    public const string BOOTSTRAP_PLUGINS_REL_DIR = "ModUnity/Assets/Plugins/Dredge";
+}
 
-    private static readonly (string Name, string Package, string Version, string Subpath, string Sha256)[] Dlls = new[]
+public static partial class Funcs
+{
+    private static readonly (string Name, string Package, string Version, string Subpath, string Sha256)[] BootstrapDlls = new[]
     {
         ("Assembly-CSharp-firstpass.dll",                       "DredgeGameLibs", "1.5.3", "lib",       "B8E700DDF6BDAB33DEC44AE675BBA17270FCD383C32D8CE12C4D11AC6F62A0A3"),
         ("Assembly-CSharp.dll",                                 "DredgeGameLibs", "1.5.3", "lib",       "3E9B0E429E36E3BDB3346D990AE5C5A502A9AC3C653757E137D22FB6D22CA674"),
@@ -20,27 +23,32 @@ public static class Bootstrap
         ("WinchCommon.dll",                                     "Winch",          "0.6.2", "lib/net48", "3AAB4C11ACACF516E0BC3A321438F1970469E74381094471B16314D3B08D768A"),
     };
 
-    public static int Run()
+    public static int Bootstrap()
     {
-        string modRepoRoot = RepoLocator.FindModRepoRoot();
+        string pluginsDir = Path.Combine(G.repoRoot, BOOTSTRAP_PLUGINS_REL_DIR.Replace('/', Path.DirectorySeparatorChar));
+
+        if (File.Exists(Path.Combine(pluginsDir, "Winch.dll")))
+        {
+            LogInfo($"Bootstrap: DREDGE DLLs already in {pluginsDir} - skipping.");
+            return 0;
+        }
+
         string nugetCache = Environment.GetEnvironmentVariable("NUGET_PACKAGES")
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".nuget", "packages");
-        string pluginsDir = Path.Combine(modRepoRoot, PluginsRelDir.Replace('/', Path.DirectorySeparatorChar));
         Directory.CreateDirectory(pluginsDir);
 
-        Console.WriteLine($"Mod repo root: {modRepoRoot}");
-        Console.WriteLine($"NuGet cache:   {nugetCache}");
-        Console.WriteLine($"Target dir:    {pluginsDir}");
-        Console.WriteLine();
+        LogInfo($"Mod repo root: {G.repoRoot}");
+        LogInfo($"NuGet cache:   {nugetCache}");
+        LogInfo($"Target dir:    {pluginsDir}");
 
         int verified = 0, failed = 0;
-        foreach (var d in Dlls)
+        foreach (var d in BootstrapDlls)
         {
             string src = Path.Combine(nugetCache, d.Package.ToLowerInvariant(), d.Version,
                 d.Subpath.Replace('/', Path.DirectorySeparatorChar), d.Name);
             if (!File.Exists(src))
             {
-                Console.Error.WriteLine($"MISSING source: {src}");
+                LogError($"MISSING source: {src}");
                 failed++;
                 continue;
             }
@@ -48,25 +56,24 @@ public static class Bootstrap
             string dst = Path.Combine(pluginsDir, d.Name);
             File.Copy(src, dst, overwrite: true);
 
-            string actualHash = ComputeSha256(dst);
+            string actualHash = BootstrapSha256(dst);
             if (!string.Equals(actualHash, d.Sha256, StringComparison.OrdinalIgnoreCase))
             {
-                Console.Error.WriteLine($"HASH MISMATCH {d.Name}: expected {d.Sha256}, got {actualHash}");
+                LogError($"HASH MISMATCH {d.Name}: expected {d.Sha256}, got {actualHash}");
                 failed++;
             }
             else
             {
-                Console.WriteLine($"OK  {d.Name}");
+                LogInfo($"OK  {d.Name}");
                 verified++;
             }
         }
 
-        Console.WriteLine();
-        Console.WriteLine($"Done. Verified {verified}/{Dlls.Length}, failed {failed}.");
+        LogInfo($"Done. Verified {verified}/{BootstrapDlls.Length}, failed {failed}.");
         return failed > 0 ? 1 : 0;
     }
 
-    private static string ComputeSha256(string path)
+    private static string BootstrapSha256(string path)
     {
         using var sha = SHA256.Create();
         using var stream = File.OpenRead(path);

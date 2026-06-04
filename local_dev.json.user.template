@@ -1,9 +1,19 @@
 {
-    "dredgeModsFolder": "C:/Path/To/DREDGE/Mods",
-    "unityExePath": "C:/Program Files/Unity/Hub/Editor/2021.3.5f1/Editor/Unity.exe",
-    "versionFiles": [
-        { "type": "modMeta",              "path": "ModLoader/InsanityWorldMod/mod_meta.json" },
-        { "type": "csharpConst",          "path": "ModUnity/Assets/_game/Scripts/Core/Version.cs" },
-        { "type": "unityProjectSettings", "path": "ModUnity/ProjectSettings/ProjectSettings.asset" }
+    "DredgeModsFolder": "C:/Path/To/DREDGE/Mods",
+    "UnityExePath": "C:/Program Files/Unity/Hub/Editor/2021.3.5f1/Editor/Unity.exe",
+    "BuildDir": "Build",
+    "VersionFiles": [
+        { "Type": "ModMeta",              "Path": "ModLoader/InsanityWorldMod/mod_meta.json" },
+        { "Type": "CsharpConst",          "Path": "ModUnity/Assets/_game/Scripts/Core/Version.cs" },
+        { "Type": "UnityProjectSettings", "Path": "ModUnity/ProjectSettings/ProjectSettings.asset" }
+    ],
+    "UnityEditorBuildItems": [
+        {
+            "Path": "ModUnity",
+            "Method": "InsanityWorldMod.Editor.Funcs.BuildAll"
+        }
+    ],
+    "DotNetBuildItems": [
+        { "Path": "ModLoader/InsanityWorldMod/InsanityWorldMod.csproj" }
     ]
 }

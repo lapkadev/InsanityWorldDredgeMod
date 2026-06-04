@@ -17,6 +17,7 @@
 mono_crash.*
 
 # Build results
+/[Bb]uild/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
@@ -426,6 +427,3 @@ ModUnity/sysinfo.txt
 
 # Proprietary DLLs
 ModUnity/Assets/Plugins/Dredge/*.dll
-
-# Mod release artifacts
-ReleaseArchives/

@@ -1,6 +1,6 @@
 {
     "name": "InsanityWorldMod.Editor",
-    "rootNamespace": "InsanityWorldMod.EditorTools",
+    "rootNamespace": "InsanityWorldMod.Editor",
     "references": [
         "NuGetForUnity"
     ],
