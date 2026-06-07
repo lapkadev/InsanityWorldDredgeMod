@@ -11,11 +11,11 @@ You can't die anymore - it's INSANE ... but something feels wrong ...
 
 ## Features
 
-1. **Respawn at last checkpoint** - the player respawns at the last visited dock instead of game over.
+1. **Respawn at last checkpoint** - the player respawns at the last visited dock instead of game over.  
 ![Respawn in action](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/respawn.webp)
 
-2. **Minimap widget** 
-![Minimap in action](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/minimap.webp)
-![InsanityWorld minimap](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/minimap.png)
+2. **Minimap widget**  
+![Minimap in action](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/minimap.webp)  
+![InsanityWorld minimap](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/minimap.png)  
 
 3. More features and contents in development.
