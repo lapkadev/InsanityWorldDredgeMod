@@ -6,7 +6,7 @@ namespace InsanityWorldMod.Core
     /// Delegates for DREDGE / Winch APIs that Core cannot reference at compile time.
     /// Core.asmdef intentionally does NOT reference Winch - keeps the DLL boundary clean
     /// (Core = pure gameplay, Api = mod-loader glue).
-    /// Api layer MUST wire these at <c>Entry.Initialize()</c> before any Core code runs.
+    /// Api layer MUST wire these at <c>EntrySystem.OnLoad()</c> before any Core code runs.
     ///
     /// Pattern: dependency inversion - Core declares the contract, Api supplies the implementation.
     /// No defaults: if Api forgets to wire a hook, calling it throws NullReferenceException -
