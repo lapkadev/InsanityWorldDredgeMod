@@ -429,3 +429,5 @@ ModUnity/sysinfo.txt
 ModUnity/Assets/Plugins/Dredge/*.dll
 
 ModUnity/Assets/Plugins/Yarn/
+
+!ModUnity/Assets/_game/Scripts/Core/UI/Debug/
