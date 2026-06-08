@@ -19,7 +19,8 @@
         "Assembly-CSharp-firstpass.dll",
         "0Harmony.dll",
         "Newtonsoft.Json.dll",
-        "YarnSpinner.dll"
+        "YarnSpinner.dll",
+        "Sirenix.Serialization.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [],

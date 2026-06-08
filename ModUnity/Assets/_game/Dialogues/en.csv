@@ -2,3 +2,5 @@ Id,Character,Text
 line:lapkadev_test_1,Scientist,"Hello in custom eldritch UI"
 line:lapkadev_test_2,Scientist,"This line uses vanilla UI"
 line:lapkadev_test_3,Scientist,"Back to eldritch"
+line:lapkadev_mystic_root_1,Mystic,"I sense madness in you, seeker."
+line:lapkadev_mystic_root_2,Mystic,"We will speak more when the world is ready."

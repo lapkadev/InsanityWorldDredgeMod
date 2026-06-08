@@ -91,6 +91,21 @@ namespace InsanityWorldMod.Editor
                 Debug.Log($"[InsanityWorld] BuildAll: copied {locCount} localization JSON(s) into {locDst}");
             }
 
+            // --- Characters (.json) ---
+            var charSrc = Path.Combine(Application.dataPath, "_game", "Characters");
+            if (Directory.Exists(charSrc))
+            {
+                var charDst = Path.Combine(outputDir, "Assets", "Characters");
+                Directory.CreateDirectory(charDst);
+                int charCount = 0;
+                foreach (var file in Directory.GetFiles(charSrc, "*.json"))
+                {
+                    File.Copy(file, Path.Combine(charDst, Path.GetFileName(file)), overwrite: true);
+                    charCount++;
+                }
+                Debug.Log($"[InsanityWorld] BuildAll: copied {charCount} character file(s) into {charDst}");
+            }
+
             // --- Dialogues (.yarn + .csv) ---
             var dialSrc = Path.Combine(Application.dataPath, "_game", "Dialogues");
             if (Directory.Exists(dialSrc))
