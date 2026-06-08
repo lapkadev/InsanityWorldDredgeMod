@@ -205,6 +205,24 @@ namespace InsanityWorldMod.Core.Dialogue
             }
         }
 
+        public override void DialogueStarted()
+        {
+            var currentNode = GameManager.Instance?.DialogueRunner?.CurrentNodeName ?? "";
+            if (!currentNode.StartsWith(OUR_NODE_PREFIX)) return;
+            ForceCursorVisible();
+        }
+
+        private void Update()
+        {
+            if (_container != null && _container.activeSelf) ForceCursorVisible();
+        }
+
+        private static void ForceCursorVisible()
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+
         public override void DismissLine(Action onDismissalComplete)
         {
             HideContainer();
