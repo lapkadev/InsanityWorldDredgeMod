@@ -6,14 +6,19 @@ using UnityEngine.UI;
 using Yarn.Unity;
 using static InsanityWorldMod.Core.Constants;
 
+namespace InsanityWorldMod.Core
+{
+    public static partial class Constants
+    {
+        public const string TAG_VANILLA_UI  = "vanilla_ui";
+        public const string TAG_LAPKADEV_UI = "lapkadev_ui";
+    }
+}
+
 namespace InsanityWorldMod.Core.Dialogue
 {
     public class InsanityDialogueView : DialogueViewBase
     {
-        private const string OUR_NODE_PREFIX = "lapkadev_";
-        private const string TAG_VANILLA_UI = "vanilla_ui";
-        private const string TAG_LAPKADEV_UI = "lapkadev_ui";
-
         private GameObject _container;
         private TMP_Text _characterText;
         private TMP_Text _lineText;
@@ -156,7 +161,7 @@ namespace InsanityWorldMod.Core.Dialogue
         {
             if (USE_VANILLA_DIALOGUE_ALWAYS) return false;
             var currentNode = GameManager.Instance?.DialogueRunner?.CurrentNodeName ?? "";
-            bool isOurNode = currentNode.StartsWith(OUR_NODE_PREFIX);
+            bool isOurNode = currentNode.StartsWith(PREFIX);
             bool hasVanillaTag = HasTag(line, TAG_VANILLA_UI);
             bool hasLapkadevTag = HasTag(line, TAG_LAPKADEV_UI);
             return (isOurNode && !hasVanillaTag) || hasLapkadevTag;
@@ -186,7 +191,7 @@ namespace InsanityWorldMod.Core.Dialogue
         {
             if (USE_VANILLA_DIALOGUE_ALWAYS) return;
             var currentNode = GameManager.Instance?.DialogueRunner?.CurrentNodeName ?? "";
-            if (!currentNode.StartsWith(OUR_NODE_PREFIX)) return;
+            if (!currentNode.StartsWith(PREFIX)) return;
 
             ShowContainer();
             _continueButton.gameObject.SetActive(false);
@@ -211,7 +216,7 @@ namespace InsanityWorldMod.Core.Dialogue
         public override void DialogueStarted()
         {
             var currentNode = GameManager.Instance?.DialogueRunner?.CurrentNodeName ?? "";
-            if (!currentNode.StartsWith(OUR_NODE_PREFIX)) return;
+            if (!currentNode.StartsWith(PREFIX)) return;
             ForceCursorVisible();
         }
 

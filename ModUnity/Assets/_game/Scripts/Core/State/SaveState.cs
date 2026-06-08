@@ -11,5 +11,6 @@ namespace InsanityWorldMod.Core
 
         public int TotalRuns;
         public int TotalDeathsIntercepted;
+        public int InsanityCellCharge;
     }
 }

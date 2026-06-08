@@ -1,5 +1,7 @@
 {
     "insanity.debug.restart": "Run restarted (debug)",
     "lapkadev.mystic.name": "Mystic",
-    "lapkadev.quest-grid.bring-fish": "Bring 3 Cod to the Mystic"
+    "lapkadev.q1.title": "Bring 3 Cod to the Mystic",
+    "lapkadev.q2.title": "Bring 3 Scrap to craft Insanity Cell",
+    "lapkadev.q3.title": "Bring 1 Aberration to charge cell"
 }

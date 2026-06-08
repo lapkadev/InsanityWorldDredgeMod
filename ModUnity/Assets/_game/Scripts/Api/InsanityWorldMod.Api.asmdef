@@ -4,7 +4,9 @@
     "references": [
         "InsanityWorldMod.Core",
         "Unity.Localization",
-        "YarnSpinner.Unity"
+        "YarnSpinner.Unity",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [
         "Editor"

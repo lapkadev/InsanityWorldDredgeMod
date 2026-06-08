@@ -9,10 +9,6 @@ namespace InsanityWorldMod.Api
 {
     public static class DredgeDialogueViewPatcher
     {
-        private const string OUR_NODE_PREFIX = "lapkadev_";
-        private const string TAG_VANILLA_UI = "vanilla_ui";
-        private const string TAG_LAPKADEV_UI = "lapkadev_ui";
-
         [HarmonyPatch(typeof(DredgeDialogueView), nameof(DredgeDialogueView.RunLine))]
         public static class RunLinePatch
         {
@@ -34,7 +30,7 @@ namespace InsanityWorldMod.Api
             {
                 if (USE_VANILLA_DIALOGUE_ALWAYS) return true;
                 var currentNode = GameManager.Instance?.DialogueRunner?.CurrentNodeName ?? "";
-                if (!currentNode.StartsWith(OUR_NODE_PREFIX)) return true;
+                if (!currentNode.StartsWith(PREFIX)) return true;
                 return false;
             }
         }
@@ -42,7 +38,7 @@ namespace InsanityWorldMod.Api
         private static bool VanillaShouldRender(LocalizedLine line)
         {
             var currentNode = GameManager.Instance?.DialogueRunner?.CurrentNodeName ?? "";
-            bool isOurNode = currentNode.StartsWith(OUR_NODE_PREFIX);
+            bool isOurNode = currentNode.StartsWith(PREFIX);
             bool hasVanillaTag = HasTag(line, TAG_VANILLA_UI);
             bool hasLapkadevTag = HasTag(line, TAG_LAPKADEV_UI);
             return (!isOurNode && !hasLapkadevTag) || (isOurNode && hasVanillaTag);
