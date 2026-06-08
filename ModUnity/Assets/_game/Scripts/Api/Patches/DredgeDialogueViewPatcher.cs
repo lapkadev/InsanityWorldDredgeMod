@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using HarmonyLib;
+using InsanityWorldMod.Core;
 using Yarn.Unity;
+using static InsanityWorldMod.Core.Constants;
 
 namespace InsanityWorldMod.Api
 {
@@ -17,6 +19,7 @@ namespace InsanityWorldMod.Api
             [HarmonyPrefix]
             public static bool Prefix(LocalizedLine dialogueLine, Action onDialogueLineFinished)
             {
+                if (USE_VANILLA_DIALOGUE_ALWAYS) return true;
                 if (VanillaShouldRender(dialogueLine)) return true;
                 onDialogueLineFinished();
                 return false;
@@ -29,6 +32,7 @@ namespace InsanityWorldMod.Api
             [HarmonyPrefix]
             public static bool Prefix(DialogueOption[] dialogueOptions, Action<int> onOptionSelected)
             {
+                if (USE_VANILLA_DIALOGUE_ALWAYS) return true;
                 var currentNode = GameManager.Instance?.DialogueRunner?.CurrentNodeName ?? "";
                 if (!currentNode.StartsWith(OUR_NODE_PREFIX)) return true;
                 return false;

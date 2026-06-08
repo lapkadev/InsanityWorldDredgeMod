@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Yarn.Unity;
+using static InsanityWorldMod.Core.Constants;
 
 namespace InsanityWorldMod.Core.Dialogue
 {
@@ -153,6 +154,7 @@ namespace InsanityWorldMod.Core.Dialogue
 
         private bool ShouldRender(LocalizedLine line)
         {
+            if (USE_VANILLA_DIALOGUE_ALWAYS) return false;
             var currentNode = GameManager.Instance?.DialogueRunner?.CurrentNodeName ?? "";
             bool isOurNode = currentNode.StartsWith(OUR_NODE_PREFIX);
             bool hasVanillaTag = HasTag(line, TAG_VANILLA_UI);
@@ -182,6 +184,7 @@ namespace InsanityWorldMod.Core.Dialogue
 
         public override void RunOptions(DialogueOption[] dialogueOptions, Action<int> onOptionSelected)
         {
+            if (USE_VANILLA_DIALOGUE_ALWAYS) return;
             var currentNode = GameManager.Instance?.DialogueRunner?.CurrentNodeName ?? "";
             if (!currentNode.StartsWith(OUR_NODE_PREFIX)) return;
 

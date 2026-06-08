@@ -1,5 +1,15 @@
 title: lapkadev_mystic_root
 ---
 Mystic: I sense madness in you, seeker. #vanilla_ui #line:lapkadev_mystic_root_1
-Mystic: We will speak more when the world is ready. #vanilla_ui #line:lapkadev_mystic_root_2
+Mystic: Bring me three cod and I will reward you. #vanilla_ui #line:lapkadev_mystic_root_2
+-> Bring the materials. #line:lapkadev_mystic_root_opt_bring
+    <<ShowQuestGrid lapkadev_extractor_quest_grid>>
+    <<if GetLastQuestGridResult() == 1>>
+        Mystic: Excellent. The madness flows into the world. #vanilla_ui #line:lapkadev_mystic_root_3
+        <<ChangeFunds 500>>
+    <<else>>
+        Mystic: You have not brought what I asked. #vanilla_ui #line:lapkadev_mystic_root_4
+    <<endif>>
+-> Not now. #line:lapkadev_mystic_root_opt_later
+    Mystic: As you wish. #vanilla_ui #line:lapkadev_mystic_root_5
 ===

@@ -91,6 +91,36 @@ namespace InsanityWorldMod.Editor
                 Debug.Log($"[InsanityWorld] BuildAll: copied {locCount} localization JSON(s) into {locDst}");
             }
 
+            // --- GridConfigs (.json) ---
+            var gridSrc = Path.Combine(Application.dataPath, "_game", "GridConfigs");
+            if (Directory.Exists(gridSrc))
+            {
+                var gridDst = Path.Combine(outputDir, "Assets", "GridConfigs");
+                Directory.CreateDirectory(gridDst);
+                int gridCount = 0;
+                foreach (var file in Directory.GetFiles(gridSrc, "*.json"))
+                {
+                    File.Copy(file, Path.Combine(gridDst, Path.GetFileName(file)), overwrite: true);
+                    gridCount++;
+                }
+                Debug.Log($"[InsanityWorld] BuildAll: copied {gridCount} grid config(s) into {gridDst}");
+            }
+
+            // --- Quests/GridConfigs (.json) ---
+            var questGridSrc = Path.Combine(Application.dataPath, "_game", "Quests", "GridConfigs");
+            if (Directory.Exists(questGridSrc))
+            {
+                var questGridDst = Path.Combine(outputDir, "Assets", "Quests", "GridConfigs");
+                Directory.CreateDirectory(questGridDst);
+                int questGridCount = 0;
+                foreach (var file in Directory.GetFiles(questGridSrc, "*.json"))
+                {
+                    File.Copy(file, Path.Combine(questGridDst, Path.GetFileName(file)), overwrite: true);
+                    questGridCount++;
+                }
+                Debug.Log($"[InsanityWorld] BuildAll: copied {questGridCount} quest grid config(s) into {questGridDst}");
+            }
+
             // --- Characters (.json) ---
             var charSrc = Path.Combine(Application.dataPath, "_game", "Characters");
             if (Directory.Exists(charSrc))
