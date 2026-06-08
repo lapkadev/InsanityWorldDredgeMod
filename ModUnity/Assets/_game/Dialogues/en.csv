@@ -1,0 +1,4 @@
+Id,Character,Text
+line:lapkadev_test_1,Scientist,"Hello in custom eldritch UI"
+line:lapkadev_test_2,Scientist,"This line uses vanilla UI"
+line:lapkadev_test_3,Scientist,"Back to eldritch"

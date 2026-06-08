@@ -50,6 +50,12 @@ namespace InsanityWorldMod.Api
             }
 
             G.Run?.Tick(Time.deltaTime);
+
+            if (Input.GetKeyDown(KeyCode.F10))
+            {
+                G.Log.Info("F10 pressed - starting test dialogue 'lapkadev_test_hello'");
+                GameManager.Instance?.DialogueRunner?.StartDialogue("lapkadev_test_hello");
+            }
         }
     }
 }

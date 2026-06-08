@@ -1,4 +1,5 @@
 using System;
+using InsanityWorldMod.Core.Dialogue;
 using UnityEngine;
 
 namespace InsanityWorldMod.Core
@@ -13,9 +14,10 @@ namespace InsanityWorldMod.Core
         public static LanguageManager Lang        => GameManager.Instance?.LanguageManager;
 
         // Our state
-        public static GameState Game { get; set; }
-        public static RunState  Run  { get; set; }
-        public static SaveState Save { get; set; }
+        public static GameState            Game         { get; set; }
+        public static RunState             Run          { get; set; }
+        public static SaveState            Save         { get; set; }
+        public static InsanityDialogueView DialogueView { get; set; }
 
         /// <summary>
         /// Logger delegates. Default implementation uses UnityEngine.Debug.

@@ -3,7 +3,8 @@
     "rootNamespace": "InsanityWorldMod.Api",
     "references": [
         "InsanityWorldMod.Core",
-        "Unity.Localization"
+        "Unity.Localization",
+        "YarnSpinner.Unity"
     ],
     "includePlatforms": [
         "Editor"
@@ -17,7 +18,8 @@
         "Assembly-CSharp.dll",
         "Assembly-CSharp-firstpass.dll",
         "0Harmony.dll",
-        "Newtonsoft.Json.dll"
+        "Newtonsoft.Json.dll",
+        "YarnSpinner.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [],
