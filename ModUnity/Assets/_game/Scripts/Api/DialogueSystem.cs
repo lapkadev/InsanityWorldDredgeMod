@@ -21,6 +21,8 @@ namespace InsanityWorldMod.Api
         public const string YARN_CMD_SET_CONSUME_ABERRATIONS       = "lapkadev_set_consume_aberrations";
         public const string YARN_CMD_ADD_CHARGE                    = "lapkadev_add_charge";
         public const string YARN_CMD_ADD_CHARGE_PER_ABERRATION     = "lapkadev_add_charge_per_aberration";
+
+        public const string YARN_CMD_LOG                           = "lapkadev_log";
     }
 
     public class DialogueSystem : IInsanityWorldSystem
@@ -102,7 +104,12 @@ namespace InsanityWorldMod.Api
                 Save();
             });
 
-            G.Log.Info("RegisterYarnCommands: registered 6 functions + 5 commands");
+            runner.AddCommandHandler<string>(YARN_CMD_LOG, msg =>
+            {
+                G.Log.Info($"[SMOKE-yarn] {msg}");
+            });
+
+            G.Log.Info("RegisterYarnCommands: registered 6 functions + 6 commands");
         }
     }
 }

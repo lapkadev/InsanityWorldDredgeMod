@@ -1,0 +1,113 @@
+// Smoke-tests for Yarn Spinner v2.2.0 + DREDGE integration.
+// Press F-keys (mapped in MainBehaviour.CheckSmokeTestKey) to run.
+// Logs under [SMOKE-yarn] tag in winch.log.
+//
+// Removed (verified 2026-06-10 smoke-test):
+//   T2 (<<ShowQuestGrid $var>>) - FAIL, vanilla cmd ignores var silently
+//   T3 (<<SetTemporalMarker $var false>>) - FAIL, saves marker under literal "$m"
+//   T1 (static jump) - PASS, control test, no value re-running
+//   T4 (bool + not) - PASS, no value re-running
+
+// ==========================================
+// VAL (F2): full demo of template-per-quest design.
+// What generator will produce for one bring-items quest, instantiated by hand.
+// Tests: vanilla cmd with LITERAL args (grid name, marker name, jump target).
+//
+// Flow:
+//   1. Press F2 -> Mystic line "Place 3 cod" shows in dialogue popup.
+//   2. Click Continue -> quest grid (cod) opens.
+//   3a. Place 3 cod, click Done    -> "Excellent" + reward node + +1$ + marker set.
+//   3b. Place 1-2 cod, click Done  -> "You have not brought" + items returned, no marker.
+//   3c. Press Esc                  -> items returned, no marker, no dialogue.
+//   4. Press F2 again -> "You have already brought" (marker is set).
+//
+// To retest from scratch: reload save (we have no clear-marker cmd yet).
+// Side effect: consumes 3 cod from inventory on success path.
+// ==========================================
+title: lapkadev_val_run
+---
+<<lapkadev_log "VAL-start">>
+<<if GetTemporalMarkerExists("lapkadev_val_done")>>
+    <<lapkadev_log "VAL-already-branch">>
+    Mystic: You have already brought what I asked. #vanilla_ui
+<<else>>
+    <<lapkadev_log "VAL-status-branch">>
+    Mystic: Place 3 cod on the grid, then click Done. #vanilla_ui
+    <<lapkadev_clear_expected>>
+    <<lapkadev_set_expected "cod" 3>>
+    <<ShowQuestGrid lapkadev_mystic_q1_grid>>
+    <<if lapkadev_was_submitted() and lapkadev_get_last_grid_item_count("cod") >= 3>>
+        <<lapkadev_log "VAL-success-branch">>
+        Mystic: Excellent. #vanilla_ui
+        <<SetTemporalMarker lapkadev_val_done false>>
+        <<jump lapkadev_val_reward>>
+    <<else>>
+        <<lapkadev_log "VAL-fail-branch">>
+        Mystic: You have not brought what I asked. #vanilla_ui
+    <<endif>>
+<<endif>>
+===
+
+title: lapkadev_val_reward
+---
+<<lapkadev_log "VAL-reward-node-reached">>
+Mystic: Here is a coin for your trouble. #vanilla_ui
+<<ChangeFunds 1>>
+===
+
+
+// ==========================================
+// T5 (F6): interpolation in line text + cmd arg
+// Click Continue on dialogue to advance to post-line log.
+// ==========================================
+title: lapkadev_smoke_interpolation
+---
+<<lapkadev_log "T5-start">>
+<<set $count = 3>>
+<<set $name = "cod">>
+<<lapkadev_log "T5a-cmd-arg-interp count={$count} name={$name}">>
+Mystic: Place {$count} {$name} on the grid. #vanilla_ui
+<<lapkadev_log "T5b-after-line-PASS-if-Mystic-said-Place-3-cod">>
+===
+
+
+// ==========================================
+// T6 (F9): nested <<if>> 3 levels deep
+// ==========================================
+title: lapkadev_smoke_nested_if
+---
+<<lapkadev_log "T6-start">>
+<<set $a = true>>
+<<set $b = true>>
+<<set $c = true>>
+<<if $a>>
+    <<lapkadev_log "T6-level1-entered">>
+    <<if $b>>
+        <<lapkadev_log "T6-level2-entered">>
+        <<if $c>>
+            <<lapkadev_log "T6-PASS-level3-reached">>
+        <<else>>
+            <<lapkadev_log "T6-FAIL-level3-not-entered">>
+        <<endif>>
+    <<endif>>
+<<endif>>
+===
+
+
+// ==========================================
+// T7 (F8): literal <<jump>> one-way verification.
+// Expected: target reached, line AFTER jump does NOT execute.
+// ==========================================
+title: lapkadev_smoke_jump_one_way
+---
+<<lapkadev_log "T7-start">>
+<<lapkadev_log "T7-about-to-jump-literal">>
+<<jump lapkadev_smoke_jump_one_way_target>>
+<<lapkadev_log "T7-FAIL-line-after-jump-was-executed-jump-is-not-one-way">>
+===
+
+title: lapkadev_smoke_jump_one_way_target
+---
+<<lapkadev_log "T7-target-reached">>
+<<lapkadev_log "T7-PASS-if-no-FAIL-line-above-jump-is-one-way">>
+===
