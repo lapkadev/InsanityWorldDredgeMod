@@ -32,6 +32,7 @@ namespace InsanityWorldMod.Api
             var apiAssemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             DredgeHooks.FindDockById   = id => DockUtil.GetDock(id);
             DredgeHooks.GetModBasePath = () => ModAssemblyLoader.GetCurrentMod()?.BasePath ?? apiAssemblyDir;
+            DredgeHooks.GetAllBundles  = () => AssetBundleUtil.AssetBundles.Values;
 
             G.Log.Info("EntrySystem.OnLoad: hooks wired");
 

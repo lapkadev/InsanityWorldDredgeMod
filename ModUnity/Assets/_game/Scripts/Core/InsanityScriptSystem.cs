@@ -1,12 +1,6 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Text;
 using TMPro;
-using UnityEngine;
 using static InsanityWorldMod.Core.Constants;
-using static InsanityWorldMod.Core.DredgeHooks;
-using static InsanityWorldMod.Core.Funcs;
 
 namespace InsanityWorldMod.Core
 {
@@ -15,8 +9,7 @@ namespace InsanityWorldMod.Core
         public const string SCRIPT_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         public const string SCRIPT_GLYPHS = SCRIPT_ALPHABET + "/\\.,:;-+=!?()%";
 
-        public const string BUNDLES_SUBDIR = "Assets/Bundles";
-        public const string BUNDLE_FONTS = "fonts";
+        public const string FONT_INSANITY = "sdf_insanity_font";
     }
 
     public static partial class G
@@ -26,38 +19,9 @@ namespace InsanityWorldMod.Core
 
     public static partial class Funcs
     {
-        public static void InitInsanityScript() => InitInsanityScript(GetModBasePath());
-
-        public static void InitInsanityScript(string modBasePath)
+        public static void InitInsanityScript()
         {
-            if (G.InsanityFont != null) return;
-
-            try
-            {
-                string path = Path.Combine(modBasePath, BUNDLES_SUBDIR, BUNDLE_FONTS);
-                if (!File.Exists(path))
-                {
-                    G.Log.Warn($"InitInsanityScript: font bundle not found at '{path}'");
-                    return;
-                }
-
-                var bundle = AssetBundle.LoadFromFile(path);
-                if (bundle == null)
-                {
-                    G.Log.Error($"InitInsanityScript: failed to load bundle '{path}'");
-                    return;
-                }
-
-                G.InsanityFont = bundle.LoadAllAssets<TMP_FontAsset>().FirstOrDefault();
-                if (G.InsanityFont == null)
-                    G.Log.Error($"InitInsanityScript: no TMP_FontAsset inside bundle '{BUNDLE_FONTS}'");
-                else
-                    G.Log.Info($"InitInsanityScript: insanity font loaded '{G.InsanityFont.name}'");
-            }
-            catch (Exception ex)
-            {
-                G.Log.Error($"InitInsanityScript: {ex}");
-            }
+            G.InsanityFont = G.Fonts[FONT_INSANITY];
         }
 
         public static string Vig(string text, string key)

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace InsanityWorldMod.Core
 {
@@ -23,5 +25,10 @@ namespace InsanityWorldMod.Core
         /// Returns the base path of the currently-loaded mod folder (used for debug save location).
         /// </summary>
         public static Func<string> GetModBasePath { get; set; }
+
+        /// <summary>
+        /// Returns every AssetBundle Winch has loaded.
+        /// </summary>
+        public static Func<IEnumerable<AssetBundle>> GetAllBundles { get; set; }
     }
 }
