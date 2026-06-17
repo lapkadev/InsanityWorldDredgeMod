@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.Cryptography;
 
 namespace InsanityWorldMod.Tools;
@@ -5,10 +6,24 @@ namespace InsanityWorldMod.Tools;
 public static partial class Constants
 {
     public const string BOOTSTRAP_PLUGINS_REL_DIR = "ModUnity/Assets/Plugins/Dredge";
+    public const string BOOTSTRAP_YARN_REL_DIR    = "ModUnity/Assets/Plugins/Yarn";
+    public const string BOOTSTRAP_YARN_GIT_URL    = "https://github.com/YarnSpinnerTool/YarnSpinner-Unity.git";
+    public const string BOOTSTRAP_YARN_GIT_TAG    = "v2.2.0";
 }
 
 public static partial class Funcs
 {
+    public static int Bootstrap()
+    {
+        int res = BootstrapDredgeAndWinch();
+        if (res != 0) return res;
+
+        res = BootstrapYarn();
+        if (res != 0) return res;
+
+        return 0;
+    }
+
     private static readonly (string Name, string Package, string Version, string Subpath, string Sha256)[] BootstrapDlls = new[]
     {
         ("Assembly-CSharp-firstpass.dll",                       "DredgeGameLibs", "1.5.3", "lib",       "B8E700DDF6BDAB33DEC44AE675BBA17270FCD383C32D8CE12C4D11AC6F62A0A3"),
@@ -23,7 +38,7 @@ public static partial class Funcs
         ("WinchCommon.dll",                                     "Winch",          "0.6.2", "lib/net48", "3AAB4C11ACACF516E0BC3A321438F1970469E74381094471B16314D3B08D768A"),
     };
 
-    public static int Bootstrap()
+    public static int BootstrapDredgeAndWinch()
     {
         string pluginsDir = Path.Combine(G.repoRoot, BOOTSTRAP_PLUGINS_REL_DIR.Replace('/', Path.DirectorySeparatorChar));
 
@@ -71,6 +86,92 @@ public static partial class Funcs
 
         LogInfo($"Done. Verified {verified}/{BootstrapDlls.Length}, failed {failed}.");
         return failed > 0 ? 1 : 0;
+    }
+
+    public static int BootstrapYarn()
+    {
+        string yarnDir = Path.Combine(G.repoRoot, BOOTSTRAP_YARN_REL_DIR.Replace('/', Path.DirectorySeparatorChar));
+        string sentinelAsmdef = Path.Combine(yarnDir, "Runtime", "YarnSpinner.Unity.asmdef");
+
+        if (File.Exists(sentinelAsmdef))
+        {
+            LogInfo($"Bootstrap: Yarn package already in {yarnDir} - skipping.");
+            return 0;
+        }
+
+        string tempDir = Path.Combine(Path.GetTempPath(), $"yarnspinner-bootstrap-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(tempDir);
+
+        try
+        {
+            LogInfo($"Bootstrap: cloning {BOOTSTRAP_YARN_GIT_URL} tag {BOOTSTRAP_YARN_GIT_TAG} -> {tempDir}");
+            int gitExit = RunProcess("git", $"clone --depth 1 --branch {BOOTSTRAP_YARN_GIT_TAG} \"{BOOTSTRAP_YARN_GIT_URL}\" \"{tempDir}\"");
+            if (gitExit != 0)
+            {
+                LogError($"git clone failed (exit {gitExit}). Is 'git' installed and on PATH?");
+                return 1;
+            }
+
+            Directory.CreateDirectory(yarnDir);
+            CopyYarnFiltered(tempDir, yarnDir);
+
+            LogInfo($"Bootstrap: Yarn package installed at {yarnDir}");
+            return 0;
+        }
+        finally
+        {
+            if (Directory.Exists(tempDir))
+            {
+                try { DeleteDirectoryForced(tempDir); }
+                catch (Exception ex) { LogError($"Failed to cleanup temp dir {tempDir}: {ex.Message}"); }
+            }
+        }
+    }
+
+    private static void DeleteDirectoryForced(string path)
+    {
+        foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
+            File.SetAttributes(file, FileAttributes.Normal);
+        Directory.Delete(path, recursive: true);
+    }
+
+    private static void CopyYarnFiltered(string srcRoot, string dstRoot)
+    {
+        var excludedDirs = new[] { ".git", "Tests" };
+        // Conflicts with NuGetForUnity's copy of the same DLL - System.Reflection.TypeExtensions.dll (HarmonyX/Mono.Cecil transitive dep)
+        var excludedFiles = new[] { "System.Reflection.TypeExtensions.dll", "System.Reflection.TypeExtensions.dll.meta", "Tests.meta" };
+
+        int copiedFiles = 0;
+        foreach (var srcFile in Directory.EnumerateFiles(srcRoot, "*", SearchOption.AllDirectories))
+        {
+            string rel = Path.GetRelativePath(srcRoot, srcFile);
+            string[] segments = rel.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            if (segments.Any(s => excludedDirs.Contains(s, StringComparer.OrdinalIgnoreCase))) continue;
+            if (excludedFiles.Contains(Path.GetFileName(srcFile), StringComparer.OrdinalIgnoreCase)) continue;
+
+            string dstFile = Path.Combine(dstRoot, rel);
+            Directory.CreateDirectory(Path.GetDirectoryName(dstFile)!);
+            File.Copy(srcFile, dstFile, overwrite: true);
+            copiedFiles++;
+        }
+        LogInfo($"Bootstrap: copied {copiedFiles} file(s) from Yarn package (excluded: Tests/, .git/, System.Reflection.TypeExtensions.dll)");
+    }
+
+    private static int RunProcess(string fileName, string arguments)
+    {
+        var psi = new ProcessStartInfo(fileName, arguments)
+        {
+            RedirectStandardOutput = true,
+            RedirectStandardError  = true,
+            UseShellExecute        = false,
+        };
+        using var proc = Process.Start(psi)!;
+        proc.OutputDataReceived += (_, e) => { if (e.Data != null) LogInfo(e.Data); };
+        proc.ErrorDataReceived  += (_, e) => { if (e.Data != null) LogError(e.Data); };
+        proc.BeginOutputReadLine();
+        proc.BeginErrorReadLine();
+        proc.WaitForExit();
+        return proc.ExitCode;
     }
 
     private static string BootstrapSha256(string path)

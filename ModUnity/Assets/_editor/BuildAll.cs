@@ -91,6 +91,69 @@ namespace InsanityWorldMod.Editor
                 Debug.Log($"[InsanityWorld] BuildAll: copied {locCount} localization JSON(s) into {locDst}");
             }
 
+            // --- GridConfigs (.json) ---
+            var gridSrc = Path.Combine(Application.dataPath, "_game", "GridConfigs");
+            if (Directory.Exists(gridSrc))
+            {
+                var gridDst = Path.Combine(outputDir, "Assets", "GridConfigs");
+                Directory.CreateDirectory(gridDst);
+                int gridCount = 0;
+                foreach (var file in Directory.GetFiles(gridSrc, "*.json"))
+                {
+                    File.Copy(file, Path.Combine(gridDst, Path.GetFileName(file)), overwrite: true);
+                    gridCount++;
+                }
+                Debug.Log($"[InsanityWorld] BuildAll: copied {gridCount} grid config(s) into {gridDst}");
+            }
+
+            // --- Quests/GridConfigs (.json) ---
+            var questGridSrc = Path.Combine(Application.dataPath, "_game", "Quests", "GridConfigs");
+            if (Directory.Exists(questGridSrc))
+            {
+                var questGridDst = Path.Combine(outputDir, "Assets", "Quests", "GridConfigs");
+                Directory.CreateDirectory(questGridDst);
+                int questGridCount = 0;
+                foreach (var file in Directory.GetFiles(questGridSrc, "*.json"))
+                {
+                    File.Copy(file, Path.Combine(questGridDst, Path.GetFileName(file)), overwrite: true);
+                    questGridCount++;
+                }
+                Debug.Log($"[InsanityWorld] BuildAll: copied {questGridCount} quest grid config(s) into {questGridDst}");
+            }
+
+            // --- Characters (.json) ---
+            var charSrc = Path.Combine(Application.dataPath, "_game", "Characters");
+            if (Directory.Exists(charSrc))
+            {
+                var charDst = Path.Combine(outputDir, "Assets", "Characters");
+                Directory.CreateDirectory(charDst);
+                int charCount = 0;
+                foreach (var file in Directory.GetFiles(charSrc, "*.json"))
+                {
+                    File.Copy(file, Path.Combine(charDst, Path.GetFileName(file)), overwrite: true);
+                    charCount++;
+                }
+                Debug.Log($"[InsanityWorld] BuildAll: copied {charCount} character file(s) into {charDst}");
+            }
+
+            // --- Dialogues (.yarn + .csv) ---
+            var dialSrc = Path.Combine(Application.dataPath, "_game", "Dialogues");
+            if (Directory.Exists(dialSrc))
+            {
+                var dialDst = Path.Combine(outputDir, "Assets", "Dialogues");
+                Directory.CreateDirectory(dialDst);
+                int dialCount = 0;
+                foreach (var pattern in new[] { "*.yarn", "*.csv" })
+                {
+                    foreach (var file in Directory.GetFiles(dialSrc, pattern))
+                    {
+                        File.Copy(file, Path.Combine(dialDst, Path.GetFileName(file)), overwrite: true);
+                        dialCount++;
+                    }
+                }
+                Debug.Log($"[InsanityWorld] BuildAll: copied {dialCount} dialogue file(s) into {dialDst}");
+            }
+
             Debug.Log("[InsanityWorld] BuildAll: DONE.");
             return true;
         }

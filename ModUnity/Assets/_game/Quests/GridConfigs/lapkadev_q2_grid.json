@@ -1,0 +1,13 @@
+{
+    "titleString": "lapkadev.q2.title",
+    "isSaved": false,
+    "allowEquipmentInstallation": false,
+    "allowManualExit": true,
+    "allowStorageAccess": true,
+    "gridConfiguration": "lapkadev_material_grid",
+    "gridKey": "NONE",
+    "presetGridMode": "NONE",
+    "questGridExitMode": "REVISITABLE",
+    "startingDurabilityProportion": 1.0,
+    "completeConditions": []
+}

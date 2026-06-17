@@ -9,6 +9,13 @@ public static partial class Funcs
         int bootRc = Bootstrap();
         if (bootRc != 0) return bootRc;
 
+        var buildBinDir = Path.GetFullPath(Path.Combine(G.repoRoot, G.cfg.BuildDir, "bin", G.buildConfig.ToString()));
+        if (Directory.Exists(buildBinDir))
+        {
+            Directory.Delete(buildBinDir, recursive: true);
+            LogInfo($"BuildAll: cleaned {buildBinDir}");
+        }
+
         var rawItems = G.cfg.UnityEditorBuildItems;
         if (rawItems.Length == 0)
         {

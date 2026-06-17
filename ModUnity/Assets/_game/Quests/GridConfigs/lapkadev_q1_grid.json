@@ -1,0 +1,13 @@
+{
+    "titleString": "lapkadev.q1.title",
+    "isSaved": false,
+    "allowEquipmentInstallation": false,
+    "allowManualExit": true,
+    "allowStorageAccess": true,
+    "gridConfiguration": "lapkadev_fish_grid",
+    "gridKey": "NONE",
+    "presetGridMode": "NONE",
+    "questGridExitMode": "REVISITABLE",
+    "startingDurabilityProportion": 1.0,
+    "completeConditions": []
+}

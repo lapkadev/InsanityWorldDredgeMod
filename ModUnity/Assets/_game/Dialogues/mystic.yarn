@@ -1,0 +1,56 @@
+title: lapkadev_mystic_root
+---
+Mystic: I sense madness in you, seeker. #vanilla_ui #line:lapkadev_mystic_root_1
+
+-> Bring me 3 cod (one-time, +500$). #line:lapkadev_mystic_opt_q1
+    <<if GetTemporalMarkerExists("lapkadev_q1_done")>>
+        Mystic: You have already brought what I asked. #vanilla_ui #line:lapkadev_mystic_q1_already
+    <<else>>
+        Mystic: Place 3 cod on the grid, then click Done. #vanilla_ui #line:lapkadev_mystic_q1_status
+        <<lapkadev_clear_expected>>
+        <<lapkadev_set_expected "cod" 3>>
+        <<ShowQuestGrid lapkadev_q1_grid>>
+        <<if lapkadev_was_submitted() and lapkadev_get_last_grid_item_count("cod") >= 3>>
+            Mystic: Excellent. The madness flows into the world. #vanilla_ui #line:lapkadev_mystic_q1_done
+            <<ChangeFunds 500>>
+            <<SetTemporalMarker lapkadev_q1_done false>>
+        <<else>>
+            Mystic: You have not brought what I asked. #vanilla_ui #line:lapkadev_mystic_q1_fail
+        <<endif>>
+    <<endif>>
+
+-> Craft me an Insanity Cell (one-time, needs 3 scrap). #line:lapkadev_mystic_opt_q2
+    <<if GetTemporalMarkerExists("lapkadev_cell_crafted")>>
+        Mystic: I have already forged your cell. #vanilla_ui #line:lapkadev_mystic_q2_already
+    <<else>>
+        Mystic: Place 3 scrap on the grid, then click Done. #vanilla_ui #line:lapkadev_mystic_q2_status
+        <<lapkadev_clear_expected>>
+        <<lapkadev_set_expected "scrap" 3>>
+        <<ShowQuestGrid lapkadev_q2_grid>>
+        <<if lapkadev_was_submitted() and lapkadev_get_last_grid_item_count("scrap") >= 3>>
+            Mystic: The cell is forged. Bring me aberrations to charge it. #vanilla_ui #line:lapkadev_mystic_q2_done
+            <<SetTemporalMarker lapkadev_cell_crafted false>>
+        <<else>>
+            Mystic: You lack the materials. #vanilla_ui #line:lapkadev_mystic_q2_fail
+        <<endif>>
+    <<endif>>
+
+-> Charge my cell (each aberration = +10 charge). <<if GetTemporalMarkerExists("lapkadev_cell_crafted")>> #line:lapkadev_mystic_opt_q3
+    <<if lapkadev_is_cell_full()>>
+        Mystic: The cell is already full. #vanilla_ui #line:lapkadev_mystic_q3_full
+    <<else>>
+        Mystic: Place aberrations on the grid, then click Done. #vanilla_ui #line:lapkadev_mystic_q3_status
+        <<lapkadev_clear_expected>>
+        <<lapkadev_set_consume_aberrations>>
+        <<ShowQuestGrid lapkadev_q3_grid>>
+        <<if lapkadev_was_submitted() and lapkadev_get_last_grid_aberration_count() > 0>>
+            <<lapkadev_add_charge_per_aberration 10>>
+            Mystic: The aberrations pour into the cell. #vanilla_ui #line:lapkadev_mystic_q3_done
+        <<else>>
+            Mystic: You brought no aberration. #vanilla_ui #line:lapkadev_mystic_q3_fail
+        <<endif>>
+    <<endif>>
+
+-> Not now. #line:lapkadev_mystic_opt_later
+    Mystic: As you wish. #vanilla_ui #line:lapkadev_mystic_opt_later_resp
+===

@@ -1,0 +1,6 @@
+title: lapkadev_test_hello
+---
+Scientist: Hello in custom eldritch UI #line:lapkadev_test_1
+Scientist: This line uses vanilla UI #vanilla_ui #line:lapkadev_test_2
+Scientist: Back to eldritch #line:lapkadev_test_3
+===

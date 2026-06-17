@@ -1,11 +1,18 @@
 using InsanityWorldMod.Core;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
+using static InsanityWorldMod.Api.Constants;
 using static InsanityWorldMod.Core.Constants;
 using static InsanityWorldMod.Core.Funcs;
 
 namespace InsanityWorldMod.Api
 {
+    public static partial class Constants
+    {
+        public const string YARN_TEST_HELLO_NODE = "lapkadev_test_hello";
+        public const KeyCode TEST_DIALOGUE_KEY   = KeyCode.F10;
+    }
+
     /// <summary>
     /// MonoBehaviour host for periodic Core ticks (auto-save loop, Run.Tick).
     /// Spawned and parented to a DontDestroyOnLoad GameObject by <c>EntrySystem.OnLoad()</c>.
@@ -50,6 +57,12 @@ namespace InsanityWorldMod.Api
             }
 
             G.Run?.Tick(Time.deltaTime);
+
+            if (Input.GetKeyDown(TEST_DIALOGUE_KEY))
+            {
+                G.Log.Info($"{TEST_DIALOGUE_KEY} pressed - starting test dialogue '{YARN_TEST_HELLO_NODE}'");
+                GameManager.Instance?.DialogueRunner?.StartDialogue(YARN_TEST_HELLO_NODE);
+            }
         }
     }
 }
