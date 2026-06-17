@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
+using static InsanityWorldMod.Editor.Funcs;
 
 namespace InsanityWorldMod.Editor
 {
@@ -54,9 +55,14 @@ namespace InsanityWorldMod.Editor
                 BuildDir = buildDir,
                 BuildConfiguration = buildConfig,
             };
-            if (!Funcs.BuildAll(args))
+            if (!CleanBuildDir(args))
             {
-                Debug.LogError("[InsanityWorld] MenuItems: in-process BuildAll FAILED. Aborting (Tools step skipped).");
+                Debug.LogError("[InsanityWorld] MenuItems: in-process CleanBuildDir FAILED. Aborting.");
+                return;
+            }
+            if (!BuildAll(args))
+            {
+                Debug.LogError("[InsanityWorld] MenuItems: in-process BuildAll FAILED. Aborting.");
                 return;
             }
 
@@ -74,10 +80,11 @@ namespace InsanityWorldMod.Editor
             psi.ArgumentList.Add("--");
             psi.ArgumentList.Add(toolsCommand);
             psi.ArgumentList.Add(buildConfig);
+            psi.ArgumentList.Add("--skip-clean-build-dir");
             psi.ArgumentList.Add("--skip-unity-project");
             psi.ArgumentList.Add(unityProjectPath);
 
-            Debug.Log($"[InsanityWorld] MenuItems: spawning Tools: dotnet run --project Tools -- {toolsCommand} {buildConfig} --skip-unity-project \"{unityProjectPath}\"");
+            Debug.Log($"[InsanityWorld] MenuItems: spawning Tools: dotnet run --project Tools -- {toolsCommand} {buildConfig} --skip-clean-build-dir --skip-unity-project \"{unityProjectPath}\"");
 
             RunDotnetProcess(psi, $"{toolsCommand} {buildConfig}");
         }

@@ -18,6 +18,7 @@ if (args.Length == 0)
 G.repoRoot = GetRepoRoot();
 G.cfg = LoadConfig();
 G.buildConfig = ParseBuildConfig(args);
+G.skipCleanBuildDir = ParseSkipCleanBuildDir(args);
 G.skipUnityProject = ParseSkipUnityProject(args);
 
 return args[0] switch
@@ -46,6 +47,15 @@ static BuildConfiguration ParseBuildConfig(string[] args)
         if (Enum.TryParse<BuildConfiguration>(args[1], ignoreCase: true, out var c)) return c;
     }
     return BuildConfiguration.Release;
+}
+
+static bool ParseSkipCleanBuildDir(string[] args)
+{
+    for (int i = 1; i < args.Length; i++)
+    {
+        if (args[i] == "--skip-clean-build-dir") return true;
+    }
+    return false;
 }
 
 static string ParseSkipUnityProject(string[] args)

@@ -20,6 +20,29 @@ namespace InsanityWorldMod.Editor
     public static partial class Funcs
     {
         /// <summary>
+        /// Deletes '{args.BuildDir}/bin/{args.BuildConfiguration}/'.
+        /// Returns true on success, false on error (caller decides exit behavior).
+        /// </summary>
+        public static bool CleanBuildDir(BuildAllArgs args)
+        {
+            try
+            {
+                var outputDir = Path.Combine(args.BuildDir, "bin", args.BuildConfiguration);
+                if (Directory.Exists(outputDir))
+                {
+                    Directory.Delete(outputDir, recursive: true);
+                    Debug.Log($"[InsanityWorld] CleanBuildDir: cleaned {outputDir}");
+                }
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[InsanityWorld] CleanBuildDir: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Entry point for Tools/UnityRun. Parses `-args {json}` from command line.
         /// Produces DLLs + Bundles into '{args.BuildDir}/bin/{args.BuildConfiguration}/'.
         /// </summary>
