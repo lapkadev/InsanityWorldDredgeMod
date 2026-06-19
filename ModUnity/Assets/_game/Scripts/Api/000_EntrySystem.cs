@@ -1,4 +1,3 @@
-using System.IO;
 using System.Reflection;
 using HarmonyLib;
 using InsanityWorldMod.Core;
@@ -29,9 +28,9 @@ namespace InsanityWorldMod.Api
             G.Log.Error = msg => WinchCore.Log.Error(msg);
             G.Log.Debug = msg => WinchCore.Log.Debug(msg);
 
-            var apiAssemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var modBasePath = ModAssemblyLoader.GetCurrentMod()?.BasePath;
             DredgeHooks.FindDockById   = id => DockUtil.GetDock(id);
-            DredgeHooks.GetModBasePath = () => ModAssemblyLoader.GetCurrentMod()?.BasePath ?? apiAssemblyDir;
+            DredgeHooks.GetModBasePath = () => ModAssemblyLoader.GetCurrentMod()?.BasePath ?? modBasePath;
             DredgeHooks.GetAllBundles  = () => AssetBundleUtil.AssetBundles.Values;
 
             G.Log.Info("EntrySystem.OnLoad: hooks wired");

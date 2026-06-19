@@ -10,6 +10,23 @@ namespace InsanityWorldMod
 	public class Loader
 	{
 		/// <summary>
+		/// Run by Winch as a Preload step, before asset bundles are loaded
+		/// </summary>
+		public static void Preload()
+		{
+			var modDir = Path.GetDirectoryName(typeof(Loader).Assembly.Location);
+
+			foreach (var path in Directory.GetFiles(modDir, "*.dll"))
+			{
+				try { Assembly.LoadFrom(path); }
+				catch (Exception ex)
+				{
+					Console.Error.WriteLine($"[InsanityWorld] Preload failed to load {Path.GetFileName(path)}: {ex.Message}");
+				}
+			}
+		}
+
+		/// <summary>
 		/// This method is run by Winch to initialize your mod
 		/// </summary>
 		public static void Initialize()
