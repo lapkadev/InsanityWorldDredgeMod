@@ -1,6 +1,7 @@
 using System.Text;
 using TMPro;
 using static InsanityWorldMod.Core.Constants;
+using static InsanityWorldMod.Core.Funcs;
 
 namespace InsanityWorldMod.Core
 {
