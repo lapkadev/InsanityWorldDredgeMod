@@ -68,16 +68,19 @@ namespace InsanityWorldMod.Api
 
             G.Run?.Tick(Time.deltaTime);
 
-            if (Input.GetKeyDown(TEST_DIALOGUE_KEY))
+            if (false && Input.GetKeyDown(TEST_DIALOGUE_KEY))
             {
                 G.Log.Info($"{TEST_DIALOGUE_KEY} pressed - starting test dialogue '{YARN_TEST_HELLO_NODE}'");
                 GameManager.Instance?.DialogueRunner?.StartDialogue(YARN_TEST_HELLO_NODE);
             }
 
-            CheckSmokeTestKey(SMOKE_KEY_VAL_RUN,         YARN_SMOKE_VAL_RUN);
-            CheckSmokeTestKey(SMOKE_KEY_INTERPOLATION,   YARN_SMOKE_INTERPOLATION);
-            CheckSmokeTestKey(SMOKE_KEY_NESTED_IF,       YARN_SMOKE_NESTED_IF);
-            CheckSmokeTestKey(SMOKE_KEY_JUMP_ONE_WAY,    YARN_SMOKE_JUMP_ONE_WAY);
+            if (false)
+            {
+                CheckSmokeTestKey(SMOKE_KEY_VAL_RUN,         YARN_SMOKE_VAL_RUN);
+                CheckSmokeTestKey(SMOKE_KEY_INTERPOLATION,   YARN_SMOKE_INTERPOLATION);
+                CheckSmokeTestKey(SMOKE_KEY_NESTED_IF,       YARN_SMOKE_NESTED_IF);
+                CheckSmokeTestKey(SMOKE_KEY_JUMP_ONE_WAY,    YARN_SMOKE_JUMP_ONE_WAY);
+            }
         }
 
         private static void CheckSmokeTestKey(KeyCode key, string node)

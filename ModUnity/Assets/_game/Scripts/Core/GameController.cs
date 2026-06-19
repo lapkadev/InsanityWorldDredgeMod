@@ -39,13 +39,16 @@ namespace InsanityWorldMod.Core
             if (_pauseButtonHost != null)   Object.Destroy(_pauseButtonHost);
             if (_minimapWidgetHost != null) Object.Destroy(_minimapWidgetHost);
 
-            _debugUiHost = new GameObject("InsanityDebugRestartUI");
-            _debugUiHost.AddComponent<DebugRestartUI>();
-            Object.DontDestroyOnLoad(_debugUiHost);
+            if (false)
+            {
+                _debugUiHost = new GameObject("InsanityDebugRestartUI");
+                _debugUiHost.AddComponent<DebugRestartUI>();
+                Object.DontDestroyOnLoad(_debugUiHost);
 
-            _pauseButtonHost = new GameObject("InsanityPauseMenuRestartButton");
-            _pauseButtonHost.AddComponent<PauseMenuRestartButton>();
-            Object.DontDestroyOnLoad(_pauseButtonHost);
+                _pauseButtonHost = new GameObject("InsanityPauseMenuRestartButton");
+                _pauseButtonHost.AddComponent<PauseMenuRestartButton>();
+                Object.DontDestroyOnLoad(_pauseButtonHost);
+            }
 
             _minimapWidgetHost = new GameObject("InsanityMinimapWidget");
             _minimapWidgetHost.AddComponent<MinimapWidget>();
