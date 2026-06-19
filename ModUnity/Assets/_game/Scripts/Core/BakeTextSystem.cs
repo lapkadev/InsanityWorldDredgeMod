@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static InsanityWorldMod.Core.Constants;
 
 namespace InsanityWorldMod.Core
@@ -37,19 +38,24 @@ namespace InsanityWorldMod.Core
 
             var rt = RenderTexture.GetTemporary(BAKE_TEXT_WIDTH, BAKE_TEXT_HEIGHT, 0, RenderTextureFormat.ARGB32);
             var prevActive = RenderTexture.active;
-            _bakeCam.targetTexture = rt;
-            _bakeRenderer.enabled = true;
-            _bakeCam.Render();
-            _bakeRenderer.enabled = false;
+
+            var gpuProj = GL.GetGPUProjectionMatrix(_bakeCam.projectionMatrix, true);
+            var cmd = new CommandBuffer();
+            cmd.SetRenderTarget(rt);
+            cmd.ClearRenderTarget(true, true, new Color(0f, 0f, 0f, 0f));
+            cmd.SetViewProjectionMatrices(_bakeCam.worldToCameraMatrix, gpuProj);
+            cmd.DrawMesh(_bakeTmp.mesh, Matrix4x4.identity, _bakeTmp.fontSharedMaterial, 0, -1);
+            Graphics.ExecuteCommandBuffer(cmd);
+            cmd.Release();
 
             RenderTexture.active = rt;
             var tex = new Texture2D(BAKE_TEXT_WIDTH, BAKE_TEXT_HEIGHT, TextureFormat.ARGB32, false);
             tex.ReadPixels(new Rect(0, 0, BAKE_TEXT_WIDTH, BAKE_TEXT_HEIGHT), 0, 0);
             tex.Apply();
-
             RenderTexture.active = prevActive;
-            _bakeCam.targetTexture = null;
             RenderTexture.ReleaseTemporary(rt);
+
+            FlipVertical(tex);
             return tex;
         }
 
@@ -60,6 +66,18 @@ namespace InsanityWorldMod.Core
             for (int i = 0; i < texts.Length; i++)
                 result[i] = BakeText(texts[i]);
             return result;
+        }
+
+        private static void FlipVertical(Texture2D tex)
+        {
+            int w = tex.width;
+            int h = tex.height;
+            var src = tex.GetPixels32();
+            var dst = new Color32[src.Length];
+            for (int y = 0; y < h; y++)
+                System.Array.Copy(src, y * w, dst, (h - 1 - y) * w, w);
+            tex.SetPixels32(dst);
+            tex.Apply();
         }
 
         private static void EnsureBaker()
