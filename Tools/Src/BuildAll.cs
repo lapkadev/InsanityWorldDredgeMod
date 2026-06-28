@@ -16,6 +16,9 @@ public static partial class Funcs
             LogInfo($"BuildAll: cleaned {buildBinDir}");
         }
 
+        int eosRc = BuildEosSdk();
+        if (eosRc != 0) return eosRc;
+
         var rawItems = G.cfg.UnityEditorBuildItems;
         if (rawItems.Length == 0)
         {
@@ -77,6 +80,41 @@ public static partial class Funcs
             LogInfo($"All {dotnetItems.Length} DotNet build(s) completed successfully.");
         }
 
+        return 0;
+    }
+
+    private static int BuildEosSdk()
+    {
+        var sdkDir = G.cfg.EosSdkDir;
+        if (string.IsNullOrEmpty(sdkDir))
+        {
+            LogError($"EosSdkDir is not set in {CONFIG_FILE_NAME}. Download the EOS C# SDK v1.18.1.2 (last version with 32-bit Win32) from the Epic Dev Portal, extract it, and set EosSdkDir to its root.");
+            return 1;
+        }
+        if (!Directory.Exists(Path.Combine(sdkDir, "SDK", "Source")))
+        {
+            LogError($"EOS SDK source not found at '{sdkDir}\\SDK\\Source'. Check EosSdkDir in {CONFIG_FILE_NAME}.");
+            return 1;
+        }
+
+        const string csproj = "EosSdk/InsanityWorldMod.EosSdk.csproj";
+        LogInfo($"======= EOS SDK build: {csproj} =======");
+        System.Environment.SetEnvironmentVariable("EosSdkDir", sdkDir);
+        int rc = DotNetRun(csproj);
+        if (rc != 0) { LogError($"FAILED building {csproj} (exit {rc}). Aborting."); return rc; }
+
+        var builtDll = Path.Combine(G.repoRoot, G.cfg.BuildDir, "bin", G.buildConfig.ToString(), "EOSSDK.dll");
+        if (!File.Exists(builtDll))
+        {
+            LogError($"EOSSDK.dll was not produced at {builtDll}.");
+            return 1;
+        }
+
+        var dstDir = Path.Combine(G.repoRoot, "ModUnity", "Assets", "Plugins");
+        Directory.CreateDirectory(dstDir);
+        var dst = Path.Combine(dstDir, "EOSSDK.dll");
+        File.Copy(builtDll, dst, overwrite: true);
+        LogInfo($"Synced EOSSDK.dll -> {dst}");
         return 0;
     }
 

@@ -8,6 +8,7 @@ public class Config
     public string DredgeModsFolder = "";
     public string UnityExePath = "";
     public string BuildDir = "Build";
+    public string EosSdkDir = "";
     public VersionFile[] VersionFiles = Array.Empty<VersionFile>();
     public UnityEditorBuildItem[] UnityEditorBuildItems = Array.Empty<UnityEditorBuildItem>();
     public DotNetBuildItem[] DotNetBuildItems = Array.Empty<DotNetBuildItem>();

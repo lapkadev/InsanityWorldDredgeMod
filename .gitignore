@@ -430,4 +430,9 @@ ModUnity/Assets/Plugins/Dredge/*.dll
 
 ModUnity/Assets/Plugins/Yarn/
 
+ModUnity/Assets/Plugins/Mirror/
+
+ModUnity/Assets/Plugins/EOSSDK.dll
+ModUnity/Assets/Plugins/EOSSDK.dll.meta
+
 !ModUnity/Assets/_game/Scripts/Core/UI/Debug/

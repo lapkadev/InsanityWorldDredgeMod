@@ -9,6 +9,17 @@ namespace InsanityWorldMod.Editor
     {
         public const string API_ASSEMBLY_NAME  = "InsanityWorldMod.Api";
         public const string CORE_ASSEMBLY_NAME = "InsanityWorldMod.Core";
+
+        public static readonly string[] MIRROR_RUNTIME_ASSEMBLIES =
+        {
+            "Mirror",
+            "Mirror.Components",
+            "Mirror.Transports",
+            "Mirror.Authenticators",
+            "Telepathy",
+            "kcp2k",
+            "SimpleWebTransport",
+        };
     }
 
     public class BuildAllArgs
@@ -89,6 +100,19 @@ namespace InsanityWorldMod.Editor
             File.Copy(apiSrc,  Path.Combine(outputDir, $"{Constants.API_ASSEMBLY_NAME}.dll"),  overwrite: true);
             File.Copy(coreSrc, Path.Combine(outputDir, $"{Constants.CORE_ASSEMBLY_NAME}.dll"), overwrite: true);
             Debug.Log($"[InsanityWorld] BuildAll: copied {Constants.API_ASSEMBLY_NAME}.dll + {Constants.CORE_ASSEMBLY_NAME}.dll into {outputDir}");
+
+            // --- Mirror runtime DLLs ---
+            foreach (var asm in Constants.MIRROR_RUNTIME_ASSEMBLIES)
+            {
+                var mirrorSrc = $"Library/ScriptAssemblies/{asm}.dll";
+                if (!File.Exists(mirrorSrc))
+                {
+                    Debug.LogError($"[InsanityWorld] BuildAll: Mirror runtime assembly not found: {mirrorSrc}\nDid bootstrap install Mirror and did it compile?");
+                    return false;
+                }
+                File.Copy(mirrorSrc, Path.Combine(outputDir, $"{asm}.dll"), overwrite: true);
+            }
+            Debug.Log($"[InsanityWorld] BuildAll: copied {Constants.MIRROR_RUNTIME_ASSEMBLIES.Length} Mirror runtime DLL(s) into {outputDir}");
 
             if (args.BuildConfiguration == "Debug")
             {

@@ -5,7 +5,9 @@
         "Unity.TextMeshPro",
         "UnityEngine.UI",
         "Unity.Localization",
-        "YarnSpinner.Unity"
+        "YarnSpinner.Unity",
+        "Mirror",
+        "Mirror.Transports"
     ],
     "includePlatforms": [
         "Editor"
@@ -18,7 +20,8 @@
         "Assembly-CSharp-firstpass.dll",
         "Newtonsoft.Json.dll",
         "Sirenix.Serialization.dll",
-        "YarnSpinner.dll"
+        "YarnSpinner.dll",
+        "EOSSDK.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [],

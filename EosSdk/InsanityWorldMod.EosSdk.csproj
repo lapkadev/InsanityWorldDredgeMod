@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyName>EOSSDK</AssemblyName>
+    <RootNamespace>Epic.OnlineServices</RootNamespace>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DefineConstants>EOS_PLATFORM_WINDOWS_32;EOS_UNITY</DefineConstants>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <OutputPath>..\Build\bin\$(Configuration)\</OutputPath>
+    <BaseIntermediateOutputPath>..\Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+
+  <Target Name="CheckEosSdkDir" BeforeTargets="BeforeBuild">
+    <Error Condition=" '$(EosSdkDir)' == '' "
+           Text="EosSdkDir is not set. Add 'EosSdkDir' to local_dev.json.user (pointing at the extracted EOS C# SDK v1.18.1.2 root) - the build passes it as -p:EosSdkDir." />
+    <Error Condition=" '$(EosSdkDir)' != '' and !Exists('$(EosSdkDir)\SDK\Source') "
+           Text="EOS SDK source not found at '$(EosSdkDir)\SDK\Source'. Download EOS C# SDK v1.18.1.2 (last version with 32-bit Win32) from the Epic Dev Portal and extract it; set EosSdkDir to its root." />
+    <Error Condition=" '$(EosSdkDir)' != '' and !Exists('$(EosSdkDir)\SDK\Bin\EOSSDK-Win32-Shipping.dll') "
+           Text="EOSSDK-Win32-Shipping.dll not found in '$(EosSdkDir)\SDK\Bin'. Use EOS SDK v1.18.1.2 or earlier (1.19.0.3+ dropped 32-bit Windows; DREDGE is 32-bit)." />
+  </Target>
+
+  <ItemGroup>
+    <Compile Include="$(EosSdkDir)\SDK\Source\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(EosSdkDir)\SDK\Bin\EOSSDK-Win32-Shipping.dll" Link="lib\EOSSDK-Win32-Shipping.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

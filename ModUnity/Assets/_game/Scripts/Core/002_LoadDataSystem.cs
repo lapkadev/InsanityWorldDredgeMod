@@ -5,7 +5,7 @@ namespace InsanityWorldMod.Core
 {
     public class LoadDataSystem : IInsanityWorldSystem
     {
-        public int Order => 1;
+        public int Order => 2;
 
         public void OnLoad()
         {

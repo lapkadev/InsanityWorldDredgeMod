@@ -34,7 +34,9 @@ public static partial class Funcs
         {
             if (Directory.Exists(dst)) Directory.Delete(dst, recursive: true);
             Directory.CreateDirectory(dst);
-            var excludeExtensions = config == BuildConfiguration.Release ? new[] { ".pdb" } : Array.Empty<string>();
+            var excludeExtensions = config == BuildConfiguration.Release
+                ? new[] { ".pdb", ".manifest" }
+                : new[] { ".manifest" };
             CopyDirectoryFiltered(src, dst, excludeExtensions, new[] { ".tmp" });
             LogInfo($"Deployed to: {dst}");
             return 0;

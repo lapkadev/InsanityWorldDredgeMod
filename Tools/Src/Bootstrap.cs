@@ -9,6 +9,10 @@ public static partial class Constants
     public const string BOOTSTRAP_YARN_REL_DIR    = "ModUnity/Assets/Plugins/Yarn";
     public const string BOOTSTRAP_YARN_GIT_URL    = "https://github.com/YarnSpinnerTool/YarnSpinner-Unity.git";
     public const string BOOTSTRAP_YARN_GIT_TAG    = "v2.2.0";
+
+    public const string BOOTSTRAP_MIRROR_REL_DIR  = "ModUnity/Assets/Plugins/Mirror";
+    public const string BOOTSTRAP_MIRROR_GIT_URL  = "https://github.com/MirrorNetworking/Mirror.git";
+    public const string BOOTSTRAP_MIRROR_GIT_TAG  = "v96.10.3";
 }
 
 public static partial class Funcs
@@ -19,6 +23,9 @@ public static partial class Funcs
         if (res != 0) return res;
 
         res = BootstrapYarn();
+        if (res != 0) return res;
+
+        res = BootstrapMirror();
         if (res != 0) return res;
 
         return 0;
@@ -155,6 +162,72 @@ public static partial class Funcs
             copiedFiles++;
         }
         LogInfo($"Bootstrap: copied {copiedFiles} file(s) from Yarn package (excluded: Tests/, .git/, System.Reflection.TypeExtensions.dll)");
+    }
+
+    public static int BootstrapMirror()
+    {
+        string mirrorDir = Path.Combine(G.repoRoot, BOOTSTRAP_MIRROR_REL_DIR.Replace('/', Path.DirectorySeparatorChar));
+
+        if (Directory.Exists(mirrorDir) && Directory.EnumerateFileSystemEntries(mirrorDir).Any())
+        {
+            LogInfo($"Bootstrap: Mirror package already in {mirrorDir} - skipping.");
+            return 0;
+        }
+
+        string tempDir = Path.Combine(Path.GetTempPath(), $"mirror-bootstrap-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(tempDir);
+
+        try
+        {
+            LogInfo($"Bootstrap: cloning {BOOTSTRAP_MIRROR_GIT_URL} tag {BOOTSTRAP_MIRROR_GIT_TAG} -> {tempDir}");
+            int gitExit = RunProcess("git", $"clone --depth 1 --branch {BOOTSTRAP_MIRROR_GIT_TAG} \"{BOOTSTRAP_MIRROR_GIT_URL}\" \"{tempDir}\"");
+            if (gitExit != 0)
+            {
+                LogError($"git clone failed (exit {gitExit}). Is 'git' installed and on PATH?");
+                return 1;
+            }
+
+            string srcMirror = Path.Combine(tempDir, "Assets", "Mirror");
+            if (!Directory.Exists(srcMirror))
+            {
+                LogError($"Mirror sources not found at {srcMirror} - repository layout changed?");
+                return 1;
+            }
+
+            Directory.CreateDirectory(mirrorDir);
+            CopyTreeFiltered(srcMirror, mirrorDir,
+                new[] { ".git", "Tests", "Examples", "PredictedRigidbody", "Encryption" },
+                new[] { "Tests.meta", "Examples.meta", "PredictedRigidbody.meta", "Encryption.meta" });
+
+            LogInfo($"Bootstrap: Mirror package installed at {mirrorDir}");
+            return 0;
+        }
+        finally
+        {
+            if (Directory.Exists(tempDir))
+            {
+                try { DeleteDirectoryForced(tempDir); }
+                catch (Exception ex) { LogError($"Failed to cleanup temp dir {tempDir}: {ex.Message}"); }
+            }
+        }
+    }
+
+    private static void CopyTreeFiltered(string srcRoot, string dstRoot, string[] excludedDirs, string[] excludedFiles)
+    {
+        int copiedFiles = 0;
+        foreach (var srcFile in Directory.EnumerateFiles(srcRoot, "*", SearchOption.AllDirectories))
+        {
+            string rel = Path.GetRelativePath(srcRoot, srcFile);
+            string[] segments = rel.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            if (segments.Any(s => excludedDirs.Contains(s, StringComparer.OrdinalIgnoreCase))) continue;
+            if (excludedFiles.Contains(Path.GetFileName(srcFile), StringComparer.OrdinalIgnoreCase)) continue;
+
+            string dstFile = Path.Combine(dstRoot, rel);
+            Directory.CreateDirectory(Path.GetDirectoryName(dstFile)!);
+            File.Copy(srcFile, dstFile, overwrite: true);
+            copiedFiles++;
+        }
+        LogInfo($"Bootstrap: copied {copiedFiles} file(s) into {dstRoot}");
     }
 
     private static int RunProcess(string fileName, string arguments)
