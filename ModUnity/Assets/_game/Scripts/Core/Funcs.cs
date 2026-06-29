@@ -75,7 +75,7 @@ namespace InsanityWorldMod.Core
 
             G.UI?.ShowNotificationWithColor(
                 NotificationType.SPOOKY_EVENT,
-                "insanity.debug.restart",
+                "insanity.player.respawn",
                 G.Lang.GetColorCode(DredgeColorTypeEnum.EMPHASIS)
             );
         }
