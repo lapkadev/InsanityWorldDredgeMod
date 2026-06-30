@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using Epic.OnlineServices.Logging;
+using Epic.OnlineServices.P2P;
 using Epic.OnlineServices.Platform;
 using UnityEngine;
 using static InsanityWorldMod.Core.Constants;
@@ -99,6 +100,8 @@ namespace InsanityWorldMod.Core
                 G.Log.Error("EosRuntime: PlatformInterface.Create returned null");
                 return false;
             }
+
+            G.Net.P2P = _platform.GetP2PInterface();
 
             G.Log.Info("EosRuntime: EOS platform created");
             return true;

@@ -10,5 +10,7 @@ namespace InsanityWorldMod.Core
         public int Version = CurrentVersion;
 
         public bool IsTransitionPhaseCompleted;
+
+        public bool IsDev;
     }
 }

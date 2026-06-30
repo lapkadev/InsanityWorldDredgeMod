@@ -1,4 +1,5 @@
 using Epic.OnlineServices;
+using Epic.OnlineServices.P2P;
 using UnityEngine;
 using static InsanityWorldMod.Core.Constants;
 
@@ -15,6 +16,7 @@ namespace InsanityWorldMod.Core
             public static EosCredentials Credentials { get; set; }
             public static bool           IsInited    { get; set; }
             public static ProductUserId  LocalUserId { get; set; }
+            public static P2PInterface   P2P         { get; set; }
 
             private static EosRuntime _runtime;
 

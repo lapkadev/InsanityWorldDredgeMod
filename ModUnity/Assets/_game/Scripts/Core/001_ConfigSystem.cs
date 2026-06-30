@@ -60,7 +60,7 @@ namespace InsanityWorldMod.Core
         public void OnLoad()
         {
             LoadConfig();
-            G.Log.Info($"ConfigSystem: IsTransitionPhaseCompleted={G.Config.IsTransitionPhaseCompleted}");
+            G.Log.Info($"ConfigSystem: IsTransitionPhaseCompleted={G.Config.IsTransitionPhaseCompleted}, IsDev={G.Config.IsDev}");
         }
     }
 }
