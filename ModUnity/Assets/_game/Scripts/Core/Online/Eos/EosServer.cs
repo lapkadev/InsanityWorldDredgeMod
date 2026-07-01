@@ -33,7 +33,7 @@ namespace InsanityWorldMod.Core
             s.OnReceivedData += (id, data, channel) => transport.OnServerDataReceived.Invoke(id, new ArraySegment<byte>(data), channel);
             s.OnReceivedError += (id, exception) => transport.OnServerError.Invoke(id, Mirror.TransportError.Unexpected, exception.ToString());
 
-            if (!G.Net.IsInited)
+            if (!G.Online.IsInited)
                 G.Log.Error("EosServer: EOS not initialized");
 
             return s;
@@ -72,11 +72,11 @@ namespace InsanityWorldMod.Core
 
             var accept = new AcceptConnectionOptions
             {
-                LocalUserId = G.Net.LocalUserId,
+                LocalUserId = G.Online.LocalUserId,
                 RemoteUserId = result.RemoteUserId,
                 SocketId = result.SocketId
             };
-            G.Net.P2P.AcceptConnection(ref accept);
+            G.Online.P2P.AcceptConnection(ref accept);
         }
 
         protected override void OnReceiveInternalData(InternalMessages type, ProductUserId clientUserId, SocketId socketId)

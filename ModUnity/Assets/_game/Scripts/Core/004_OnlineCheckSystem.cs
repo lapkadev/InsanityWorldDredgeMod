@@ -11,7 +11,7 @@ namespace InsanityWorldMod.Core
         /// Online state. IsInited gates the network-aware model
         /// (false = everything runs locally / single-player).
         /// </summary>
-        public static class Net
+        public static class Online
         {
             public static EosCredentials Credentials { get; set; }
             public static bool           IsInited    { get; set; }
@@ -26,7 +26,7 @@ namespace InsanityWorldMod.Core
                     return;
                 if (creds == null || !creds.IsComplete)
                 {
-                    G.Log.Warn("G.Net.Init: credentials missing/incomplete - staying single-player");
+                    G.Log.Warn("G.Online.Init: credentials missing/incomplete - staying single-player");
                     return;
                 }
 
@@ -50,7 +50,7 @@ namespace InsanityWorldMod.Core
                 return;
             }
 
-            var creds = G.Net.Credentials;
+            var creds = G.Online.Credentials;
 
             if (creds == null || !creds.IsComplete)
             {
@@ -60,12 +60,12 @@ namespace InsanityWorldMod.Core
 
             try
             {
-                G.Net.Init(creds);
+                G.Online.Init(creds);
                 G.Log.Info("OnlineCheckSystem: online enabled");
             }
             catch
             {
-                G.Net.IsInited = false;
+                G.Online.IsInited = false;
                 G.Log.Info("OnlineCheckSystem: online disabled");
             }
         }

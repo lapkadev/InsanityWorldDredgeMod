@@ -101,7 +101,7 @@ namespace InsanityWorldMod.Core
                 return false;
             }
 
-            G.Net.P2P = _platform.GetP2PInterface();
+            G.Online.P2P = _platform.GetP2PInterface();
 
             G.Log.Info("EosRuntime: EOS platform created");
             return true;
@@ -151,8 +151,8 @@ namespace InsanityWorldMod.Core
             if (info.ResultCode == Result.Success)
             {
                 _connecting = false;
-                G.Net.LocalUserId = info.LocalUserId;
-                G.Net.IsInited = true;
+                G.Online.LocalUserId = info.LocalUserId;
+                G.Online.IsInited = true;
                 G.Log.Info("EosRuntime: Connect login succeeded");
 
                 var authExpOptions = new AddNotifyAuthExpirationOptions();

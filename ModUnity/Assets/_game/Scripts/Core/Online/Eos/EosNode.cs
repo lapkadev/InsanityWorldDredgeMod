@@ -48,17 +48,17 @@ namespace InsanityWorldMod.Core
 
             var addRequest = new AddNotifyPeerConnectionRequestOptions
             {
-                LocalUserId = G.Net.LocalUserId,
+                LocalUserId = G.Online.LocalUserId,
                 SocketId = null
             };
-            incomingNotificationId = G.Net.P2P.AddNotifyPeerConnectionRequest(ref addRequest, null, OnIncomingConnectionRequest);
+            incomingNotificationId = G.Online.P2P.AddNotifyPeerConnectionRequest(ref addRequest, null, OnIncomingConnectionRequest);
 
             var addClosed = new AddNotifyPeerConnectionClosedOptions
             {
-                LocalUserId = G.Net.LocalUserId,
+                LocalUserId = G.Online.LocalUserId,
                 SocketId = null
             };
-            outgoingNotificationId = G.Net.P2P.AddNotifyPeerConnectionClosed(ref addClosed, null, OnRemoteConnectionClosed);
+            outgoingNotificationId = G.Online.P2P.AddNotifyPeerConnectionClosed(ref addClosed, null, OnRemoteConnectionClosed);
 
             if (outgoingNotificationId == 0 || incomingNotificationId == 0)
                 G.Log.Error("EosNode: couldn't bind notifications with P2P interface");
@@ -68,8 +68,8 @@ namespace InsanityWorldMod.Core
 
         protected void Dispose()
         {
-            G.Net.P2P.RemoveNotifyPeerConnectionRequest(incomingNotificationId);
-            G.Net.P2P.RemoveNotifyPeerConnectionClosed(outgoingNotificationId);
+            G.Online.P2P.RemoveNotifyPeerConnectionRequest(incomingNotificationId);
+            G.Online.P2P.RemoveNotifyPeerConnectionClosed(outgoingNotificationId);
 
             transport.ResetIgnoreMessagesAtStartUpTimer();
         }
@@ -92,12 +92,12 @@ namespace InsanityWorldMod.Core
                 AllowDelayedDelivery = true,
                 Channel = (byte)internal_ch,
                 Data = new ArraySegment<byte>(new byte[] { (byte)type }),
-                LocalUserId = G.Net.LocalUserId,
+                LocalUserId = G.Online.LocalUserId,
                 Reliability = PacketReliability.ReliableOrdered,
                 RemoteUserId = target,
                 SocketId = socketId
             };
-            Result result = G.Net.P2P.SendPacket(ref options);
+            Result result = G.Online.P2P.SendPacket(ref options);
 
             if (result != Result.Success)
                 G.Log.Error($"EosNode: SendInternal({type}) failed ({result})");
@@ -110,12 +110,12 @@ namespace InsanityWorldMod.Core
                 AllowDelayedDelivery = true,
                 Channel = channel,
                 Data = new ArraySegment<byte>(msgBuffer),
-                LocalUserId = G.Net.LocalUserId,
+                LocalUserId = G.Online.LocalUserId,
                 Reliability = channels[channel],
                 RemoteUserId = host,
                 SocketId = socketId
             };
-            Result result = G.Net.P2P.SendPacket(ref options);
+            Result result = G.Online.P2P.SendPacket(ref options);
 
             if (result != Result.Success)
                 G.Log.Error($"EosNode: send failed ({result})");
@@ -128,13 +128,13 @@ namespace InsanityWorldMod.Core
 
             var options = new ReceivePacketOptions
             {
-                LocalUserId = G.Net.LocalUserId,
+                LocalUserId = G.Online.LocalUserId,
                 MaxDataSizeBytes = (uint)P2PInterface.MAX_PACKET_SIZE,
                 RequestedChannel = channel
             };
 
             var segment = new ArraySegment<byte>(receiveBuffer);
-            Result result = G.Net.P2P.ReceivePacket(ref options, ref clientProductUserId, ref socketId, out byte _, segment, out uint bytesWritten);
+            Result result = G.Online.P2P.ReceivePacket(ref options, ref clientProductUserId, ref socketId, out byte _, segment, out uint bytesWritten);
 
             if (result == Result.Success)
             {

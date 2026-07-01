@@ -64,7 +64,7 @@ namespace InsanityWorldMod.Core
 
                     if (client != null && !client.isConnecting)
                     {
-                        if (G.Net.IsInited)
+                        if (G.Online.IsInited)
                         {
                             G.DevLog.Info($"EosTransport: firing client.Connect to {client.hostAddress}");
                             client.Connect(client.hostAddress);
@@ -107,14 +107,14 @@ namespace InsanityWorldMod.Core
 
         public override void ClientConnect(string address)
         {
-            if (!G.Net.IsInited)
+            if (!G.Online.IsInited)
             {
                 G.Log.Error("EosTransport: EOS not initialized, client could not be started");
                 OnClientDisconnected.Invoke();
                 return;
             }
 
-            productUserId = G.Net.LocalUserId;
+            productUserId = G.Online.LocalUserId;
 
             if (ServerActive())
             {
@@ -156,13 +156,13 @@ namespace InsanityWorldMod.Core
 
         public override void ServerStart()
         {
-            if (!G.Net.IsInited)
+            if (!G.Online.IsInited)
             {
                 G.Log.Error("EosTransport: EOS not initialized, server could not be started");
                 return;
             }
 
-            productUserId = G.Net.LocalUserId;
+            productUserId = G.Online.LocalUserId;
 
             if (ClientActive())
             {
@@ -187,7 +187,7 @@ namespace InsanityWorldMod.Core
             UriBuilder epicBuilder = new UriBuilder
             {
                 Scheme = EPIC_SCHEME,
-                Host = G.Net.LocalUserId.ToString()
+                Host = G.Online.LocalUserId.ToString()
             };
 
             return epicBuilder.Uri;
@@ -275,7 +275,7 @@ namespace InsanityWorldMod.Core
         {
             try
             {
-                return G.Net.IsInited;
+                return G.Online.IsInited;
             }
             catch
             {
@@ -285,11 +285,11 @@ namespace InsanityWorldMod.Core
 
         private IEnumerator ChangeRelayStatus()
         {
-            while (!G.Net.IsInited)
+            while (!G.Online.IsInited)
                 yield return null;
 
             var options = new SetRelayControlOptions { RelayControl = relayControl };
-            G.Net.P2P.SetRelayControl(ref options);
+            G.Online.P2P.SetRelayControl(ref options);
         }
 
         public void ResetIgnoreMessagesAtStartUpTimer() => ignoreCachedMessagesTimer = 0;

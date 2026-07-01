@@ -141,11 +141,11 @@ namespace InsanityWorldMod.Core
             {
                 var accept = new AcceptConnectionOptions
                 {
-                    LocalUserId = G.Net.LocalUserId,
+                    LocalUserId = G.Online.LocalUserId,
                     RemoteUserId = result.RemoteUserId,
                     SocketId = result.SocketId
                 };
-                G.Net.P2P.AcceptConnection(ref accept);
+                G.Online.P2P.AcceptConnection(ref accept);
             }
             else
             {

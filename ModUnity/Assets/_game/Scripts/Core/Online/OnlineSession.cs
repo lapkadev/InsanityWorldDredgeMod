@@ -131,7 +131,7 @@ namespace InsanityWorldMod.Core
 
         public static void StartServer()
         {
-            if (!G.Net.IsInited)
+            if (!G.Online.IsInited)
             {
                 G.Log.Error("OnlineSession: EOS not initialized - cannot host");
                 return;
@@ -140,12 +140,12 @@ namespace InsanityWorldMod.Core
             EnsureTransport();
             NetworkServer.RegisterHandler<PingMessage>(OnServerPing, false);
             NetworkServer.Listen(NET_MAX_CONNECTIONS);
-            G.DevLog.Info($"OnlineSession: server listening | local PUID = {G.Net.LocalUserId}");
+            G.DevLog.Info($"OnlineSession: server listening | local PUID = {G.Online.LocalUserId}");
         }
 
         public static void StartHost()
         {
-            if (!G.Net.IsInited)
+            if (!G.Online.IsInited)
             {
                 G.Log.Error("OnlineSession: EOS not initialized - cannot host");
                 return;
@@ -178,7 +178,7 @@ namespace InsanityWorldMod.Core
 
         public static void StartClient(string hostProductId)
         {
-            if (!G.Net.IsInited)
+            if (!G.Online.IsInited)
             {
                 G.Log.Error("OnlineSession: EOS not initialized - cannot join");
                 return;
@@ -193,7 +193,7 @@ namespace InsanityWorldMod.Core
             NetworkClient.RegisterHandler<PongMessage>(OnClientPong, false);
             NetworkClient.OnConnectedEvent = OnClientConnected;
             NetworkClient.Connect(hostProductId);
-            G.DevLog.Info($"OnlineSession: local PUID = {G.Net.LocalUserId} - connecting to {hostProductId}");
+            G.DevLog.Info($"OnlineSession: local PUID = {G.Online.LocalUserId} - connecting to {hostProductId}");
         }
 
         public static void Stop()
