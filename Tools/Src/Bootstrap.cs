@@ -41,6 +41,7 @@ public static partial class Funcs
         ("Sirenix.Serialization.Config.dll",                    "DredgeGameLibs", "1.5.3", "lib",       "4A4BCE970AC2D876034706C9961F8017B43CE8E41D7231FFA00D21FC352A59A3"),
         ("Sirenix.Serialization.dll",                           "DredgeGameLibs", "1.5.3", "lib",       "5D58F6DE23E1BCA3237F2B7D6F8DE5DE66718D510B449FF4B422589A929EB4E8"),
         ("Sirenix.Utilities.dll",                               "DredgeGameLibs", "1.5.3", "lib",       "FA44E5604F06616B70522D08EBD73457BD1DAE189C79867E5D7402C2A7BD8D87"),
+        ("InControl.dll",                                       "DredgeGameLibs", "1.5.3", "lib",       "2F99284AFAA14455BA5DB9459B655A1BF248D7840C5031C33BD2BECE9FCB5CE8"),
         ("Winch.dll",                                           "Winch",          "0.6.2", "lib/net48", "21C10E4D6878345BB2CE55087B42DE86B243390FDC221D45E72A30E381E8A5AC"),
         ("WinchCommon.dll",                                     "Winch",          "0.6.2", "lib/net48", "3AAB4C11ACACF516E0BC3A321438F1970469E74381094471B16314D3B08D768A"),
     };
@@ -48,12 +49,6 @@ public static partial class Funcs
     public static int BootstrapDredgeAndWinch()
     {
         string pluginsDir = Path.Combine(G.repoRoot, BOOTSTRAP_PLUGINS_REL_DIR.Replace('/', Path.DirectorySeparatorChar));
-
-        if (File.Exists(Path.Combine(pluginsDir, "Winch.dll")))
-        {
-            LogInfo($"Bootstrap: DREDGE DLLs already in {pluginsDir} - skipping.");
-            return 0;
-        }
 
         string nugetCache = Environment.GetEnvironmentVariable("NUGET_PACKAGES")
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".nuget", "packages");
@@ -63,9 +58,16 @@ public static partial class Funcs
         LogInfo($"NuGet cache:   {nugetCache}");
         LogInfo($"Target dir:    {pluginsDir}");
 
-        int verified = 0, failed = 0;
+        int present = 0, copied = 0, failed = 0;
         foreach (var d in BootstrapDlls)
         {
+            string dst = Path.Combine(pluginsDir, d.Name);
+            if (File.Exists(dst) && string.Equals(BootstrapSha256(dst), d.Sha256, StringComparison.OrdinalIgnoreCase))
+            {
+                present++;
+                continue;
+            }
+
             string src = Path.Combine(nugetCache, d.Package.ToLowerInvariant(), d.Version,
                 d.Subpath.Replace('/', Path.DirectorySeparatorChar), d.Name);
             if (!File.Exists(src))
@@ -75,7 +77,6 @@ public static partial class Funcs
                 continue;
             }
 
-            string dst = Path.Combine(pluginsDir, d.Name);
             File.Copy(src, dst, overwrite: true);
 
             string actualHash = BootstrapSha256(dst);
@@ -86,12 +87,12 @@ public static partial class Funcs
             }
             else
             {
-                LogInfo($"OK  {d.Name}");
-                verified++;
+                LogInfo($"COPIED {d.Name}");
+                copied++;
             }
         }
 
-        LogInfo($"Done. Verified {verified}/{BootstrapDlls.Length}, failed {failed}.");
+        LogInfo($"Bootstrap DREDGE/Winch: {present} present, {copied} copied, {failed} failed (of {BootstrapDlls.Length}).");
         return failed > 0 ? 1 : 0;
     }
 

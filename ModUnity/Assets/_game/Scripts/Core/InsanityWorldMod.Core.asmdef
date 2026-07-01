@@ -18,6 +18,7 @@
     "precompiledReferences": [
         "Assembly-CSharp.dll",
         "Assembly-CSharp-firstpass.dll",
+        "InControl.dll",
         "Newtonsoft.Json.dll",
         "Sirenix.Serialization.dll",
         "YarnSpinner.dll",

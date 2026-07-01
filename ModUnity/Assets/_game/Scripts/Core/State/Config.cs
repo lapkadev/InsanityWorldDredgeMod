@@ -14,6 +14,8 @@ namespace InsanityWorldMod.Core
         public bool IsTransitionPhaseCompleted;
 
         public bool IsDev;
+
+        public string PlayerName = "Player";
     }
 
     public enum SessionMode
