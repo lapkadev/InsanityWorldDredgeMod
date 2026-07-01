@@ -17,7 +17,6 @@ namespace InsanityWorldMod.Core
         public static GameState            Game         { get; set; }
         public static RunState             Run          { get; set; }
         public static SaveState            Save         { get; set; }
-        public static InsanityWorldConfig  Config       { get; set; }
         public static InsanityDialogueView DialogueView { get; set; }
 
         /// <summary>

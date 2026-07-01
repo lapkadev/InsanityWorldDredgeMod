@@ -10,16 +10,26 @@ namespace InsanityWorldMod.Core
     public static partial class Constants
     {
         public const string CONFIG_FILE_NAME = "insanity_world_config.json";
+        public const string LAST_SESSION_FILE_NAME = "last-game-session.json";
+    }
+
+    public static partial class G
+    {
+        public static InsanityWorldConfig Config      { get; set; }
+        public static LastGameSession     LastSession { get; set; }
     }
 
     public static partial class Funcs
     {
-        public static string GetConfigFilePath()
+        public static string GetModDataDir()
         {
             string dir = Path.Combine(Application.persistentDataPath, "InsanityWorldMod");
             Directory.CreateDirectory(dir);
-            return Path.Combine(dir, CONFIG_FILE_NAME);
+            return dir;
         }
+
+        public static string GetConfigFilePath() => Path.Combine(GetModDataDir(), CONFIG_FILE_NAME);
+        public static string GetLastGameSessionFilePath() => Path.Combine(GetModDataDir(), LAST_SESSION_FILE_NAME);
 
         public static void LoadConfig()
         {
@@ -51,6 +61,35 @@ namespace InsanityWorldMod.Core
             var json = JsonConvert.SerializeObject(G.Config, Formatting.Indented);
             File.WriteAllText(path, json);
         }
+
+        public static void LoadLastGameSession()
+        {
+            var path = GetLastGameSessionFilePath();
+            if (!File.Exists(path))
+            {
+                G.LastSession = null;
+                return;
+            }
+
+            try
+            {
+                var json = File.ReadAllText(path);
+                G.LastSession = JsonConvert.DeserializeObject<LastGameSession>(json);
+                G.Log.Info($"LastGameSession: loaded from {path}");
+            }
+            catch (Exception ex)
+            {
+                G.LastSession = null;
+                G.Log.Error($"LastGameSession: failed to read {path}: {ex.Message}");
+            }
+        }
+
+        public static void SaveLastGameSession()
+        {
+            var path = GetLastGameSessionFilePath();
+            var json = JsonConvert.SerializeObject(G.LastSession, Formatting.Indented);
+            File.WriteAllText(path, json);
+        }
     }
 
     public class ConfigSystem : IInsanityWorldSystem
@@ -60,6 +99,8 @@ namespace InsanityWorldMod.Core
         public void OnLoad()
         {
             LoadConfig();
+            if (G.Config.IsTransitionPhaseCompleted)
+                LoadLastGameSession();
             G.Log.Info($"ConfigSystem: IsTransitionPhaseCompleted={G.Config.IsTransitionPhaseCompleted}, IsDev={G.Config.IsDev}");
         }
     }
