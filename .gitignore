@@ -426,7 +426,7 @@ ModUnity/*.opendb
 ModUnity/sysinfo.txt
 
 # Proprietary DLLs
-ModUnity/Assets/Plugins/Dredge/
+ModUnity/Assets/Plugins/Dredge/*.dll
 
 ModUnity/Assets/Plugins/Yarn/
 
