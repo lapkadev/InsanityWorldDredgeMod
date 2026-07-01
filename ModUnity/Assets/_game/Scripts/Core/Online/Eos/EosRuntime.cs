@@ -109,7 +109,7 @@ namespace InsanityWorldMod.Core
 
         private void OnEosLog(ref LogMessage msg)
         {
-            G.Log.Info($"[EOS] {msg.Category}: {msg.Message}");
+            G.Log.Debug($"[EOS] {msg.Category}: {msg.Message}");
         }
 
         private void BeginDeviceIdLogin()

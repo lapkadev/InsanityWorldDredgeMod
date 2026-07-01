@@ -55,7 +55,7 @@ namespace InsanityWorldMod.Core
             }
 
             _loopInstalled = true;
-            G.Log.Info("OnlineSession: ran RuntimeInitializeOnLoad for networking assemblies (PlayerLoop + serializers)");
+            G.DevLog.Info("OnlineSession: ran RuntimeInitializeOnLoad for networking assemblies (PlayerLoop + serializers)");
         }
 
         private static void RunRuntimeInitMethods(Assembly asm)
@@ -126,7 +126,7 @@ namespace InsanityWorldMod.Core
             UnityEngine.Object.DontDestroyOnLoad(obj);
             _transport = obj.AddComponent<EosTransport>();
             Transport.active = _transport;
-            G.Log.Info("OnlineSession: transport ready");
+            G.DevLog.Info("OnlineSession: transport ready");
         }
 
         public static void StartServer()
@@ -140,7 +140,7 @@ namespace InsanityWorldMod.Core
             EnsureTransport();
             NetworkServer.RegisterHandler<PingMessage>(OnServerPing, false);
             NetworkServer.Listen(NET_MAX_CONNECTIONS);
-            G.Log.Info($"OnlineSession: server listening | local PUID = {G.Net.LocalUserId}");
+            G.DevLog.Info($"OnlineSession: server listening | local PUID = {G.Net.LocalUserId}");
         }
 
         public static void StartHost()
@@ -160,7 +160,7 @@ namespace InsanityWorldMod.Core
             NetworkClient.ConnectHost();
             HostMode.InvokeOnConnected();
 
-            G.Log.Info("OnlineSession: host (loopback) started - server + local client in-process");
+            G.DevLog.Info("OnlineSession: host (loopback) started - server + local client in-process");
         }
 
         public static void StartClientFromFile()
@@ -193,7 +193,7 @@ namespace InsanityWorldMod.Core
             NetworkClient.RegisterHandler<PongMessage>(OnClientPong, false);
             NetworkClient.OnConnectedEvent = OnClientConnected;
             NetworkClient.Connect(hostProductId);
-            G.Log.Info($"OnlineSession: local PUID = {G.Net.LocalUserId} - connecting to {hostProductId}");
+            G.DevLog.Info($"OnlineSession: local PUID = {G.Net.LocalUserId} - connecting to {hostProductId}");
         }
 
         public static void Stop()
@@ -202,24 +202,24 @@ namespace InsanityWorldMod.Core
                 NetworkServer.Shutdown();
             if (NetworkClient.active)
                 NetworkClient.Disconnect();
-            G.Log.Info("OnlineSession: stopped");
+            G.DevLog.Info("OnlineSession: stopped");
         }
 
         private static void OnClientConnected()
         {
-            G.Log.Info("OnlineSession: client connected - sending ping");
+            G.DevLog.Info("OnlineSession: client connected - sending ping");
             NetworkClient.Send(new PingMessage { value = 1 });
         }
 
         private static void OnServerPing(NetworkConnectionToClient conn, PingMessage msg)
         {
-            G.Log.Info($"OnlineSession: server received ping {msg.value} from conn {conn.connectionId} - replying pong");
+            G.DevLog.Info($"OnlineSession: server received ping {msg.value} from conn {conn.connectionId} - replying pong");
             conn.Send(new PongMessage { value = msg.value + 1 });
         }
 
         private static void OnClientPong(PongMessage msg)
         {
-            G.Log.Info($"OnlineSession: client received pong {msg.value} - round trip OK");
+            G.DevLog.Info($"OnlineSession: client received pong {msg.value} - round trip OK");
         }
     }
 }

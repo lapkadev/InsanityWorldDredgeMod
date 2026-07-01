@@ -68,7 +68,7 @@ namespace InsanityWorldMod.Core
                 return;
             }
 
-            G.Log.Info($"EosServer: incoming connection request from {result.RemoteUserId} - accepting");
+            G.DevLog.Info($"EosServer: incoming connection request from {result.RemoteUserId} - accepting");
 
             var accept = new AcceptConnectionOptions
             {
@@ -105,14 +105,14 @@ namespace InsanityWorldMod.Core
                     Register(conn);
                     OnConnected.Invoke(conn.ConnId, clientUserId.ToString());
 
-                    G.Log.Info($"EosServer: client {clientUserId} connected, assigning connection id {conn.ConnId}");
+                    G.DevLog.Info($"EosServer: client {clientUserId} connected, assigning connection id {conn.ConnId}");
                     break;
                 case InternalMessages.DISCONNECT:
                     if (_byEpicId.TryGetValue(clientUserId, out ServerConn disc))
                     {
                         OnDisconnected.Invoke(disc.ConnId);
                         Unregister(disc);
-                        G.Log.Info($"EosServer: client {clientUserId} disconnected");
+                        G.DevLog.Info($"EosServer: client {clientUserId} disconnected");
                     }
                     else
                     {
@@ -120,7 +120,7 @@ namespace InsanityWorldMod.Core
                     }
                     break;
                 default:
-                    G.Log.Info("EosServer: received unknown message type");
+                    G.DevLog.Info("EosServer: received unknown message type");
                     break;
             }
         }

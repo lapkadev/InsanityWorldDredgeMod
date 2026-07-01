@@ -188,7 +188,7 @@ namespace InsanityWorldMod.Core
                         return;
                     }
 
-                    G.Log.Info("EosNode: incorrect package length on internal channel");
+                    G.DevLog.Info("EosNode: incorrect package length on internal channel");
                 }
 
                 for (int chNum = 0; chNum < channels.Length; chNum++)

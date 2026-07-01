@@ -58,7 +58,7 @@ namespace InsanityWorldMod.Core
                 OnConnected += SetConnectedComplete;
 
                 SendInternal(hostProductId, socketId, InternalMessages.CONNECT);
-                G.Log.Info($"EosClient: sent CONNECT to {host} on socket {socketId.SocketName}");
+                G.DevLog.Info($"EosClient: sent CONNECT to {host} on socket {socketId.SocketName}");
 
                 Task connectedCompleteTask = connectedComplete.Task;
 
@@ -163,15 +163,15 @@ namespace InsanityWorldMod.Core
                 case InternalMessages.ACCEPT_CONNECT:
                     Connected = true;
                     OnConnected.Invoke();
-                    G.Log.Info("EosClient: connection established");
+                    G.DevLog.Info("EosClient: connection established");
                     break;
                 case InternalMessages.DISCONNECT:
                     Connected = false;
-                    G.Log.Info("EosClient: disconnected");
+                    G.DevLog.Info("EosClient: disconnected");
                     OnDisconnected.Invoke();
                     break;
                 default:
-                    G.Log.Info("EosClient: received unknown message type");
+                    G.DevLog.Info("EosClient: received unknown message type");
                     break;
             }
         }

@@ -66,7 +66,7 @@ namespace InsanityWorldMod.Core
                     {
                         if (G.Net.IsInited)
                         {
-                            G.Log.Info($"EosTransport: firing client.Connect to {client.hostAddress}");
+                            G.DevLog.Info($"EosTransport: firing client.Connect to {client.hostAddress}");
                             client.Connect(client.hostAddress);
                         }
                         else
@@ -124,7 +124,7 @@ namespace InsanityWorldMod.Core
 
             if (!ClientActive() || client.Error)
             {
-                G.Log.Info($"EosTransport: starting client, target address {address}");
+                G.DevLog.Info($"EosTransport: starting client, target address {address}");
                 client = EosClient.CreateClient(this, address);
                 activeNode = client;
             }
@@ -172,7 +172,7 @@ namespace InsanityWorldMod.Core
 
             if (!ServerActive())
             {
-                G.Log.Info("EosTransport: starting server");
+                G.DevLog.Info("EosTransport: starting server");
                 server = EosServer.CreateServer(this, NetworkServer.maxConnections);
                 activeNode = server;
             }
@@ -262,7 +262,7 @@ namespace InsanityWorldMod.Core
             server = null;
             client = null;
             activeNode = null;
-            G.Log.Info("EosTransport: transport shut down");
+            G.DevLog.Info("EosTransport: transport shut down");
         }
 
         public int GetMaxSinglePacketSize(int channelId) => P2PInterface.MAX_PACKET_SIZE - 10;
