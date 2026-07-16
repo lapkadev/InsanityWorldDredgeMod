@@ -1,4 +1,4 @@
-namespace InsanityWorldMod.Api
+namespace InsanityWorldMod.DredgeRuntime
 {
     /// <summary>
     /// Api-side constants (mod GUID, Harmony ID, version metadata).

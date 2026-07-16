@@ -1,6 +1,6 @@
 {
-    "name": "InsanityWorldMod.Api",
-    "rootNamespace": "InsanityWorldMod.Api",
+    "name": "InsanityWorldMod.DredgeRuntime",
+    "rootNamespace": "InsanityWorldMod.DredgeRuntime",
     "references": [
         "InsanityWorldMod.Core",
         "Unity.Localization",

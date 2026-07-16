@@ -1,9 +1,9 @@
 using HarmonyLib;
 using InsanityWorldMod.Core;
 using Winch.Util;
-using static InsanityWorldMod.Api.Constants;
+using static InsanityWorldMod.DredgeRuntime.Constants;
 
-namespace InsanityWorldMod.Api
+namespace InsanityWorldMod.DredgeRuntime
 {
     public static partial class Constants
     {

@@ -1,11 +1,11 @@
 using System.Linq;
 using InsanityWorldMod.Core;
 using InsanityWorldMod.Core.Dialogue;
-using static InsanityWorldMod.Api.Constants;
+using static InsanityWorldMod.DredgeRuntime.Constants;
 using static InsanityWorldMod.Core.Constants;
 using static InsanityWorldMod.Core.Funcs;
 
-namespace InsanityWorldMod.Api
+namespace InsanityWorldMod.DredgeRuntime
 {
     public static partial class Constants
     {

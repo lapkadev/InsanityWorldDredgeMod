@@ -1,4 +1,4 @@
-namespace InsanityWorldMod.Api
+namespace InsanityWorldMod.DredgeRuntime
 {
     /// <summary>
     /// Api-side public functions (Harmony patches helpers, Winch glue, etc.).

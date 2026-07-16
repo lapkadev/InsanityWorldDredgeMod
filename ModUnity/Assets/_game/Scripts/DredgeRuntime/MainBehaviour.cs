@@ -1,11 +1,11 @@
 using InsanityWorldMod.Core;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
-using static InsanityWorldMod.Api.Constants;
+using static InsanityWorldMod.DredgeRuntime.Constants;
 using static InsanityWorldMod.Core.Constants;
 using static InsanityWorldMod.Core.Funcs;
 
-namespace InsanityWorldMod.Api
+namespace InsanityWorldMod.DredgeRuntime
 {
     public static partial class Constants
     {

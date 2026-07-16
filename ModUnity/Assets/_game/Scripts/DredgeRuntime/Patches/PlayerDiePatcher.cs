@@ -3,7 +3,7 @@ using HarmonyLib;
 using InsanityWorldMod.Core;
 using static InsanityWorldMod.Core.Funcs;
 
-namespace InsanityWorldMod.Api
+namespace InsanityWorldMod.DredgeRuntime
 {
     /// <summary>
     // Player.Die has two overloads (parameterless + debug command Die(CommandArg[])).

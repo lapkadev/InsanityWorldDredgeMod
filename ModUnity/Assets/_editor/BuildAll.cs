@@ -7,7 +7,7 @@ namespace InsanityWorldMod.Editor
 {
     public static partial class Constants
     {
-        public const string API_ASSEMBLY_NAME  = "InsanityWorldMod.Api";
+        public const string API_ASSEMBLY_NAME  = "InsanityWorldMod.DredgeRuntime";
         public const string CORE_ASSEMBLY_NAME = "InsanityWorldMod.Core";
 
         public static readonly string[] MIRROR_RUNTIME_ASSEMBLIES =

@@ -5,7 +5,7 @@ using HarmonyLib;
 using InsanityWorldMod.Core;
 using static InsanityWorldMod.Core.Constants;
 
-namespace InsanityWorldMod.Api
+namespace InsanityWorldMod.DredgeRuntime
 {
     public static class QuestGridPanelPatcher
     {

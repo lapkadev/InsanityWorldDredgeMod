@@ -4,9 +4,9 @@ using InsanityWorldMod.Core;
 using UnityEngine;
 using Winch.Core;
 using Winch.Util;
-using static InsanityWorldMod.Api.Constants;
+using static InsanityWorldMod.DredgeRuntime.Constants;
 
-namespace InsanityWorldMod.Api
+namespace InsanityWorldMod.DredgeRuntime
 {
     /// <summary>
     /// First system to load (Order=0).

@@ -5,7 +5,7 @@ using InsanityWorldMod.Core;
 using Yarn.Unity;
 using static InsanityWorldMod.Core.Constants;
 
-namespace InsanityWorldMod.Api
+namespace InsanityWorldMod.DredgeRuntime
 {
     public static class DredgeDialogueViewPatcher
     {
