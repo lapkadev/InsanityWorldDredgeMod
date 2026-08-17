@@ -33,6 +33,13 @@ namespace InsanityWorldMod.DredgeRuntime
             DredgeHooks.GetModBasePath = () => ModAssemblyLoader.GetCurrentMod()?.BasePath ?? modBasePath;
             DredgeHooks.GetAllBundles  = () => AssetBundleUtil.AssetBundles.Values;
 
+            DredgeHooks.IsPlayerSailing = () =>
+            {
+                var gm = GameManager.Instance;
+                if (gm == null || gm.Player == null || gm.Input == null) return false;
+                return !gm.Player.IsDocked && gm.Input.GetActiveActionLayer() == ActionLayer.BASE;
+            };
+
             G.Log.Info("EntrySystem.OnLoad: hooks wired");
 
             GameController.InitializeState();

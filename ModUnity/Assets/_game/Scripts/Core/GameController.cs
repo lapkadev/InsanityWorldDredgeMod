@@ -14,6 +14,7 @@ namespace InsanityWorldMod.Core
         private static GameObject _debugUiHost;
         private static GameObject _pauseButtonHost;
         private static GameObject _minimapWidgetHost;
+        private static GameObject _compassWidgetHost;
 
         /// <summary>
         /// Initializes Core state to defaults. Called from `Api.EntrySystem.OnLoad()` after setup all hooks.
@@ -34,10 +35,12 @@ namespace InsanityWorldMod.Core
             // Reset transient operation flags that may have been left stuck if the player
             // exited to main menu mid-operation (e.g. _isTeleporting in Funcs).
             Funcs.ResetTransientState();
+            InitKeyBindings();
 
             if (_debugUiHost != null)       Object.Destroy(_debugUiHost);
             if (_pauseButtonHost != null)   Object.Destroy(_pauseButtonHost);
             if (_minimapWidgetHost != null) Object.Destroy(_minimapWidgetHost);
+            if (_compassWidgetHost != null) Object.Destroy(_compassWidgetHost);
 
             if (false)
             {
@@ -53,6 +56,10 @@ namespace InsanityWorldMod.Core
             _minimapWidgetHost = new GameObject("InsanityMinimapWidget");
             _minimapWidgetHost.AddComponent<MinimapWidget>();
             Object.DontDestroyOnLoad(_minimapWidgetHost);
+
+            _compassWidgetHost = new GameObject("InsanityCompassWidget");
+            _compassWidgetHost.AddComponent<CompassWidget>();
+            Object.DontDestroyOnLoad(_compassWidgetHost);
 
             Load("last");
             StartNewRun();

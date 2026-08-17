@@ -30,5 +30,7 @@ namespace InsanityWorldMod.Core
         /// Returns every AssetBundle Winch has loaded.
         /// </summary>
         public static Func<IEnumerable<AssetBundle>> GetAllBundles { get; set; }
+
+        public static Func<bool> IsPlayerSailing { get; set; }
     }
 }
