@@ -15,12 +15,12 @@ namespace InsanityWorldMod.Core
                 // if (version < 2) token = MigrateV1ToV2(token);
 
                 if (version > SaveState.CurrentSchemaVersion)
-                    G.Log.Warn($"SaveState schema v{version} is newer than code v{SaveState.CurrentSchemaVersion} - proceeding anyway, new fields may be dropped.");
+                    Log.Warn($"SaveState schema v{version} is newer than code v{SaveState.CurrentSchemaVersion} - proceeding anyway, new fields may be dropped.");
 
                 var result = token.ToObject<SaveState>();
                 if (result == null)
                 {
-                    G.Log.Warn("SaveStateMigrator: deserialized null, using default.");
+                    Log.Warn("SaveStateMigrator: deserialized null, using default.");
                     return new SaveState();
                 }
                 result.SchemaVersion = SaveState.CurrentSchemaVersion;
@@ -28,7 +28,7 @@ namespace InsanityWorldMod.Core
             }
             catch (Exception ex)
             {
-                G.Log.Error($"SaveStateMigrator: failed to deserialize, falling back to default: {ex}");
+                Log.Error($"SaveStateMigrator: failed to deserialize, falling back to default: {ex}");
                 return new SaveState();
             }
         }

@@ -1,8 +1,8 @@
-using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static InsanityWorldMod.Core.Constants;
+using static InsanityWorldMod.Core.DredgeHooks;
 using static InsanityWorldMod.Core.Funcs;
 using static InsanityWorldMod.Core.Params;
 
@@ -38,9 +38,9 @@ namespace InsanityWorldMod.Core
     public class MinimapWidget : MonoBehaviour
     {
         private RectTransform _rotatingDial;
-        private RectTransform _mapClone;          // cloned vanilla MapContents (statics only - Landmasses/Docks/AreaLabels)
-        private RectTransform _shipArrow;         // player ship direction triangle at minimap center
-        private float _worldToMapProportion;      // mapViewRectWidth / 2000f - copied from vanilla MapWindow
+        private RectTransform _mapClone;
+        private RectTransform _shipArrow;
+        private float _worldToMapProportion;
 
         private RectTransform _embedParent;
         private float _diameter = MINIMAP_SIZE_PX;
@@ -50,9 +50,6 @@ namespace InsanityWorldMod.Core
         private Vector3 _lastPlayerPos;                     // previous frame's player position, for speed calc
         private bool _hasLastPlayerPos;                     // false until first valid sample captured
 
-        // Vanilla DREDGE CompassUI font/size - matched at Start() via reflection over the
-        // active scene so our cardinals visually match the existing top-center vanilla compass.
-        // Static cache because vanilla compass doesn't change between scene loads.
         private static TMPro.TMP_FontAsset _vanillaFont;
         private static float _vanillaFontSize;
         private static bool _vanillaStyleResolved;
@@ -68,9 +65,8 @@ namespace InsanityWorldMod.Core
             Transform parent = _embedParent;
             if (parent == null)
             {
-                var canvas = GameObject.Find("GameCanvases/GameCanvas");
-                if (canvas == null) { G.Log.Warn("MinimapWidget: GameCanvas not found"); return; }
-                parent = canvas.transform;
+                if (G.GameCanvas == null) { Log.Warn("MinimapWidget: game canvas not available"); return; }
+                parent = G.GameCanvas;
             }
 
             TryResolveVanillaCompassStyle();
@@ -143,101 +139,44 @@ namespace InsanityWorldMod.Core
 
             if (_embedParent == null)
             {
-                G.Log.Debug($"MinimapWidget: created in {MINIMAP_CORNER} corner");
+                Log.Debug($"MinimapWidget: created in {MINIMAP_CORNER} corner");
                 ShiftSlidePanelTabBelowMinimap();
             }
             else
             {
-                G.Log.Debug($"MinimapWidget: created embedded in '{_embedParent.name}', diameter {_diameter}");
+                Log.Debug($"MinimapWidget: created embedded in '{_embedParent.name}', diameter {_diameter}");
             }
         }
 
         private float Scale => _diameter / MINIMAP_SIZE_PX;
 
-        /// <summary>
-        /// Shift the vanilla DREDGE SlidePanelTab (the visible HUD cargo button) so that its top edge sits just below our minimap. 
-        /// SlidePanelTab is a child of PlayerSlidePanel and contains 5 sub-children (ClickableButton, Backplate, Icon, UnseenItemIcon, ControlIconContainer) 
-        /// - they move together as the whole button.
-        /// Siblings (Funds money display, etc.) are NOT affected.
-        /// </summary>
         private void ShiftSlidePanelTabBelowMinimap()
         {
 #pragma warning disable CS0162
             if (MINIMAP_CORNER != HudCorner.TopRight) return;
 #pragma warning restore CS0162
 
-            var go = GameObject.Find("SlidePanelTab");
-            if (go == null) { G.Log.Debug("MinimapWidget: SlidePanelTab GameObject not found in scene"); return; }
-            var rt = go.GetComponent<RectTransform>();
-            if (rt == null) { G.Log.Debug("MinimapWidget: SlidePanelTab has no RectTransform"); return; }
-
-            // World-space corners (Y axis up). corners[0]=BL, corners[1]=TL, corners[2]=TR, corners[3]=BR.
-            var corners = new Vector3[4];
-            rt.GetWorldCorners(corners);
-            float currentTopY = corners[1].y;
-
-            // Target top edge = just below minimap bottom edge.
-            // Screen Space Overlay canvas: world Y == screen pixel Y (origin bottom-left).
-            // Minimap bottom in screen Y = Screen.height - MINIMAP_MARGIN_PX - MINIMAP_SIZE_PX.
             float minimapBottomY = Screen.height - MINIMAP_MARGIN_PX - MINIMAP_SIZE_PX;
-            float targetTopY = minimapBottomY - MINIMAP_TABS_BELOW_GAP_PX;
-            float deltaY = targetTopY - currentTopY;
-
-            G.Log.Debug($"MinimapWidget: SlidePanelTab currentTopY={currentTopY}, targetTopY={targetTopY}, deltaY={deltaY}");
-
-            if (deltaY >= 0f) { G.Log.Debug("MinimapWidget: SlidePanelTab top already below minimap; no shift"); return; }
-
-            rt.anchoredPosition += new Vector2(0f, deltaY);
-            G.Log.Debug($"MinimapWidget: shifted SlidePanelTab by {deltaY}px");
+            ShiftHudTabBelow(minimapBottomY - MINIMAP_TABS_BELOW_GAP_PX);
         }
 
-        /// <summary>
-        /// Clone the vanilla MapWindow's `mapContents` RectTransform under our minimap and use it as the live map background. 
-        /// Reflection-based because the field is private serialized. 
-        /// </summary>
         private void TryCloneVanillaMap(Transform parent)
         {
-            MapWindow vanilla = null;
-            foreach (var w in Resources.FindObjectsOfTypeAll<MapWindow>())
+            _mapClone = CreateMapClone();
+            if (_mapClone == null)
             {
-                // Skip asset prefabs - only scene instances.
-                if (w != null && w.gameObject.scene.IsValid()) { vanilla = w; break; }
-            }
-            if (vanilla == null) { G.Log.Warn("MinimapWidget: vanilla MapWindow not found in scene"); return; }
-
-            var mapContentsField = typeof(MapWindow).GetField("mapContents", BindingFlags.NonPublic | BindingFlags.Instance);
-            var rectWidthField   = typeof(MapWindow).GetField("mapViewRectWidth", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (mapContentsField == null || rectWidthField == null)
-            {
-                G.Log.Warn("MinimapWidget: failed to reflect MapWindow private fields (mapContents / mapViewRectWidth)");
+                Log.Warn("MinimapWidget: map clone not available");
                 return;
             }
 
-            var srcMapContents  = mapContentsField.GetValue(vanilla) as RectTransform;
-            var mapViewRectWidth = (float)rectWidthField.GetValue(vanilla);
-            if (srcMapContents == null || mapViewRectWidth <= 0f)
-            {
-                G.Log.Warn($"MinimapWidget: invalid vanilla map data (mapContents={srcMapContents}, mapViewRectWidth={mapViewRectWidth})");
-                return;
-            }
+            _worldToMapProportion = GetMapPixelsPerWorldUnit();
 
-            _worldToMapProportion = mapViewRectWidth / 2000f;
-
-            var cloneGo = Object.Instantiate(srcMapContents.gameObject, parent, false);
-            cloneGo.name = "VanillaMapClone";
-            _mapClone = cloneGo.GetComponent<RectTransform>();
-
+            _mapClone.SetParent(parent, false);
             _mapClone.anchorMin = _mapClone.anchorMax = new Vector2(0.5f, 0.5f);
             _mapClone.pivot = new Vector2(0.5f, 0.5f);
             _mapClone.anchoredPosition = Vector2.zero;
 
-            foreach (var n in new[] { "OozeMarkers", "MapMarkers", "MapHarvestPOIMarkers", "YouAreHereMarker", "DemoLabels" })
-            {
-                var t = _mapClone.Find(n);
-                if (t != null) Object.Destroy(t.gameObject);
-            }
-
-            G.Log.Info($"MinimapWidget: cloned vanilla MapContents (proportion={_worldToMapProportion}, mapViewRectWidth={mapViewRectWidth})");
+            Log.Info($"MinimapWidget: map clone attached (proportion={_worldToMapProportion})");
         }
 
         public void Update()
@@ -263,10 +202,11 @@ namespace InsanityWorldMod.Core
         private void UpdateShipArrow(float camYaw)
         {
             if (_shipArrow == null) return;
-            var gm = GameManager.Instance;
-            if (gm == null || gm.Player == null) return;
+            var player = GetPlayerTransform();
+            if (player == null)
+                return;
 
-            float shipYaw = gm.Player.transform.eulerAngles.y;
+            float shipYaw = player.eulerAngles.y;
             _shipArrow.localEulerAngles = new Vector3(0f, 0f, camYaw - shipYaw);
         }
 
@@ -276,10 +216,11 @@ namespace InsanityWorldMod.Core
         private void UpdateMapClone(float camYaw)
         {
             if (_mapClone == null) return;
-            var gm = GameManager.Instance;
-            if (gm == null || gm.Player == null) return;
+            var player = GetPlayerTransform();
+            if (player == null)
+                return;
 
-            var pos = gm.Player.transform.position;
+            var pos = player.position;
 
             // Dynamic zoom
             if (_hasLastPlayerPos && Time.deltaTime > 0f)
@@ -327,25 +268,15 @@ namespace InsanityWorldMod.Core
             tmp.color = color;
         }
 
-        /// <summary>
-        /// Looks up the vanilla DREDGE CompassUI in the scene and caches its TMP font
-        /// </summary>
         private static void TryResolveVanillaCompassStyle()
         {
             if (_vanillaStyleResolved) return;
             _vanillaStyleResolved = true;
 
-            var vanilla = Object.FindObjectOfType<CompassUI>();
-            if (vanilla == null) { G.Log.Debug("MinimapWidget: vanilla CompassUI not found, using fallback font"); return; }
+            _vanillaFont = GetVanillaCompassFont();
+            _vanillaFontSize = GetVanillaCompassFontSize();
 
-            var any = vanilla.GetComponentInChildren<TMPro.TMP_Text>(includeInactive: true);
-            if (any == null) { G.Log.Debug("MinimapWidget: no TMP_Text in vanilla CompassUI, using fallback"); return; }
-
-            _vanillaFont = any.font;
-            if (any is TextMeshProUGUI ugui)
-                _vanillaFontSize = ugui.fontSize;
-
-            G.Log.Debug($"MinimapWidget: matched vanilla font '{(_vanillaFont != null ? _vanillaFont.name : "?")}', size {_vanillaFontSize}");
+            Log.Debug($"MinimapWidget: matched vanilla font '{(_vanillaFont != null ? _vanillaFont.name : "?")}', size {_vanillaFontSize}");
         }
 
         private static Sprite _circleSpriteCache;

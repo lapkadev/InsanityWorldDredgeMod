@@ -1,11 +1,28 @@
 using InControl;
-using static InsanityWorldMod.Core.Funcs;
+using static InsanityWorldMod.Core.Constants;
 
 namespace InsanityWorldMod.Core
 {
+    public static partial class Constants
+    {
+        public const string ACTION_TOGGLE_COMPASS = "toggle-compass";
+    }
+
     public static partial class G
     {
         public static KeyBindings Bindings { get; set; }
+    }
+
+    public static partial class Funcs
+    {
+        public static void InitKeyBindings()
+        {
+            if (G.Bindings != null)
+                return;
+
+            G.Bindings = new KeyBindings();
+            Log.Info("KeyBindings: actions created");
+        }
     }
 
     public class KeyBindings : PlayerActionSet
@@ -14,39 +31,9 @@ namespace InsanityWorldMod.Core
 
         public KeyBindings()
         {
-            ToggleCompass = CreatePlayerAction("insanity.binding.toggle-compass");
+            ToggleCompass = CreatePlayerAction(ACTION_TOGGLE_COMPASS);
             ToggleCompass.AddDefaultBinding(Key.C);
             ToggleCompass.AddDefaultBinding(InputControlType.LeftStickButton);
-        }
-    }
-
-    public static partial class Funcs
-    {
-        public static void InitKeyBindings()
-        {
-            if (G.Bindings != null) return;
-
-            G.Bindings = new KeyBindings();
-
-            var saved = G.Config?.KeyBindings;
-            if (!string.IsNullOrEmpty(saved))
-            {
-                G.Bindings.Load(saved);
-                G.Log.Info("KeyBindings: loaded from config");
-            }
-            else
-            {
-                G.Log.Info("KeyBindings: using defaults");
-            }
-        }
-
-        public static void SaveKeyBindings()
-        {
-            if (G.Bindings == null || G.Config == null) return;
-
-            G.Config.KeyBindings = G.Bindings.Save();
-            SaveConfig();
-            G.Log.Info("KeyBindings: saved to config");
         }
     }
 }

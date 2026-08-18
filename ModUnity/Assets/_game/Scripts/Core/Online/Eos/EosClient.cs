@@ -58,13 +58,13 @@ namespace InsanityWorldMod.Core
                 OnConnected += SetConnectedComplete;
 
                 SendInternal(hostProductId, socketId, InternalMessages.CONNECT);
-                G.DevLog.Info($"EosClient: sent CONNECT to {host} on socket {socketId.SocketName}");
+                DevLog.Info($"EosClient: sent CONNECT to {host} on socket {socketId.SocketName}");
 
                 Task connectedCompleteTask = connectedComplete.Task;
 
                 if (await Task.WhenAny(connectedCompleteTask, Task.Delay(ConnectionTimeout)) != connectedCompleteTask)
                 {
-                    G.Log.Error($"EosClient: connection to {host} timed out");
+                    Log.Error($"EosClient: connection to {host} timed out");
                     OnConnected -= SetConnectedComplete;
                     OnConnectionFailed(hostProductId);
                 }
@@ -73,13 +73,13 @@ namespace InsanityWorldMod.Core
             }
             catch (FormatException)
             {
-                G.Log.Error("EosClient: connection string was not in the right format - did you enter a ProductId?");
+                Log.Error("EosClient: connection string was not in the right format - did you enter a ProductId?");
                 Error = true;
                 OnConnectionFailed(hostProductId);
             }
             catch (Exception ex)
             {
-                G.Log.Error(ex.Message);
+                Log.Error(ex.Message);
                 Error = true;
                 OnConnectionFailed(hostProductId);
             }
@@ -119,7 +119,7 @@ namespace InsanityWorldMod.Core
 
             if (clientUserId != hostProductId)
             {
-                G.Log.Error("EosClient: received a message from an unknown peer");
+                Log.Error("EosClient: received a message from an unknown peer");
                 return;
             }
 
@@ -133,7 +133,7 @@ namespace InsanityWorldMod.Core
 
             if (result.SocketId.HasValue && deadSockets.Contains(result.SocketId.Value.SocketName))
             {
-                G.Log.Error("EosClient: incoming connection request from dead socket");
+                Log.Error("EosClient: incoming connection request from dead socket");
                 return;
             }
 
@@ -149,7 +149,7 @@ namespace InsanityWorldMod.Core
             }
             else
             {
-                G.Log.Error("EosClient: P2P acceptance request from unknown host ID");
+                Log.Error("EosClient: P2P acceptance request from unknown host ID");
             }
         }
 
@@ -163,15 +163,15 @@ namespace InsanityWorldMod.Core
                 case InternalMessages.ACCEPT_CONNECT:
                     Connected = true;
                     OnConnected.Invoke();
-                    G.DevLog.Info("EosClient: connection established");
+                    DevLog.Info("EosClient: connection established");
                     break;
                 case InternalMessages.DISCONNECT:
                     Connected = false;
-                    G.DevLog.Info("EosClient: disconnected");
+                    DevLog.Info("EosClient: disconnected");
                     OnDisconnected.Invoke();
                     break;
                 default:
-                    G.DevLog.Info("EosClient: received unknown message type");
+                    DevLog.Info("EosClient: received unknown message type");
                     break;
             }
         }

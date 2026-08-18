@@ -47,22 +47,22 @@ namespace InsanityWorldMod.Core
             if (_bootstrapped)
                 return true;
 
-            var libPath = Path.Combine(DredgeHooks.GetModBasePath(), EOS_NATIVE_SUBDIR, EOS_NATIVE_DLL);
+            var libPath = Path.Combine(G.ModBasePath, EOS_NATIVE_SUBDIR, EOS_NATIVE_DLL);
             if (!File.Exists(libPath))
             {
-                G.Log.Error($"EosRuntime: native SDK not found at {libPath}");
+                Log.Error($"EosRuntime: native SDK not found at {libPath}");
                 return false;
             }
 
             var handle = LoadLibrary(libPath);
             if (handle == IntPtr.Zero)
             {
-                G.Log.Error($"EosRuntime: LoadLibrary failed for {libPath} (win32 error {Marshal.GetLastWin32Error()})");
+                Log.Error($"EosRuntime: LoadLibrary failed for {libPath} (win32 error {Marshal.GetLastWin32Error()})");
                 return false;
             }
 
             _bootstrapped = true;
-            G.Log.Info("EosRuntime: native EOS SDK loaded");
+            Log.Info("EosRuntime: native EOS SDK loaded");
             return true;
         }
 
@@ -76,7 +76,7 @@ namespace InsanityWorldMod.Core
             var initResult = PlatformInterface.Initialize(ref initOptions);
             if (initResult != Result.Success && initResult != Result.AlreadyConfigured)
             {
-                G.Log.Error($"EosRuntime: PlatformInterface.Initialize failed: {initResult}");
+                Log.Error($"EosRuntime: PlatformInterface.Initialize failed: {initResult}");
                 return false;
             }
 
@@ -97,19 +97,19 @@ namespace InsanityWorldMod.Core
             _platform = PlatformInterface.Create(ref createOptions);
             if (_platform == null)
             {
-                G.Log.Error("EosRuntime: PlatformInterface.Create returned null");
+                Log.Error("EosRuntime: PlatformInterface.Create returned null");
                 return false;
             }
 
             G.Online.P2P = _platform.GetP2PInterface();
 
-            G.Log.Info("EosRuntime: EOS platform created");
+            Log.Info("EosRuntime: EOS platform created");
             return true;
         }
 
         private void OnEosLog(ref LogMessage msg)
         {
-            G.Log.Debug($"[EOS] {msg.Category}: {msg.Message}");
+            Log.Debug($"[EOS] {msg.Category}: {msg.Message}");
         }
 
         private void BeginDeviceIdLogin()
@@ -128,7 +128,7 @@ namespace InsanityWorldMod.Core
             else if (Common.IsOperationComplete(info.ResultCode))
             {
                 _connecting = false;
-                G.Log.Error($"EosRuntime: CreateDeviceId failed: {info.ResultCode}");
+                Log.Error($"EosRuntime: CreateDeviceId failed: {info.ResultCode}");
             }
         }
 
@@ -153,7 +153,7 @@ namespace InsanityWorldMod.Core
                 _connecting = false;
                 G.Online.LocalUserId = info.LocalUserId;
                 G.Online.IsInited = true;
-                G.Log.Info("EosRuntime: Connect login succeeded");
+                Log.Info("EosRuntime: Connect login succeeded");
 
                 var authExpOptions = new AddNotifyAuthExpirationOptions();
                 _authExpirationHandle = _platform.GetConnectInterface().AddNotifyAuthExpiration(ref authExpOptions, null, OnAuthExpiration);
@@ -176,7 +176,7 @@ namespace InsanityWorldMod.Core
             if (info.ResultCode != Result.Success)
             {
                 _connecting = false;
-                G.Log.Error($"EosRuntime: CreateUser failed: {info.ResultCode}");
+                Log.Error($"EosRuntime: CreateUser failed: {info.ResultCode}");
                 return;
             }
             ConnectLogin();

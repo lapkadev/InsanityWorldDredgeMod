@@ -1,9 +1,5 @@
 namespace InsanityWorldMod.Core
 {
-    /// <summary>
-    /// Core-side constants (gameplay tuning, paths, defaults).
-    /// Partial - can be split across multiple files within Core.
-    /// </summary>
     public static partial class Constants
     {
         public const string PREFIX                         = "lapkadev_";

@@ -61,7 +61,7 @@ namespace InsanityWorldMod.Core
             outgoingNotificationId = G.Online.P2P.AddNotifyPeerConnectionClosed(ref addClosed, null, OnRemoteConnectionClosed);
 
             if (outgoingNotificationId == 0 || incomingNotificationId == 0)
-                G.Log.Error("EosNode: couldn't bind notifications with P2P interface");
+                Log.Error("EosNode: couldn't bind notifications with P2P interface");
 
             this.transport = transport;
         }
@@ -82,7 +82,7 @@ namespace InsanityWorldMod.Core
                 return;
 
             OnConnectionFailed(result.RemoteUserId);
-            G.Log.Warn($"EosNode: connection closed ({result.Reason})");
+            Log.Warn($"EosNode: connection closed ({result.Reason})");
         }
 
         protected void SendInternal(ProductUserId target, SocketId socketId, InternalMessages type)
@@ -100,7 +100,7 @@ namespace InsanityWorldMod.Core
             Result result = G.Online.P2P.SendPacket(ref options);
 
             if (result != Result.Success)
-                G.Log.Error($"EosNode: SendInternal({type}) failed ({result})");
+                Log.Error($"EosNode: SendInternal({type}) failed ({result})");
         }
 
         protected void Send(ProductUserId host, SocketId socketId, byte[] msgBuffer, byte channel)
@@ -118,7 +118,7 @@ namespace InsanityWorldMod.Core
             Result result = G.Online.P2P.SendPacket(ref options);
 
             if (result != Result.Success)
-                G.Log.Error($"EosNode: send failed ({result})");
+                Log.Error($"EosNode: send failed ({result})");
         }
 
         private bool Receive(out ProductUserId clientProductUserId, out SocketId socketId, out byte[] data, byte channel)
@@ -151,13 +151,13 @@ namespace InsanityWorldMod.Core
         {
             if (socketId.SocketName == null)
             {
-                G.Log.Warn("EosNode: socket name == null | " + ignoreAllMessages);
+                Log.Warn("EosNode: socket name == null | " + ignoreAllMessages);
                 return;
             }
 
             if (deadSockets == null)
             {
-                G.Log.Warn("EosNode: deadSockets == null");
+                Log.Warn("EosNode: deadSockets == null");
                 return;
             }
 
@@ -188,7 +188,7 @@ namespace InsanityWorldMod.Core
                         return;
                     }
 
-                    G.DevLog.Info("EosNode: incorrect package length on internal channel");
+                    DevLog.Info("EosNode: incorrect package length on internal channel");
                 }
 
                 for (int chNum = 0; chNum < channels.Length; chNum++)
@@ -276,7 +276,7 @@ namespace InsanityWorldMod.Core
             }
             catch (Exception e)
             {
-                G.Log.Error(e.ToString());
+                Log.Error(e.ToString());
             }
         }
 

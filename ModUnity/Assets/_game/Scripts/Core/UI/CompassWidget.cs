@@ -7,69 +7,92 @@ namespace InsanityWorldMod.Core
 {
     public static partial class Constants
     {
-        public const string  COMPASS_PREFAB_NAME     = "InsanityCompasMap";
-        public const string  COMPASS_MAP_ANCHOR_NAME = "MapAnchor";
-        public const float   COMPASS_MARGIN_PX       = 0f;
-        public const bool    COMPASS_VISIBLE_ON_START = false;
-        public const float   COMPASS_OFFSCREEN_PADDING_PX = 40f;
-        public const float   COMPASS_SLIDE_SPEED_PX_PER_SEC = 2200f;
+        public const string COMPASS_PREFAB_NAME            = "pfb_insanity_compas_map";
+        public const string COMPASS_ROOT_NAME              = "InsanityCompassRoot";
+        public const string COMPASS_MINIMAP_HOST_NAME      = "CompassMinimap";
+        public const float  COMPASS_MARGIN_PX              = 0f;
+        public const bool   COMPASS_VISIBLE_ON_START       = false;
+        public const float  COMPASS_OFFSCREEN_PADDING_PX   = 40f;
+        public const float  COMPASS_SLIDE_SPEED_PX_PER_SEC = 2200f;
+    }
+
+    public static partial class Funcs
+    {
+        public static void SetChildrenActive(Transform root, bool active)
+        {
+            foreach (Transform child in root)
+                child.gameObject.SetActive(active);
+        }
     }
 
     public class CompassWidget : MonoBehaviour
     {
+        public RectTransform MapAnchor;
+
         private RectTransform _root;
         private GameObject _prompt;
         private bool _wantedByPlayer = COMPASS_VISIBLE_ON_START;
         private Vector2 _shownPos;
         private Vector2 _hiddenPos;
         private bool _placed;
+        private bool _visualsActive = true;
 
-        public void Start()
+        public static GameObject TryCreate()
         {
-            var canvas = GameObject.Find("GameCanvases/GameCanvas");
-            if (canvas == null) { G.Log.Warn("CompassWidget: GameCanvas not found"); return; }
+            if (G.GameCanvas == null)
+            {
+                Log.Warn("CompassWidget: game canvas not available");
+                return null;
+            }
 
             if (!G.Prefabs.TryGetValue(COMPASS_PREFAB_NAME, out var prefab) || prefab == null)
             {
-                G.Log.Warn($"CompassWidget: prefab '{COMPASS_PREFAB_NAME}' not found among loaded bundles");
+                Log.Warn($"CompassWidget: prefab '{COMPASS_PREFAB_NAME}' not found among loaded bundles");
+                return null;
+            }
+
+            var obj = CloneUiNode(prefab, COMPASS_ROOT_NAME, G.GameCanvas);
+            obj.transform.SetAsFirstSibling();
+            return obj;
+        }
+
+        public void Start()
+        {
+            var rootRt = GetComponent<RectTransform>();
+            if (rootRt == null)
+            {
+                Log.Warn("CompassWidget: prefab root has no RectTransform");
                 return;
             }
 
-            var obj = Object.Instantiate(prefab, canvas.transform, false);
-            obj.name = "InsanityCompassRoot";
-            obj.transform.SetAsFirstSibling();
-
-            var rootRt = obj.GetComponent<RectTransform>();
-            if (rootRt == null) { G.Log.Warn("CompassWidget: prefab root has no RectTransform"); return; }
+            if (MapAnchor == null)
+            {
+                Log.Warn("CompassWidget: MapAnchor is not assigned - compass will show no map");
+                return;
+            }
 
             rootRt.sizeDelta = FrameSize(rootRt);
             AnchorToCorner(rootRt, HudCorner.BottomRight, COMPASS_MARGIN_PX);
 
-            var anchor = rootRt.Find(COMPASS_MAP_ANCHOR_NAME) as RectTransform;
-            if (anchor == null)
-            {
-                G.Log.Warn($"CompassWidget: '{COMPASS_MAP_ANCHOR_NAME}' not found in prefab - compass will show no map");
-                return;
-            }
-
-            var mapHost = new GameObject("CompassMinimap");
-            mapHost.transform.SetParent(anchor, false);
-            mapHost.AddComponent<MinimapWidget>().EmbedInto(anchor);
+            var mapHost = new GameObject(COMPASS_MINIMAP_HOST_NAME);
+            mapHost.transform.SetParent(MapAnchor, false);
+            mapHost.AddComponent<MinimapWidget>().EmbedInto(MapAnchor);
 
             _root = rootRt;
             _shownPos = rootRt.anchoredPosition;
             _hiddenPos = _shownPos + HideOffset(rootRt.rect.size);
             _prompt = CompassHotkeyPrompt.TryCreate();
 
-            G.Log.Info($"CompassWidget: created, dial {anchor.rect.width}x{anchor.rect.height}");
+            Log.Info($"CompassWidget: created, dial {MapAnchor.rect.width}x{MapAnchor.rect.height}");
         }
 
         public void Update()
         {
-            if (_root == null) return;
+            if (_root == null)
+                return;
 
             bool sailing = IsPlayerSailing();
-            if (sailing && G.Bindings != null && G.Bindings.ToggleCompass.WasPressed)
+            if (sailing && G.Bindings.ToggleCompass.WasPressed)
                 _wantedByPlayer = !_wantedByPlayer;
 
             if (_prompt != null && _prompt.activeSelf != sailing)
@@ -82,18 +105,27 @@ namespace InsanityWorldMod.Core
             {
                 _placed = true;
                 _root.anchoredPosition = target;
-                _root.gameObject.SetActive(visible);
+                SetVisualsActive(visible);
                 return;
             }
 
-            if (visible && !_root.gameObject.activeSelf)
-                _root.gameObject.SetActive(true);
+            if (visible)
+                SetVisualsActive(true);
 
             _root.anchoredPosition = Vector2.MoveTowards(
                 _root.anchoredPosition, target, COMPASS_SLIDE_SPEED_PX_PER_SEC * Time.unscaledDeltaTime);
 
-            if (!visible && _root.anchoredPosition == target && _root.gameObject.activeSelf)
-                _root.gameObject.SetActive(false);
+            if (!visible && _root.anchoredPosition == target)
+                SetVisualsActive(false);
+        }
+
+        private void SetVisualsActive(bool active)
+        {
+            if (_visualsActive == active)
+                return;
+
+            _visualsActive = active;
+            SetChildrenActive(_root, active);
         }
 
         private static Vector2 HideOffset(Vector2 size) =>
@@ -105,7 +137,9 @@ namespace InsanityWorldMod.Core
             foreach (Transform child in root)
             {
                 var rt = child as RectTransform;
-                if (rt == null) continue;
+                if (rt == null)
+                    continue;
+
                 if (rt.rect.width * rt.rect.height > size.x * size.y)
                     size = new Vector2(rt.rect.width, rt.rect.height);
             }

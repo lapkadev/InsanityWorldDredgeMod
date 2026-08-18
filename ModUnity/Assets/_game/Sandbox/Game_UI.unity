@@ -455,7 +455,7 @@ PrefabInstance:
     - target: {fileID: 6276345958872558366, guid: 57e054e6ce047884d8227f9cb3152ca2,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 150
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6276345958872558366, guid: 57e054e6ce047884d8227f9cb3152ca2,
         type: 3}
@@ -505,7 +505,7 @@ PrefabInstance:
     - target: {fileID: 6276345958872558366, guid: 57e054e6ce047884d8227f9cb3152ca2,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -302
+      value: -400
       objectReference: {fileID: 0}
     - target: {fileID: 6276345958872558366, guid: 57e054e6ce047884d8227f9cb3152ca2,
         type: 3}
@@ -650,7 +650,7 @@ PrefabInstance:
     - target: {fileID: 2147976983358322370, guid: 013c5d06860dbcd458ea8351b17fb5a6,
         type: 3}
       propertyPath: m_Name
-      value: InsanityCompasMap
+      value: pfb_insanity_compas_map
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 013c5d06860dbcd458ea8351b17fb5a6, type: 3}
@@ -660,3 +660,28 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8019598210813558939}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &8019598210813558941 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3314954390411473395, guid: 013c5d06860dbcd458ea8351b17fb5a6,
+    type: 3}
+  m_PrefabInstance: {fileID: 8019598210813558939}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8019598210813558942 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2147976983358322370, guid: 013c5d06860dbcd458ea8351b17fb5a6,
+    type: 3}
+  m_PrefabInstance: {fileID: 8019598210813558939}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8019598210813558943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8019598210813558942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5093589d5d18ec342bfc75f4a7569371, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MapAnchor: {fileID: 8019598210813558941}

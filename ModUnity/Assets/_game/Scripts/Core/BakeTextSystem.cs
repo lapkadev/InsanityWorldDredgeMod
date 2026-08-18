@@ -24,7 +24,7 @@ namespace InsanityWorldMod.Core
         {
             if (G.InsanityFont == null)
             {
-                G.Log.Warn("BakeText: InsanityFont is not loaded");
+                Log.Warn("BakeText: InsanityFont is not loaded");
                 return null;
             }
 

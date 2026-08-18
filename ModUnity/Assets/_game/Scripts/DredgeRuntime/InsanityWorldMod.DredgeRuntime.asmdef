@@ -19,6 +19,7 @@
         "WinchCommon.dll",
         "Assembly-CSharp.dll",
         "Assembly-CSharp-firstpass.dll",
+        "InControl.dll",
         "0Harmony.dll",
         "Newtonsoft.Json.dll",
         "YarnSpinner.dll",

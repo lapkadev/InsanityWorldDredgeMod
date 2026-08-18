@@ -16,8 +16,6 @@ namespace InsanityWorldMod.Core
         public bool IsDev;
 
         public string PlayerName = "Player";
-
-        public string KeyBindings;
     }
 
     public enum SessionMode

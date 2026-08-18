@@ -9,18 +9,13 @@
         "Mirror",
         "Mirror.Transports"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "Assembly-CSharp.dll",
-        "Assembly-CSharp-firstpass.dll",
         "InControl.dll",
         "Newtonsoft.Json.dll",
-        "Sirenix.Serialization.dll",
         "YarnSpinner.dll",
         "EOSSDK.dll"
     ],

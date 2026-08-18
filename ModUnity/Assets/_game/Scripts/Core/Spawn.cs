@@ -8,7 +8,7 @@ namespace InsanityWorldMod.Core
         {
             if (!G.Prefabs.TryGetValue(prefabName, out var prefab) || prefab == null)
             {
-                G.Log.Warn($"Spawn: prefab '{prefabName}' not loaded");
+                Log.Warn($"Spawn: prefab '{prefabName}' not loaded");
                 return null;
             }
 

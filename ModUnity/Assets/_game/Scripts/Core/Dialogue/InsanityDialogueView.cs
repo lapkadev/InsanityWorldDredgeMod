@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Yarn.Unity;
 using static InsanityWorldMod.Core.Constants;
+using static InsanityWorldMod.Core.Funcs;
 
 namespace InsanityWorldMod.Core
 {
@@ -160,7 +161,7 @@ namespace InsanityWorldMod.Core.Dialogue
         private bool ShouldRender(LocalizedLine line)
         {
             if (USE_VANILLA_DIALOGUE_ALWAYS) return false;
-            var currentNode = GameManager.Instance?.DialogueRunner?.CurrentNodeName ?? "";
+            var currentNode = GetCurrentDialogueNode();
             bool isOurNode = currentNode.StartsWith(PREFIX);
             bool hasVanillaTag = HasTag(line, TAG_VANILLA_UI);
             bool hasLapkadevTag = HasTag(line, TAG_LAPKADEV_UI);
@@ -190,7 +191,7 @@ namespace InsanityWorldMod.Core.Dialogue
         public override void RunOptions(DialogueOption[] dialogueOptions, Action<int> onOptionSelected)
         {
             if (USE_VANILLA_DIALOGUE_ALWAYS) return;
-            var currentNode = GameManager.Instance?.DialogueRunner?.CurrentNodeName ?? "";
+            var currentNode = GetCurrentDialogueNode();
             if (!currentNode.StartsWith(PREFIX)) return;
 
             ShowContainer();
@@ -215,7 +216,7 @@ namespace InsanityWorldMod.Core.Dialogue
 
         public override void DialogueStarted()
         {
-            var currentNode = GameManager.Instance?.DialogueRunner?.CurrentNodeName ?? "";
+            var currentNode = GetCurrentDialogueNode();
             if (!currentNode.StartsWith(PREFIX)) return;
             ForceCursorVisible();
         }

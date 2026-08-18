@@ -34,7 +34,7 @@ namespace InsanityWorldMod.Core
             s.OnReceivedError += (id, exception) => transport.OnServerError.Invoke(id, Mirror.TransportError.Unexpected, exception.ToString());
 
             if (!G.Online.IsInited)
-                G.Log.Error("EosServer: EOS not initialized");
+                Log.Error("EosServer: EOS not initialized");
 
             return s;
         }
@@ -64,11 +64,11 @@ namespace InsanityWorldMod.Core
 
             if (result.SocketId.HasValue && deadSockets.Contains(result.SocketId.Value.SocketName))
             {
-                G.Log.Error("EosServer: incoming connection request from dead socket");
+                Log.Error("EosServer: incoming connection request from dead socket");
                 return;
             }
 
-            G.DevLog.Info($"EosServer: incoming connection request from {result.RemoteUserId} - accepting");
+            DevLog.Info($"EosServer: incoming connection request from {result.RemoteUserId} - accepting");
 
             var accept = new AcceptConnectionOptions
             {
@@ -89,7 +89,7 @@ namespace InsanityWorldMod.Core
                 case InternalMessages.CONNECT:
                     if (_byMirrorId.Count >= maxConnections)
                     {
-                        G.Log.Error("EosServer: reached max connections");
+                        Log.Error("EosServer: reached max connections");
                         SendInternal(clientUserId, socketId, InternalMessages.DISCONNECT);
                         return;
                     }
@@ -105,14 +105,14 @@ namespace InsanityWorldMod.Core
                     Register(conn);
                     OnConnected.Invoke(conn.ConnId, clientUserId.ToString());
 
-                    G.DevLog.Info($"EosServer: client {clientUserId} connected, assigning connection id {conn.ConnId}");
+                    DevLog.Info($"EosServer: client {clientUserId} connected, assigning connection id {conn.ConnId}");
                     break;
                 case InternalMessages.DISCONNECT:
                     if (_byEpicId.TryGetValue(clientUserId, out ServerConn disc))
                     {
                         OnDisconnected.Invoke(disc.ConnId);
                         Unregister(disc);
-                        G.DevLog.Info($"EosServer: client {clientUserId} disconnected");
+                        DevLog.Info($"EosServer: client {clientUserId} disconnected");
                     }
                     else
                     {
@@ -120,7 +120,7 @@ namespace InsanityWorldMod.Core
                     }
                     break;
                 default:
-                    G.DevLog.Info("EosServer: received unknown message type");
+                    DevLog.Info("EosServer: received unknown message type");
                     break;
             }
         }
@@ -138,7 +138,7 @@ namespace InsanityWorldMod.Core
             {
                 CloseP2PSessionWithUser(clientUserId, default);
 
-                G.Log.Error("EosServer: data received from unknown epic client " + clientUserId);
+                Log.Error("EosServer: data received from unknown epic client " + clientUserId);
                 OnReceivedError.Invoke(-1, new Exception("ERROR Unknown product ID"));
             }
         }
@@ -152,7 +152,7 @@ namespace InsanityWorldMod.Core
             }
             else
             {
-                G.Log.Warn("EosServer: trying to disconnect unknown connection id " + connectionId);
+                Log.Warn("EosServer: trying to disconnect unknown connection id " + connectionId);
             }
         }
 
@@ -178,7 +178,7 @@ namespace InsanityWorldMod.Core
             }
             else
             {
-                G.Log.Error("EosServer: trying to send on unknown connection " + connectionId);
+                Log.Error("EosServer: trying to send on unknown connection " + connectionId);
                 OnReceivedError.Invoke(connectionId, new Exception("ERROR Unknown Connection"));
             }
         }
@@ -190,7 +190,7 @@ namespace InsanityWorldMod.Core
                 return conn.Puid.ToString();
             }
 
-            G.Log.Error("EosServer: trying to get info on unknown connection " + connectionId);
+            Log.Error("EosServer: trying to get info on unknown connection " + connectionId);
             OnReceivedError.Invoke(connectionId, new Exception("ERROR Unknown Connection"));
             return string.Empty;
         }
@@ -210,7 +210,7 @@ namespace InsanityWorldMod.Core
                 OnDisconnected.Invoke(nextConnectionID++);
             }
 
-            G.Log.Error("EosServer: connection failed, removing user");
+            Log.Error("EosServer: connection failed, removing user");
         }
     }
 }

@@ -2,7 +2,6 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static InsanityWorldMod.Core.Constants;
 using static InsanityWorldMod.Core.Funcs;
 
 namespace InsanityWorldMod.Core
@@ -33,7 +32,7 @@ namespace InsanityWorldMod.Core
         {
             G.Config.PlayerName = playerNameInput.text;
             SaveConfig();
-            G.Log.Info($"ModSettingsWindow: PlayerName saved = '{G.Config.PlayerName}'");
+            Log.Info($"ModSettingsWindow: PlayerName saved = '{G.Config.PlayerName}'");
             Close();
         }
 
@@ -48,14 +47,7 @@ namespace InsanityWorldMod.Core
         private void ApplyVanillaFont()
         {
             foreach (var text in skinTexts)
-            {
-                var bypass = text.GetComponent<LocalizeFontBypass>();
-                if (bypass == null)
-                    bypass = text.gameObject.AddComponent<LocalizeFontBypass>();
-                bypass.textField = text;
-                bypass.tableString = MENU_FONT_TABLE;
-                bypass.tableEntryString = MENU_FONT_ENTRY;
-            }
+                text.UseLocalizedFont();
         }
     }
 }

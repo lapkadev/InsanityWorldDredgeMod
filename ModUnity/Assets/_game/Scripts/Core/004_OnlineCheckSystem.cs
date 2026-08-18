@@ -26,7 +26,7 @@ namespace InsanityWorldMod.Core
                     return;
                 if (creds == null || !creds.IsComplete)
                 {
-                    G.Log.Warn("G.Online.Init: credentials missing/incomplete - staying single-player");
+                    Log.Warn("G.Online.Init: credentials missing/incomplete - staying single-player");
                     return;
                 }
 
@@ -46,7 +46,7 @@ namespace InsanityWorldMod.Core
         {
             if (!G.Config.IsTransitionPhaseCompleted)
             {
-                G.Log.Info("OnlineCheckSystem: vanilla phase - online not started");
+                Log.Info("OnlineCheckSystem: vanilla phase - online not started");
                 return;
             }
 
@@ -54,19 +54,19 @@ namespace InsanityWorldMod.Core
 
             if (creds == null || !creds.IsComplete)
             {
-                G.Log.Info("OnlineCheckSystem: online disabled");
+                Log.Info("OnlineCheckSystem: online disabled");
                 return;
             }
 
             try
             {
                 G.Online.Init(creds);
-                G.Log.Info("OnlineCheckSystem: online enabled");
+                Log.Info("OnlineCheckSystem: online enabled");
             }
             catch
             {
                 G.Online.IsInited = false;
-                G.Log.Info("OnlineCheckSystem: online disabled");
+                Log.Info("OnlineCheckSystem: online disabled");
             }
         }
     }

@@ -2,20 +2,33 @@ using System.Reflection;
 using HarmonyLib;
 using InsanityWorldMod.Core;
 using UnityEngine;
-using Winch.Core;
-using Winch.Util;
 using static InsanityWorldMod.DredgeRuntime.Constants;
+using static InsanityWorldMod.DredgeRuntime.Funcs;
 
 namespace InsanityWorldMod.DredgeRuntime
 {
+    public static partial class Constants
+    {
+        public const string MOD_GUID   = "lapkadev.InsanityWorldMod";
+        public const string HARMONY_ID = "lapkadev.InsanityWorldMod";
+    }
+
+    public static partial class G
+    {
+        public static GameManager       DredgeGame       => GameManager.Instance;
+        public static Player            DredgePlayer     => GameManager.Instance?.Player;
+        public static ApplicationEvents DredgeAppEvents  => ApplicationEvents.Instance;
+        public static GameEvents        DredgeGameEvents => GameEvents.Instance;
+    }
+
     /// <summary>
     /// First system to load (Order=0).
     /// Actions:
-    /// - wires Core delegates
-    /// - initializes G.* state,
-    /// - spawns MainBehaviour,
-    /// - registers Harmony,
-    /// - subscribes to DREDGE events.
+    /// - adds Core hooks
+    /// - subscribes to DREDGE and Unity scene events
+    /// - initializes Core.G.* state
+    /// - spawns MainBehaviour
+    /// - registers Harmony
     /// </summary>
     public class EntrySystem : IInsanityWorldSystem
     {
@@ -23,36 +36,38 @@ namespace InsanityWorldMod.DredgeRuntime
 
         public void OnLoad()
         {
-            G.Log.Info  = msg => WinchCore.Log.Info(msg);
-            G.Log.Warn  = msg => WinchCore.Log.Warn(msg);
-            G.Log.Error = msg => WinchCore.Log.Error(msg);
-            G.Log.Debug = msg => WinchCore.Log.Debug(msg);
+            AddHooksLog();
+            AddHooksWinch();
+            AddHooksInput();
+            AddHooksHud();
+            AddHooksNotifications();
+            AddHooksDocks();
+            AddHooksPlayer();
+            AddHooksItems();
+            AddHooksSave();
+            AddHooksDialogue();
+            AddHooksFont();
+            AddHooksText();
+            AddHooksMenu();
+            AddHooksPause();
+            AddHooksSettings();
 
-            var modBasePath = ModAssemblyLoader.GetCurrentMod()?.BasePath;
-            DredgeHooks.FindDockById   = id => DockUtil.GetDock(id);
-            DredgeHooks.GetModBasePath = () => ModAssemblyLoader.GetCurrentMod()?.BasePath ?? modBasePath;
-            DredgeHooks.GetAllBundles  = () => AssetBundleUtil.AssetBundles.Values;
+            Log.Info("EntrySystem.OnLoad: hooks added");
 
-            DredgeHooks.IsPlayerSailing = () =>
-            {
-                var gm = GameManager.Instance;
-                if (gm == null || gm.Player == null || gm.Input == null) return false;
-                return !gm.Player.IsDocked && gm.Input.GetActiveActionLayer() == ActionLayer.BASE;
-            };
+            AddListenersMenuScene();
+            AddListenersGameScene();
 
-            G.Log.Info("EntrySystem.OnLoad: hooks wired");
+            Log.Info("EntrySystem.OnLoad: listeners added");
 
             GameController.InitializeState();
 
-            var mainGo = new GameObject(nameof(InsanityWorldMod));
-            mainGo.AddComponent<MainBehaviour>();
-            Object.DontDestroyOnLoad(mainGo);
+            var main = new GameObject(nameof(InsanityWorldMod));
+            main.AddComponent<MainBehaviour>();
+            Object.DontDestroyOnLoad(main);
 
             new Harmony(HARMONY_ID).PatchAll(Assembly.GetExecutingAssembly());
 
-            ApplicationEvents.Instance.OnGameLoaded += GameController.OnGameLoaded;
-
-            G.Log.Info("EntrySystem.OnLoad: done");
+            Log.Info("EntrySystem.OnLoad: done");
         }
     }
 }

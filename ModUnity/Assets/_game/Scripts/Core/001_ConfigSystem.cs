@@ -38,7 +38,7 @@ namespace InsanityWorldMod.Core
             {
                 G.Config = new InsanityWorldConfig();
                 SaveConfig();
-                G.Log.Info($"Config: created default at {path}");
+                Log.Info($"Config: created default at {path}");
                 return;
             }
 
@@ -46,12 +46,12 @@ namespace InsanityWorldMod.Core
             {
                 var json = File.ReadAllText(path);
                 G.Config = JsonConvert.DeserializeObject<InsanityWorldConfig>(json) ?? new InsanityWorldConfig();
-                G.Log.Info($"Config: loaded from {path}");
+                Log.Info($"Config: loaded from {path}");
             }
             catch (Exception ex)
             {
                 G.Config = new InsanityWorldConfig();
-                G.Log.Error($"Config: failed to read {path}: {ex.Message}");
+                Log.Error($"Config: failed to read {path}: {ex.Message}");
             }
         }
 
@@ -75,12 +75,12 @@ namespace InsanityWorldMod.Core
             {
                 var json = File.ReadAllText(path);
                 G.LastSession = JsonConvert.DeserializeObject<LastGameSession>(json);
-                G.Log.Info($"LastGameSession: loaded from {path}");
+                Log.Info($"LastGameSession: loaded from {path}");
             }
             catch (Exception ex)
             {
                 G.LastSession = null;
-                G.Log.Error($"LastGameSession: failed to read {path}: {ex.Message}");
+                Log.Error($"LastGameSession: failed to read {path}: {ex.Message}");
             }
         }
 
@@ -101,7 +101,7 @@ namespace InsanityWorldMod.Core
             LoadConfig();
             if (G.Config.IsTransitionPhaseCompleted)
                 LoadLastGameSession();
-            G.Log.Info($"ConfigSystem: IsTransitionPhaseCompleted={G.Config.IsTransitionPhaseCompleted}, IsDev={G.Config.IsDev}");
+            Log.Info($"ConfigSystem: IsTransitionPhaseCompleted={G.Config.IsTransitionPhaseCompleted}, IsDev={G.Config.IsDev}");
         }
     }
 }

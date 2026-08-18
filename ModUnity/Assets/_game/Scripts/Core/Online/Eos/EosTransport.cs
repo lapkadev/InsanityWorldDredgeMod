@@ -41,9 +41,9 @@ namespace InsanityWorldMod.Core
             Debug.Assert(Channels.Length < byte.MaxValue, "Too many channels configured for EOS Transport");
 
             if (Channels[0] != PacketReliability.ReliableOrdered)
-                G.Log.Warn("EosTransport: Channel[0] is not ReliableOrdered, Mirror expects Channel 0 to be ReliableOrdered");
+                Log.Warn("EosTransport: Channel[0] is not ReliableOrdered, Mirror expects Channel 0 to be ReliableOrdered");
             if (Channels[1] != PacketReliability.UnreliableUnordered)
-                G.Log.Warn("EosTransport: Channel[1] is not UnreliableUnordered, Mirror expects Channel 1 to be UnreliableUnordered");
+                Log.Warn("EosTransport: Channel[1] is not UnreliableUnordered, Mirror expects Channel 1 to be UnreliableUnordered");
 
             StartCoroutine(ChangeRelayStatus());
         }
@@ -66,12 +66,12 @@ namespace InsanityWorldMod.Core
                     {
                         if (G.Online.IsInited)
                         {
-                            G.DevLog.Info($"EosTransport: firing client.Connect to {client.hostAddress}");
+                            DevLog.Info($"EosTransport: firing client.Connect to {client.hostAddress}");
                             client.Connect(client.hostAddress);
                         }
                         else
                         {
-                            G.Log.Error("EosTransport: EOS not initialized");
+                            Log.Error("EosTransport: EOS not initialized");
                             client.EosNotInitialized();
                         }
                         client.isConnecting = true;
@@ -109,7 +109,7 @@ namespace InsanityWorldMod.Core
         {
             if (!G.Online.IsInited)
             {
-                G.Log.Error("EosTransport: EOS not initialized, client could not be started");
+                Log.Error("EosTransport: EOS not initialized, client could not be started");
                 OnClientDisconnected.Invoke();
                 return;
             }
@@ -118,19 +118,19 @@ namespace InsanityWorldMod.Core
 
             if (ServerActive())
             {
-                G.Log.Error("EosTransport: already running as server");
+                Log.Error("EosTransport: already running as server");
                 return;
             }
 
             if (!ClientActive() || client.Error)
             {
-                G.DevLog.Info($"EosTransport: starting client, target address {address}");
+                DevLog.Info($"EosTransport: starting client, target address {address}");
                 client = EosClient.CreateClient(this, address);
                 activeNode = client;
             }
             else
             {
-                G.Log.Error("EosTransport: client already running");
+                Log.Error("EosTransport: client already running");
             }
         }
 
@@ -158,7 +158,7 @@ namespace InsanityWorldMod.Core
         {
             if (!G.Online.IsInited)
             {
-                G.Log.Error("EosTransport: EOS not initialized, server could not be started");
+                Log.Error("EosTransport: EOS not initialized, server could not be started");
                 return;
             }
 
@@ -166,19 +166,19 @@ namespace InsanityWorldMod.Core
 
             if (ClientActive())
             {
-                G.Log.Error("EosTransport: already running as client");
+                Log.Error("EosTransport: already running as client");
                 return;
             }
 
             if (!ServerActive())
             {
-                G.DevLog.Info("EosTransport: starting server");
+                DevLog.Info("EosTransport: starting server");
                 server = EosServer.CreateServer(this, NetworkServer.maxConnections);
                 activeNode = server;
             }
             else
             {
-                G.Log.Error("EosTransport: server already started");
+                Log.Error("EosTransport: server already started");
             }
         }
 
@@ -262,7 +262,7 @@ namespace InsanityWorldMod.Core
             server = null;
             client = null;
             activeNode = null;
-            G.DevLog.Info("EosTransport: transport shut down");
+            DevLog.Info("EosTransport: transport shut down");
         }
 
         public int GetMaxSinglePacketSize(int channelId) => P2PInterface.MAX_PACKET_SIZE - 10;

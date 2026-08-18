@@ -55,7 +55,7 @@ namespace InsanityWorldMod.Core
             }
 
             _loopInstalled = true;
-            G.DevLog.Info("OnlineSession: ran RuntimeInitializeOnLoad for networking assemblies (PlayerLoop + serializers)");
+            DevLog.Info("OnlineSession: ran RuntimeInitializeOnLoad for networking assemblies (PlayerLoop + serializers)");
         }
 
         private static void RunRuntimeInitMethods(Assembly asm)
@@ -109,7 +109,7 @@ namespace InsanityWorldMod.Core
                     }
                     catch (Exception e)
                     {
-                        G.Log.Warn($"OnlineSession: RuntimeInit {type.Name}.{method.Name} failed: {e.Message}");
+                        Log.Warn($"OnlineSession: RuntimeInit {type.Name}.{method.Name} failed: {e.Message}");
                     }
                 }
             }
@@ -126,28 +126,28 @@ namespace InsanityWorldMod.Core
             UnityEngine.Object.DontDestroyOnLoad(obj);
             _transport = obj.AddComponent<EosTransport>();
             Transport.active = _transport;
-            G.DevLog.Info("OnlineSession: transport ready");
+            DevLog.Info("OnlineSession: transport ready");
         }
 
         public static void StartServer()
         {
             if (!G.Online.IsInited)
             {
-                G.Log.Error("OnlineSession: EOS not initialized - cannot host");
+                Log.Error("OnlineSession: EOS not initialized - cannot host");
                 return;
             }
 
             EnsureTransport();
             NetworkServer.RegisterHandler<PingMessage>(OnServerPing, false);
             NetworkServer.Listen(NET_MAX_CONNECTIONS);
-            G.DevLog.Info($"OnlineSession: server listening | local PUID = {G.Online.LocalUserId}");
+            DevLog.Info($"OnlineSession: server listening | local PUID = {G.Online.LocalUserId}");
         }
 
         public static void StartHost()
         {
             if (!G.Online.IsInited)
             {
-                G.Log.Error("OnlineSession: EOS not initialized - cannot host");
+                Log.Error("OnlineSession: EOS not initialized - cannot host");
                 return;
             }
 
@@ -160,7 +160,7 @@ namespace InsanityWorldMod.Core
             NetworkClient.ConnectHost();
             HostMode.InvokeOnConnected();
 
-            G.DevLog.Info("OnlineSession: host (loopback) started - server + local client in-process");
+            DevLog.Info("OnlineSession: host (loopback) started - server + local client in-process");
         }
 
         public static void StartClientFromFile()
@@ -168,7 +168,7 @@ namespace InsanityWorldMod.Core
             var path = Path.Combine(Application.persistentDataPath, "InsanityWorldMod", EOS_TEST_HOST_FILE);
             if (!File.Exists(path))
             {
-                G.Log.Error($"OnlineSession: host id file not found: {path}");
+                Log.Error($"OnlineSession: host id file not found: {path}");
                 return;
             }
 
@@ -180,12 +180,12 @@ namespace InsanityWorldMod.Core
         {
             if (!G.Online.IsInited)
             {
-                G.Log.Error("OnlineSession: EOS not initialized - cannot join");
+                Log.Error("OnlineSession: EOS not initialized - cannot join");
                 return;
             }
             if (string.IsNullOrWhiteSpace(hostProductId))
             {
-                G.Log.Error("OnlineSession: empty host PUID");
+                Log.Error("OnlineSession: empty host PUID");
                 return;
             }
 
@@ -193,7 +193,7 @@ namespace InsanityWorldMod.Core
             NetworkClient.RegisterHandler<PongMessage>(OnClientPong, false);
             NetworkClient.OnConnectedEvent = OnClientConnected;
             NetworkClient.Connect(hostProductId);
-            G.DevLog.Info($"OnlineSession: local PUID = {G.Online.LocalUserId} - connecting to {hostProductId}");
+            DevLog.Info($"OnlineSession: local PUID = {G.Online.LocalUserId} - connecting to {hostProductId}");
         }
 
         public static void Stop()
@@ -202,24 +202,24 @@ namespace InsanityWorldMod.Core
                 NetworkServer.Shutdown();
             if (NetworkClient.active)
                 NetworkClient.Disconnect();
-            G.DevLog.Info("OnlineSession: stopped");
+            DevLog.Info("OnlineSession: stopped");
         }
 
         private static void OnClientConnected()
         {
-            G.DevLog.Info("OnlineSession: client connected - sending ping");
+            DevLog.Info("OnlineSession: client connected - sending ping");
             NetworkClient.Send(new PingMessage { value = 1 });
         }
 
         private static void OnServerPing(NetworkConnectionToClient conn, PingMessage msg)
         {
-            G.DevLog.Info($"OnlineSession: server received ping {msg.value} from conn {conn.connectionId} - replying pong");
+            DevLog.Info($"OnlineSession: server received ping {msg.value} from conn {conn.connectionId} - replying pong");
             conn.Send(new PongMessage { value = msg.value + 1 });
         }
 
         private static void OnClientPong(PongMessage msg)
         {
-            G.DevLog.Info($"OnlineSession: client received pong {msg.value} - round trip OK");
+            DevLog.Info($"OnlineSession: client received pong {msg.value} - round trip OK");
         }
     }
 }

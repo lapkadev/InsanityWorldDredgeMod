@@ -2,12 +2,19 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Localization.Components;
 using UnityEngine.UI;
+using static InsanityWorldMod.Core.Constants;
+using static InsanityWorldMod.Core.DredgeHooks;
 using static InsanityWorldMod.Core.Funcs;
 
 namespace InsanityWorldMod.Core
 {
+    public static partial class Constants
+    {
+        public const string SETTINGS_TAB_PROFILE  = "Profile";
+        public const string SETTINGS_WINDOW_NAME  = "InsanityWorldSettings";
+    }
+
     [AddToMainMenuScene]
     public class InsanityWorldMenu : MonoBehaviour
     {
@@ -17,8 +24,8 @@ namespace InsanityWorldMod.Core
         private GameObject _settingsPanel;
         private TMP_InputField _playerNameInput;
         private GameObject _settings;
-        private DredgePlayerActionPress _closeAction;
-        private DredgePlayerActionPress _submenuBack;
+        private int _closeAction;
+        private int _submenuBack;
         private TMP_InputField _profileNameInput;
 
         public void Start()
@@ -26,7 +33,7 @@ namespace InsanityWorldMod.Core
             if (G.Config == null || !G.Config.IsTransitionPhaseCompleted)
                 return;
 
-            MenuUIHelper.AddMainMenuButton("Insanity World", OpenSubmenu, 0);
+            AddMainMenuButton("Insanity World", OpenSubmenu, 0);
         }
 
         private void OpenSubmenu()
@@ -59,7 +66,7 @@ namespace InsanityWorldMod.Core
 
         private void HideExistingButtons()
         {
-            foreach (Transform child in MenuUIHelper.ButtonContainer.transform)
+            foreach (Transform child in G.MenuButtonContainer)
             {
                 if (!child.gameObject.activeSelf)
                     continue;
@@ -70,8 +77,8 @@ namespace InsanityWorldMod.Core
 
         private void AddSubmenuButton(string text, Action onClick)
         {
-            int index = MenuUIHelper.ButtonContainer.transform.childCount;
-            _submenuButtons.Add(MenuUIHelper.AddMainMenuButton(text, onClick, index));
+            int index = G.MenuButtonContainer.childCount;
+            _submenuButtons.Add(AddMainMenuButton(text, onClick, index));
         }
 
         private void OnModSettings()
@@ -81,99 +88,50 @@ namespace InsanityWorldMod.Core
             if (_settings != null)
                 Destroy(_settings);
 
-            var vanilla = FindObjectOfType<SettingsDialog>(true);
-            if (vanilla == null)
-            {
-                G.Log.Warn("Menu: vanilla SettingsDialog not found in scene");
+            _settings = CreateSettingsClone(SETTINGS_WINDOW_NAME);
+            if (_settings == null)
                 return;
-            }
-
-            _settings = Instantiate(vanilla.gameObject);
-            _settings.name = "InsanityWorldSettings";
 
             SetupSettingsTab();
 
-            _settings.GetComponent<SettingsDialog>().Show();
-            WireCloseButtons();
+            ShowSettings(_settings);
+            SetSettingsCloseHandler(_settings, CloseModSettings);
             RegisterCloseAction();
-            G.Log.Info("Menu: Mod Settings opened (Profile tab)");
+            Log.Info("Menu: Mod Settings opened (Profile tab)");
         }
 
         private void SetupSettingsTab()
         {
-            var container = _settings.GetComponentInChildren<TabbedPanelContainer>(true);
-            if (container == null)
-            {
-                G.Log.Warn("Menu: clone TabbedPanelContainer not found");
+            var tabs = SetSettingsTabs(_settings, new string[] { SETTINGS_TAB_PROFILE });
+            if (tabs.Length == 0 || tabs[0] == null)
                 return;
-            }
 
-            var tabs = container.TabbedPanels;
-            for (int i = tabs.Count - 1; i >= 1; i--)
-            {
-                Destroy(tabs[i].tab.gameObject);
-                Destroy(tabs[i].panel.gameObject);
-                tabs.RemoveAt(i);
-            }
-            container.RequestShowablePanels(new List<int> { 0 });
+            var controlList = tabs[0];
+            AddLabel(controlList, "Player Name", 26f);
+            _profileNameInput = AddInputField(controlList, G.Config.PlayerName);
 
-            var controlList = tabs[0].panel.transform.Find("Container/ControlScroller/ControlList");
-            if (controlList != null)
-            {
-                for (int i = controlList.childCount - 1; i >= 0; i--)
-                    Destroy(controlList.GetChild(i).gameObject);
-
-                MenuUIHelper.AddLabel(controlList, "Player Name", 26f);
-                _profileNameInput = MenuUIHelper.AddInputField(controlList, G.Config.PlayerName);
-
-                var inputBg = _profileNameInput.GetComponent<Image>();
-                if (inputBg != null)
-                    inputBg.color = Color.black;
-                if (_profileNameInput.textComponent != null)
-                    _profileNameInput.textComponent.color = Color.white;
-                _profileNameInput.caretColor = Color.white;
-            }
-
-            var tabText = tabs[0].tab.GetComponentInChildren<TextMeshProUGUI>(true);
-            if (tabText != null)
-            {
-                var localize = tabText.GetComponent<LocalizeStringEvent>();
-                if (localize != null)
-                    Destroy(localize);
-                tabText.text = "Profile";
-            }
-        }
-
-        private void WireCloseButtons()
-        {
-            var buttonBar = _settings.transform.Find("TabbedPanelContainer/ButtonBar");
-            if (buttonBar == null)
-            {
-                G.Log.Warn("Menu: clone ButtonBar not found (check hierarchy path)");
-                return;
-            }
-
-            foreach (var wrapper in buttonBar.GetComponentsInChildren<BasicButtonWrapper>(true))
-                wrapper.OnClick = CloseModSettings;
+            var inputBg = _profileNameInput.GetComponent<Image>();
+            if (inputBg != null)
+                inputBg.color = Color.black;
+            if (_profileNameInput.textComponent != null)
+                _profileNameInput.textComponent.color = Color.white;
+            _profileNameInput.caretColor = Color.white;
         }
 
         private void RegisterCloseAction()
         {
-            _closeAction = new DredgePlayerActionPress("prompt.back", GameManager.Instance.Input.Controls.Back);
-            _closeAction.evaluateWhenPaused = true;
-            _closeAction.OnPressComplete = CloseModSettings;
-            GameManager.Instance.Input.AddActionListener(new DredgePlayerActionPress[] { _closeAction }, ActionLayer.SYSTEM);
+            _closeAction = AddInputBackAction(CloseModSettings, false);
         }
 
         private void CloseModSettings()
         {
-            if (_closeAction != null)
+            if (_closeAction != 0)
             {
-                GameManager.Instance.Input.RemoveActionListener(new DredgePlayerActionPress[] { _closeAction }, ActionLayer.SYSTEM);
-                _closeAction = null;
+                RemoveInputBackAction(_closeAction);
+                _closeAction = 0;
             }
 
-            GameManager.Instance.PauseListener.CanShowUnpauseAction(false);
+            HideUnpausePrompt();
 
             if (_profileNameInput != null)
             {
@@ -184,9 +142,7 @@ namespace InsanityWorldMod.Core
 
             if (_settings != null)
             {
-                var dialog = _settings.GetComponent<SettingsDialog>();
-                if (dialog != null)
-                    dialog.Hide();
+                HideSettings(_settings);
                 Destroy(_settings);
             }
             _settings = null;
@@ -195,20 +151,16 @@ namespace InsanityWorldMod.Core
 
         private void RegisterSubmenuBack()
         {
-            _submenuBack = new DredgePlayerActionPress("prompt.back", GameManager.Instance.Input.Controls.Back);
-            _submenuBack.showInControlArea = true;
-            _submenuBack.evaluateWhenPaused = true;
-            _submenuBack.OnPressComplete = CloseSubmenu;
-            GameManager.Instance.Input.AddActionListener(new DredgePlayerActionPress[] { _submenuBack }, ActionLayer.SYSTEM);
+            _submenuBack = AddInputBackAction(CloseSubmenu, true);
         }
 
         private void RemoveSubmenuBack()
         {
-            if (_submenuBack == null)
+            if (_submenuBack == 0)
                 return;
 
-            GameManager.Instance.Input.RemoveActionListener(new DredgePlayerActionPress[] { _submenuBack }, ActionLayer.SYSTEM);
-            _submenuBack = null;
+            RemoveInputBackAction(_submenuBack);
+            _submenuBack = 0;
         }
 
         private void OnPlayerNameOld()
@@ -220,17 +172,17 @@ namespace InsanityWorldMod.Core
 
         private void OpenSettings()
         {
-            _settingsPanel = MenuUIHelper.AddPanel("InsanityModSettings", new Vector2(560f, 420f), Vector2.zero);
-            MenuUIHelper.AddLabel(_settingsPanel.transform, "Mod Settings", 40f);
-            MenuUIHelper.AddLabel(_settingsPanel.transform, "Player Name", 26f);
+            _settingsPanel = AddPanel("InsanityModSettings", new Vector2(560f, 420f), Vector2.zero);
+            AddLabel(_settingsPanel.transform, "Mod Settings", 40f);
+            AddLabel(_settingsPanel.transform, "Player Name", 26f);
 
-            _playerNameInput = MenuUIHelper.AddInputField(_settingsPanel.transform, G.Config.PlayerName);
+            _playerNameInput = AddInputField(_settingsPanel.transform, G.Config.PlayerName);
             var inputLayout = _playerNameInput.gameObject.AddComponent<LayoutElement>();
             inputLayout.preferredHeight = 50f;
             inputLayout.preferredWidth = 460f;
 
-            MenuUIHelper.AddButton(_settingsPanel.transform, "Save", SaveSettings);
-            MenuUIHelper.AddButton(_settingsPanel.transform, "Cancel", CancelSettings);
+            AddButton(_settingsPanel.transform, "Save", SaveSettings);
+            AddButton(_settingsPanel.transform, "Cancel", CancelSettings);
         }
 
         private void SaveSettings()
@@ -239,7 +191,7 @@ namespace InsanityWorldMod.Core
             {
                 G.Config.PlayerName = _playerNameInput.text;
                 SaveConfig();
-                G.Log.Info($"Menu: PlayerName saved = '{G.Config.PlayerName}'");
+                Log.Info($"Menu: PlayerName saved = '{G.Config.PlayerName}'");
             }
             CloseSettings();
         }
@@ -262,8 +214,8 @@ namespace InsanityWorldMod.Core
                     button.SetActive(active);
         }
 
-        private void OnContinue() => G.Log.Info($"Menu: Continue (WorldId={G.LastSession.WorldId}, Mode={G.LastSession.Mode}) [stub]");
-        private void OnLoadNewOffline() => G.Log.Info("Menu: Load/New (Offline) [stub]");
-        private void OnLoadNewOnline() => G.Log.Info("Menu: Load/New (Online) [stub]");
+        private void OnContinue() => Log.Info($"Menu: Continue (WorldId={G.LastSession.WorldId}, Mode={G.LastSession.Mode}) [stub]");
+        private void OnLoadNewOffline() => Log.Info("Menu: Load/New (Offline) [stub]");
+        private void OnLoadNewOnline() => Log.Info("Menu: Load/New (Online) [stub]");
     }
 }

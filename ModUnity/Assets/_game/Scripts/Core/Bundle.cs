@@ -31,7 +31,7 @@ namespace InsanityWorldMod.Core
             var assets = bundle.LoadAllAssets<GameObject>();
             foreach (var asset in assets)
                 G.Prefabs[asset.name] = asset;
-            G.Log.Info($"LoadPrefabs: cached {assets.Length} from '{bundle.name}'");
+            Log.Info($"LoadPrefabs: cached {assets.Length} from '{bundle.name}'");
         }
 
         public static void LoadFonts(AssetBundle bundle)
@@ -39,7 +39,7 @@ namespace InsanityWorldMod.Core
             var assets = bundle.LoadAllAssets<TMP_FontAsset>();
             foreach (var asset in assets)
                 G.Fonts[asset.name] = asset;
-            G.Log.Info($"LoadFonts: cached {assets.Length} from '{bundle.name}'");
+            Log.Info($"LoadFonts: cached {assets.Length} from '{bundle.name}'");
         }
     }
 }

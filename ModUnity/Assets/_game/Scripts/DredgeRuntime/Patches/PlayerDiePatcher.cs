@@ -5,10 +5,6 @@ using static InsanityWorldMod.Core.Funcs;
 
 namespace InsanityWorldMod.DredgeRuntime
 {
-    /// <summary>
-    // Player.Die has two overloads (parameterless + debug command Die(CommandArg[])).
-    // Target the parameterless one - the debug command internally calls it anyway.
-    /// </summary>
     [HarmonyPatch(typeof(Player), nameof(Player.Die), new Type[0])]
     public static class PlayerDiePatcher
     {
@@ -18,7 +14,7 @@ namespace InsanityWorldMod.DredgeRuntime
             if (__instance.IsGodModeEnabled || !__instance.IsAlive)
                 return true;
 
-            G.Log.Info("Death intercepted - restarting run.");
+            Log.Info("Death intercepted - restarting run.");
 
             RepairFull();
             TeleportToLastDock();

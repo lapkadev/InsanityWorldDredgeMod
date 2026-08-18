@@ -1,3 +1,4 @@
+/*
 using TMPro;
 using UnityEngine;
 using static InsanityWorldMod.Core.Funcs;
@@ -36,11 +37,11 @@ namespace InsanityWorldMod.Core
         private void TryInject()
         {
             var quitBtn = FindObjectOfType<QuitToMenuButton>(includeInactive: true);
-            if (quitBtn == null) { G.Log.Warn("PauseMenuRestartButton: QuitToMenuButton not found"); return; }
+            if (quitBtn == null) { Log.Warn("PauseMenuRestartButton: QuitToMenuButton not found"); return; }
 
             var quitGo = quitBtn.gameObject;
             var parent = quitGo.transform.parent;
-            if (parent == null) { G.Log.Warn("PauseMenuRestartButton: quit button has no parent"); return; }
+            if (parent == null) { Log.Warn("PauseMenuRestartButton: quit button has no parent"); return; }
 
             _injectedButton = Instantiate(quitGo, parent);
             _injectedButton.name = "InsanityRestartRunButton";
@@ -50,7 +51,7 @@ namespace InsanityWorldMod.Core
             var vanillaQuit = _injectedButton.GetComponent<QuitToMenuButton>();
             if (vanillaQuit != null) Destroy(vanillaQuit);
 
-            // Rewire BasicButtonWrapper click handler to our restart action.
+            // Replace BasicButtonWrapper click handler with our restart action.
             var bbw = _injectedButton.GetComponent<BasicButtonWrapper>();
             if (bbw != null)
             {
@@ -67,7 +68,7 @@ namespace InsanityWorldMod.Core
             // Move to the leftmost slot in the bottom row layout.
             _injectedButton.transform.SetSiblingIndex(0);
 
-            G.Log.Info("PauseMenuRestartButton: injected into pause/settings dialog");
+            Log.Info("PauseMenuRestartButton: injected into pause/settings dialog");
         }
 
         private void OnRestartClicked()
@@ -80,3 +81,4 @@ namespace InsanityWorldMod.Core
         }
     }
 }
+*/

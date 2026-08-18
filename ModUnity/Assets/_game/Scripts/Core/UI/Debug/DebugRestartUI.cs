@@ -1,3 +1,4 @@
+/*
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +13,7 @@ namespace InsanityWorldMod.Core
         public void Start()
         {
             var gameCanvas = GameObject.Find("GameCanvases/GameCanvas");
-            if (gameCanvas == null) { G.Log.Warn("DebugRestartUI: GameCanvas not found"); return; }
+            if (gameCanvas == null) { Log.Warn("DebugRestartUI: GameCanvas not found"); return; }
 
             _buttonObject = new GameObject("InsanityDebugRestartButton");
             _buttonObject.transform.SetParent(gameCanvas.transform, false);
@@ -45,7 +46,7 @@ namespace InsanityWorldMod.Core
             label.alignment = TextAlignmentOptions.Center;
             label.color = Color.white;
 
-            G.Log.Debug("DebugRestartUI: button created");
+            Log.Debug("DebugRestartUI: button created");
         }
 
         public void OnDestroy()
@@ -54,3 +55,4 @@ namespace InsanityWorldMod.Core
         }
     }
 }
+*/

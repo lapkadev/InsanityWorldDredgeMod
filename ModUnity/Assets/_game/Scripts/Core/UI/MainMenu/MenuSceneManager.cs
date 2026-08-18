@@ -1,37 +1,29 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using static InsanityWorldMod.Core.Constants;
 
 namespace InsanityWorldMod.Core
 {
     public static partial class Constants
     {
-        public const string TITLE_SCENE_NAME = "Title";
+        public const string MENU_OBJECTS_HOST_NAME = "InsanityWorldMenuObjects";
     }
 
-    public class MenuSceneManager : MonoBehaviour
+    public static class MenuSceneManager
     {
-        public void Awake()
-        {
-            SceneManager.activeSceneChanged += OnSceneChanged;
-            OnSceneChanged(default, SceneManager.GetActiveScene());
-        }
+        private static GameObject _host;
 
-        public void OnDestroy()
+        public static void SpawnMenuObjects()
         {
-            SceneManager.activeSceneChanged -= OnSceneChanged;
-        }
+            if (_host != null)
+                UnityEngine.Object.Destroy(_host);
 
-        private void OnSceneChanged(Scene previous, Scene current)
-        {
-            if (current.name != TITLE_SCENE_NAME)
-                return;
-
-            var host = new GameObject("InsanityWorldMenuObjects");
+            _host = new GameObject(MENU_OBJECTS_HOST_NAME);
             foreach (var type in GetMainMenuSceneTypes())
-                host.AddComponent(type);
+                _host.AddComponent(type);
+
+            Log.Info("MenuSceneManager: menu objects spawned");
         }
 
         private static List<Type> GetMainMenuSceneTypes()
