@@ -10,7 +10,7 @@ namespace InsanityWorldMod.Core
 
     public static partial class G
     {
-        public static KeyBindings Bindings { get; set; }
+        public static KeyBindings Bindings;
     }
 
     public static partial class Funcs

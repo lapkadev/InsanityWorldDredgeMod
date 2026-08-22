@@ -9,10 +9,10 @@ namespace InsanityWorldMod.Core
     /// </summary>
     public static class Log
     {
-        public static Action<string> Info  { get; set; } = msg => UnityEngine.Debug.Log(msg);
-        public static Action<string> Warn  { get; set; } = msg => UnityEngine.Debug.LogWarning(msg);
-        public static Action<string> Error { get; set; } = msg => UnityEngine.Debug.LogError(msg);
-        public static Action<string> Debug { get; set; } = msg => UnityEngine.Debug.Log($"[DEBUG] {msg}");
+        public static Action<string> Info  = msg => UnityEngine.Debug.Log(msg);
+        public static Action<string> Warn  = msg => UnityEngine.Debug.LogWarning(msg);
+        public static Action<string> Error = msg => UnityEngine.Debug.LogError(msg);
+        public static Action<string> Debug = msg => UnityEngine.Debug.Log($"[DEBUG] {msg}");
     }
 
     /// <summary>

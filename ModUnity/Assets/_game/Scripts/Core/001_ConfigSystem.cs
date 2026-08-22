@@ -15,8 +15,8 @@ namespace InsanityWorldMod.Core
 
     public static partial class G
     {
-        public static InsanityWorldConfig Config      { get; set; }
-        public static LastGameSession     LastSession { get; set; }
+        public static InsanityWorldConfig Config;
+        public static LastGameSession     LastSession;
     }
 
     public static partial class Funcs

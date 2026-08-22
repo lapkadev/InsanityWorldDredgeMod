@@ -11,8 +11,8 @@ namespace InsanityWorldMod.Core
 
     public static partial class G
     {
-        public static Dictionary<string, GameObject>    Prefabs { get; } = new Dictionary<string, GameObject>();
-        public static Dictionary<string, TMP_FontAsset> Fonts   { get; } = new Dictionary<string, TMP_FontAsset>();
+        public static Dictionary<string, GameObject>    Prefabs = new Dictionary<string, GameObject>();
+        public static Dictionary<string, TMP_FontAsset> Fonts   = new Dictionary<string, TMP_FontAsset>();
     }
 
     public static partial class Funcs

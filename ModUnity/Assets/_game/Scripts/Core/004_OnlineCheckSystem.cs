@@ -13,10 +13,10 @@ namespace InsanityWorldMod.Core
         /// </summary>
         public static class Online
         {
-            public static EosCredentials Credentials { get; set; }
-            public static bool           IsInited    { get; set; }
-            public static ProductUserId  LocalUserId { get; set; }
-            public static P2PInterface   P2P         { get; set; }
+            public static EosCredentials Credentials;
+            public static bool           IsInited;
+            public static ProductUserId  LocalUserId;
+            public static P2PInterface   P2P;
 
             private static EosRuntime _runtime;
 

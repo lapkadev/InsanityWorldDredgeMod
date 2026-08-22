@@ -22,66 +22,66 @@ namespace InsanityWorldMod.Core
         /// <summary>
         /// Returns every AssetBundle Winch has loaded.
         /// </summary>
-        public static Func<IEnumerable<AssetBundle>> GetAllBundles { get; set; }
+        public static Func<IEnumerable<AssetBundle>> GetAllBundles;
 
-        public static Func<bool> IsPlayerSailing { get; set; }
+        public static Func<bool> IsPlayerSailing;
 
-        public static Func<DialogueRunner> GetDialogueRunner { get; set; }
+        public static Func<DialogueRunner> GetDialogueRunner;
 
-        public static Action<NotificationKind, string, NotificationColor> ShowNotification { get; set; }
+        public static Action<NotificationKind, string, NotificationColor> ShowNotification;
 
-        public static Action RepairHull { get; set; }
+        public static Action RepairHull;
 
-        public static Action RepairAllItems { get; set; }
+        public static Action RepairAllItems;
 
-        public static Func<int> GetActiveSaveSlot { get; set; }
+        public static Func<int> GetActiveSaveSlot;
 
-        public static Func<DockSlot?> GetLastDock { get; set; }
+        public static Func<DockSlot?> GetLastDock;
 
-        public static Func<string, int, bool> MoveShipToDock { get; set; }
+        public static Func<string, int, bool> MoveShipToDock;
 
-        public static Action CancelPendingTeleport { get; set; }
+        public static Action CancelPendingTeleport;
 
-        public static Func<Transform> GetPlayerTransform { get; set; }
+        public static Func<Transform> GetPlayerTransform;
 
-        public static Func<bool> IsInGame { get; set; }
+        public static Func<bool> IsInGame;
 
-        public static Action<TextMeshProUGUI> UseLocalizedFont { get; set; }
+        public static Action<TextMeshProUGUI> UseLocalizedFont;
 
-        public static Action<TextMeshProUGUI, string> UseLocalizedText { get; set; }
+        public static Action<TextMeshProUGUI, string> UseLocalizedText;
 
-        public static Action<GameObject, Action> SetMenuButtonClick { get; set; }
+        public static Action<GameObject, Action> SetMenuButtonClick;
 
-        public static Func<Action, bool, int> AddInputBackAction { get; set; }
+        public static Func<Action, bool, int> AddInputBackAction;
 
-        public static Action<int> RemoveInputBackAction { get; set; }
+        public static Action<int> RemoveInputBackAction;
 
-        public static Action HideUnpausePrompt { get; set; }
+        public static Action HideUnpausePrompt;
 
-        public static Func<string, GameObject> CreateSettingsClone { get; set; }
+        public static Func<string, GameObject> CreateSettingsClone;
 
-        public static Func<GameObject, string[], RectTransform[]> SetSettingsTabs { get; set; }
+        public static Func<GameObject, string[], RectTransform[]> SetSettingsTabs;
 
-        public static Action<GameObject> ShowSettings { get; set; }
+        public static Action<GameObject> ShowSettings;
 
-        public static Action<GameObject> HideSettings { get; set; }
+        public static Action<GameObject> HideSettings;
 
-        public static Action<GameObject, Action> SetSettingsCloseHandler { get; set; }
+        public static Action<GameObject, Action> SetSettingsCloseHandler;
 
-        public static Func<RectTransform> CreateMapClone { get; set; }
+        public static Func<RectTransform> CreateMapClone;
 
-        public static Func<float> GetMapPixelsPerWorldUnit { get; set; }
+        public static Func<float> GetMapPixelsPerWorldUnit;
 
-        public static Func<TMP_FontAsset> GetVanillaCompassFont { get; set; }
+        public static Func<TMP_FontAsset> GetVanillaCompassFont;
 
-        public static Func<float> GetVanillaCompassFontSize { get; set; }
+        public static Func<float> GetVanillaCompassFontSize;
 
-        public static Action<float> ShiftHudTabBelow { get; set; }
+        public static Action<float> ShiftHudTabBelow;
 
-        public static Func<PlayerAction, bool, Sprite> GetActionIcon { get; set; }
+        public static Func<PlayerAction, bool, Sprite> GetActionIcon;
 
-        public static Action<Action<BindingSourceType, InputDeviceStyle>> SubscribeInputChanged { get; set; }
+        public static Action<Action<BindingSourceType, InputDeviceStyle>> SubscribeInputChanged;
 
-        public static Action<Action<BindingSourceType, InputDeviceStyle>> UnsubscribeInputChanged { get; set; }
+        public static Action<Action<BindingSourceType, InputDeviceStyle>> UnsubscribeInputChanged;
     }
 }

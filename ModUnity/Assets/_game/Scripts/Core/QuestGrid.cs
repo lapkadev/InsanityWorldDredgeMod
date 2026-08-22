@@ -17,7 +17,7 @@ namespace InsanityWorldMod.Core
 
     public static partial class G
     {
-        public static QuestGridState QuestGrid { get; } = new QuestGridState();
+        public static QuestGridState QuestGrid = new QuestGridState();
     }
 
     public static partial class Funcs

@@ -15,7 +15,7 @@ namespace InsanityWorldMod.Core
 
     public static partial class G
     {
-        public static TMP_FontAsset InsanityFont { get; set; }
+        public static TMP_FontAsset InsanityFont;
     }
 
     public static partial class Funcs
