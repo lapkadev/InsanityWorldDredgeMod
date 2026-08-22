@@ -45,7 +45,6 @@ public static partial class Funcs
         {
             var item = items[i];
             var resolvedPath = ResolveItemPath(item.Path);
-
             if (!string.IsNullOrEmpty(G.skipUnityProject) && resolvedPath == G.skipUnityProject)
             {
                 LogInfo($"======= Step {i + 1}/{items.Length}: SKIPPED (current Unity project): {item.Path} =======");

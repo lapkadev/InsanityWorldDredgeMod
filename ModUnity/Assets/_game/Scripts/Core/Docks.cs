@@ -32,7 +32,6 @@ namespace InsanityWorldMod.Core
         public static void TeleportToLastDock()
         {
             var lastDock = GetLastDock();
-
             if (lastDock == null || string.IsNullOrEmpty(lastDock.Value.DockId))
             {
                 Log.Info($"TeleportToLastDock: no last dock recorded, falling back to '{DEFAULT_RESTART_DOCK}' slot 0");

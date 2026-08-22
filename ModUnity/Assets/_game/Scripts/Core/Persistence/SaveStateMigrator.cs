@@ -10,7 +10,6 @@ namespace InsanityWorldMod.Core
             try
             {
                 var version = token["SchemaVersion"]?.Value<int>() ?? 0;
-
                 if (version < 1) token = MigrateV0ToV1(token);
                 // if (version < 2) token = MigrateV1ToV2(token);
 

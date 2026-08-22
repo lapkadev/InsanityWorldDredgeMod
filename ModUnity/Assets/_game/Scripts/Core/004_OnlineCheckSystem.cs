@@ -51,7 +51,6 @@ namespace InsanityWorldMod.Core
             }
 
             var creds = G.Online.Credentials;
-
             if (creds == null || !creds.IsComplete)
             {
                 Log.Info("OnlineCheckSystem: online disabled");
