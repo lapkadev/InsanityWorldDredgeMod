@@ -11,7 +11,7 @@ namespace InsanityWorldMod.Core
 {
     public static partial class Constants
     {
-        public const string TAG_VANILLA_UI  = "vanilla_ui";
+        public const string TAG_DREDGE_UI   = "dredge_ui";
         public const string TAG_LAPKADEV_UI = "lapkadev_ui";
     }
 }
@@ -160,12 +160,12 @@ namespace InsanityWorldMod.Core.Dialogue
 
         private bool ShouldRender(LocalizedLine line)
         {
-            if (USE_VANILLA_DIALOGUE_ALWAYS) return false;
+            if (USE_DREDGE_DIALOGUE_ALWAYS) return false;
             var currentNode = GetCurrentDialogueNode();
             bool isOurNode = currentNode.StartsWith(PREFIX);
-            bool hasVanillaTag = HasTag(line, TAG_VANILLA_UI);
+            bool hasDredgeTag = HasTag(line, TAG_DREDGE_UI);
             bool hasLapkadevTag = HasTag(line, TAG_LAPKADEV_UI);
-            return (isOurNode && !hasVanillaTag) || hasLapkadevTag;
+            return (isOurNode && !hasDredgeTag) || hasLapkadevTag;
         }
 
         private static bool HasTag(LocalizedLine line, string tag)
@@ -190,7 +190,7 @@ namespace InsanityWorldMod.Core.Dialogue
 
         public override void RunOptions(DialogueOption[] dialogueOptions, Action<int> onOptionSelected)
         {
-            if (USE_VANILLA_DIALOGUE_ALWAYS) return;
+            if (USE_DREDGE_DIALOGUE_ALWAYS) return;
             var currentNode = GetCurrentDialogueNode();
             if (!currentNode.StartsWith(PREFIX)) return;
 

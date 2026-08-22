@@ -19,7 +19,7 @@ namespace InsanityWorldMod.Core
         {
             saveButton.onClick.AddListener(OnSave);
             cancelButton.onClick.AddListener(OnCancel);
-            ApplyVanillaFont();
+            ApplyDredgeFont();
         }
 
         public void Open(Action onClosed)
@@ -44,7 +44,7 @@ namespace InsanityWorldMod.Core
             Destroy(gameObject);
         }
 
-        private void ApplyVanillaFont()
+        private void ApplyDredgeFont()
         {
             foreach (var text in skinTexts)
                 text.UseLocalizedFont();

@@ -8,7 +8,7 @@ namespace InsanityWorldMod.Core
     public static partial class Constants
     {
         public const string YARN_CMD_LOG                = "lapkadev_log";
-        public const bool   USE_VANILLA_DIALOGUE_ALWAYS = true;
+        public const bool   USE_DREDGE_DIALOGUE_ALWAYS = true;
     }
 
     public static partial class G
@@ -72,21 +72,21 @@ namespace InsanityWorldMod.Core
             Log.Info("RegisterYarnBindings: registered 6 functions + 6 commands");
         }
 
-        public static bool ShouldVanillaRenderLine(string[] tags)
+        public static bool ShouldDredgeRenderLine(string[] tags)
         {
-            if (USE_VANILLA_DIALOGUE_ALWAYS)
+            if (USE_DREDGE_DIALOGUE_ALWAYS)
                 return true;
 
             bool isOurNode = GetCurrentDialogueNode().StartsWith(PREFIX);
-            bool hasVanillaTag = HasDialogueTag(tags, TAG_VANILLA_UI);
+            bool hasDredgeTag = HasDialogueTag(tags, TAG_DREDGE_UI);
             bool hasLapkadevTag = HasDialogueTag(tags, TAG_LAPKADEV_UI);
 
-            return (!isOurNode && !hasLapkadevTag) || (isOurNode && hasVanillaTag);
+            return (!isOurNode && !hasLapkadevTag) || (isOurNode && hasDredgeTag);
         }
 
-        public static bool ShouldVanillaRenderOptions()
+        public static bool ShouldDredgeRenderOptions()
         {
-            if (USE_VANILLA_DIALOGUE_ALWAYS)
+            if (USE_DREDGE_DIALOGUE_ALWAYS)
                 return true;
 
             return !GetCurrentDialogueNode().StartsWith(PREFIX);

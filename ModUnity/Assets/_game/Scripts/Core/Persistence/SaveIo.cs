@@ -19,7 +19,7 @@ namespace InsanityWorldMod.Core
         {
             if (G.Game == null || G.Save == null) { Log.Warn("Save: state not initialized"); return; }
 
-            G.Game.CaptureFromVanilla();
+            G.Game.CaptureFromDredge();
 
             var slot = ResolveSlot("last");
             if (slot < 0) { Log.Debug("Save: no active slot yet, skipping"); return; }
@@ -63,7 +63,7 @@ namespace InsanityWorldMod.Core
 
             G.Game = new GameState();
             G.Game.InitFromSave();
-            G.Game.ApplyToVanilla();
+            G.Game.ApplyToDredge();
 
             Log.Info($"Load: slot={slot}, TotalRuns={G.Save.TotalRuns}, TotalDeathsIntercepted={G.Save.TotalDeathsIntercepted}");
         }

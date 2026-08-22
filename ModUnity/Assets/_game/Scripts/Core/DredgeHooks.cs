@@ -72,9 +72,9 @@ namespace InsanityWorldMod.Core
 
         public static Func<float> GetMapPixelsPerWorldUnit;
 
-        public static Func<TMP_FontAsset> GetVanillaCompassFont;
+        public static Func<TMP_FontAsset> GetDredgeCompassFont;
 
-        public static Func<float> GetVanillaCompassFontSize;
+        public static Func<float> GetDredgeCompassFontSize;
 
         public static Action<float> ShiftHudTabBelow;
 

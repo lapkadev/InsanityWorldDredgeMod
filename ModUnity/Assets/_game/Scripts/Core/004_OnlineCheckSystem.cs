@@ -46,7 +46,7 @@ namespace InsanityWorldMod.Core
         {
             if (!G.Config.IsTransitionPhaseCompleted)
             {
-                Log.Info("OnlineCheckSystem: vanilla phase - online not started");
+                Log.Info("OnlineCheckSystem: Dredge phase - online not started");
                 return;
             }
 

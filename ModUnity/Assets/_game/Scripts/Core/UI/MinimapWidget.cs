@@ -50,9 +50,9 @@ namespace InsanityWorldMod.Core
         private Vector3 _lastPlayerPos;                     // previous frame's player position, for speed calc
         private bool _hasLastPlayerPos;                     // false until first valid sample captured
 
-        private static TMPro.TMP_FontAsset _vanillaFont;
-        private static float _vanillaFontSize;
-        private static bool _vanillaStyleResolved;
+        private static TMPro.TMP_FontAsset _dredgeFont;
+        private static float _dredgeFontSize;
+        private static bool _dredgeStyleResolved;
 
         public void EmbedInto(RectTransform parent)
         {
@@ -69,7 +69,7 @@ namespace InsanityWorldMod.Core
                 parent = G.GameCanvas;
             }
 
-            TryResolveVanillaCompassStyle();
+            TryResolveDredgeCompassStyle();
 
             var root = new GameObject("MinimapRoot", typeof(RectTransform));
             root.transform.SetParent(parent, false);
@@ -78,7 +78,7 @@ namespace InsanityWorldMod.Core
 
             if (_embedParent == null)
             {
-                // Render BEHIND all vanilla HUD elements in the same canvas (cargo panel, inventory grid, etc.).
+                // Render BEHIND all Dredge HUD elements in the same canvas (cargo panel, inventory grid, etc.).
                 // SetSiblingIndex(0) = first child = drawn first = covered by later siblings when they overlap.
                 root.transform.SetAsFirstSibling();
                 AnchorToCorner(rootRt, MINIMAP_CORNER, MINIMAP_MARGIN_PX);
@@ -103,10 +103,10 @@ namespace InsanityWorldMod.Core
             bgImage.color = new Color(0.05f, 0.05f, 0.05f, 0.7f);
             bgGo.GetComponent<Mask>().showMaskGraphic = true;
 
-            // Clone vanilla MapContents under Background so it's clipped by the Mask.
+            // Clone Dredge MapContents under Background so it's clipped by the Mask.
             // Position/rotation/scale are driven each Update() to keep player at center
             // and minimap heading-up relative to camera yaw.
-            TryCloneVanillaMap(bgGo.transform);
+            TryCloneDredgeMap(bgGo.transform);
 
             // Rotating dial - holds the four cardinal labels. Rotating this transform
             // moves all labels together; the background stays static.
@@ -160,7 +160,7 @@ namespace InsanityWorldMod.Core
             ShiftHudTabBelow(minimapBottomY - MINIMAP_TABS_BELOW_GAP_PX);
         }
 
-        private void TryCloneVanillaMap(Transform parent)
+        private void TryCloneDredgeMap(Transform parent)
         {
             _mapClone = CreateMapClone();
             if (_mapClone == null)
@@ -261,22 +261,22 @@ namespace InsanityWorldMod.Core
 
             var tmp = go.GetComponent<TextMeshProUGUI>();
             tmp.text = letter;
-            if (_vanillaFont != null) tmp.font = _vanillaFont;
-            tmp.fontSize = (_vanillaFontSize > 0f ? _vanillaFontSize : MINIMAP_LABEL_FONT_SIZE_FALLBACK) * Scale;
+            if (_dredgeFont != null) tmp.font = _dredgeFont;
+            tmp.fontSize = (_dredgeFontSize > 0f ? _dredgeFontSize : MINIMAP_LABEL_FONT_SIZE_FALLBACK) * Scale;
             tmp.fontStyle = FontStyles.Bold;
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.color = color;
         }
 
-        private static void TryResolveVanillaCompassStyle()
+        private static void TryResolveDredgeCompassStyle()
         {
-            if (_vanillaStyleResolved) return;
-            _vanillaStyleResolved = true;
+            if (_dredgeStyleResolved) return;
+            _dredgeStyleResolved = true;
 
-            _vanillaFont = GetVanillaCompassFont();
-            _vanillaFontSize = GetVanillaCompassFontSize();
+            _dredgeFont = GetDredgeCompassFont();
+            _dredgeFontSize = GetDredgeCompassFontSize();
 
-            Log.Debug($"MinimapWidget: matched vanilla font '{(_vanillaFont != null ? _vanillaFont.name : "?")}', size {_vanillaFontSize}");
+            Log.Debug($"MinimapWidget: matched Dredge font '{(_dredgeFont != null ? _dredgeFont.name : "?")}', size {_dredgeFontSize}");
         }
 
         private static Sprite _circleSpriteCache;

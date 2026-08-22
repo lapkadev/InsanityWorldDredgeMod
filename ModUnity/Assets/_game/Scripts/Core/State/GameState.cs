@@ -17,14 +17,14 @@ namespace InsanityWorldMod.Core
             SessionStartTime = Time.time;
         }
 
-        public void CaptureFromVanilla()
+        public void CaptureFromDredge()
         {
-            // Placeholder: pull vanilla-runtime state we care about into G.Save.
+            // Placeholder: pull Dredge-runtime state we care about into G.Save.
         }
 
-        public void ApplyToVanilla()
+        public void ApplyToDredge()
         {
-            // Placeholder: push G.Save state back into vanilla runtime.
+            // Placeholder: push G.Save state back into Dredge runtime.
         }
     }
 }

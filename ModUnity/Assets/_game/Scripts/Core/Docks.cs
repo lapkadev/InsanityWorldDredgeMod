@@ -14,7 +14,7 @@ namespace InsanityWorldMod.Core
         /// <summary>
         /// Teleports the ship to a specific dock + slot. Used by Restart actions.
         /// </summary>
-        /// <param name="dockId">Vanilla dock id (e.g. "dock.greater-marrow").</param>
+        /// <param name="dockId">Dredge dock id (e.g. "dock.greater-marrow").</param>
         /// <param name="slotIndex">Dock slot index. Out-of-range values are clamped to 0 with a warning.</param>
         public static void TeleportShipToDock(string dockId, int slotIndex = 0)
         {
@@ -26,7 +26,7 @@ namespace InsanityWorldMod.Core
 
         /// <summary>
         /// Teleports the ship to the LAST dock the player was parked at
-        /// (vanilla DREDGE tracks this in `SaveData.dockId` + `SaveData.dockSlotIndex`, updated on each `Player.Dock(...)` call).
+        /// (DREDGE tracks this in `SaveData.dockId` + `SaveData.dockSlotIndex`, updated on each `Player.Dock(...)` call).
         /// Falls back to DEFAULT_RESTART_DOCK slot 0 if no dock has been visited yet.
         /// </summary>
         public static void TeleportToLastDock()
