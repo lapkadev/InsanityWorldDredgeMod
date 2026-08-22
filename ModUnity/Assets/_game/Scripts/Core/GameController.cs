@@ -48,10 +48,17 @@ namespace InsanityWorldMod.Core
             ResetTransientState();
             InitKeyBindings();
 
-            // if (_debugUiHost != null)       Object.Destroy(_debugUiHost);
-            // if (_pauseButtonHost != null)   Object.Destroy(_pauseButtonHost);
-            if (_minimapWidgetHost != null) Object.Destroy(_minimapWidgetHost);
-            if (_compassWidgetHost != null) Object.Destroy(_compassWidgetHost);
+            // if (_debugUiHost != null)
+            //     Object.Destroy(_debugUiHost);
+
+            // if (_pauseButtonHost != null)
+            //     Object.Destroy(_pauseButtonHost);
+
+            if (_minimapWidgetHost != null)
+                Object.Destroy(_minimapWidgetHost);
+
+            if (_compassWidgetHost != null)
+                Object.Destroy(_compassWidgetHost);
 
             // _debugUiHost = new GameObject("InsanityDebugRestartUI");
             // _debugUiHost.AddComponent<DebugRestartUI>();

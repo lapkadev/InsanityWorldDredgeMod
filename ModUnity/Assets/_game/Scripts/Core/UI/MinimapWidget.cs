@@ -65,7 +65,12 @@ namespace InsanityWorldMod.Core
             Transform parent = _embedParent;
             if (parent == null)
             {
-                if (G.GameCanvas == null) { Log.Warn("MinimapWidget: game canvas not available"); return; }
+                if (G.GameCanvas == null)
+                {
+                    Log.Warn("MinimapWidget: game canvas not available");
+                    return;
+                }
+
                 parent = G.GameCanvas;
             }
 
@@ -153,7 +158,8 @@ namespace InsanityWorldMod.Core
         private void ShiftSlidePanelTabBelowMinimap()
         {
 #pragma warning disable CS0162
-            if (MINIMAP_CORNER != HudCorner.TopRight) return;
+            if (MINIMAP_CORNER != HudCorner.TopRight)
+                return;
 #pragma warning restore CS0162
 
             float minimapBottomY = Screen.height - MINIMAP_MARGIN_PX - MINIMAP_SIZE_PX;
@@ -182,7 +188,9 @@ namespace InsanityWorldMod.Core
         public void Update()
         {
             var cam = Camera.main;
-            if (cam == null) return;
+            if (cam == null)
+                return;
+
             var camYaw = cam.transform.eulerAngles.y;
 
             if (_rotatingDial != null)
@@ -201,7 +209,9 @@ namespace InsanityWorldMod.Core
         /// </summary>
         private void UpdateShipArrow(float camYaw)
         {
-            if (_shipArrow == null) return;
+            if (_shipArrow == null)
+                return;
+
             var player = GetPlayerTransform();
             if (player == null)
                 return;
@@ -215,7 +225,9 @@ namespace InsanityWorldMod.Core
         /// </summary>
         private void UpdateMapClone(float camYaw)
         {
-            if (_mapClone == null) return;
+            if (_mapClone == null)
+                return;
+
             var player = GetPlayerTransform();
             if (player == null)
                 return;
@@ -261,7 +273,9 @@ namespace InsanityWorldMod.Core
 
             var tmp = go.GetComponent<TextMeshProUGUI>();
             tmp.text = letter;
-            if (_dredgeFont != null) tmp.font = _dredgeFont;
+            if (_dredgeFont != null)
+                tmp.font = _dredgeFont;
+
             tmp.fontSize = (_dredgeFontSize > 0f ? _dredgeFontSize : MINIMAP_LABEL_FONT_SIZE_FALLBACK) * Scale;
             tmp.fontStyle = FontStyles.Bold;
             tmp.alignment = TextAlignmentOptions.Center;
@@ -270,7 +284,9 @@ namespace InsanityWorldMod.Core
 
         private static void TryResolveDredgeCompassStyle()
         {
-            if (_dredgeStyleResolved) return;
+            if (_dredgeStyleResolved)
+                return;
+
             _dredgeStyleResolved = true;
 
             _dredgeFont = GetDredgeCompassFont();
@@ -282,7 +298,8 @@ namespace InsanityWorldMod.Core
         private static Sprite _circleSpriteCache;
         private static Sprite GetCircleSprite()
         {
-            if (_circleSpriteCache != null) return _circleSpriteCache;
+            if (_circleSpriteCache != null)
+                return _circleSpriteCache;
 
             int n = MINIMAP_CIRCLE_SPRITE_SIZE_PX;
             var tex = new Texture2D(n, n, TextureFormat.RGBA32, mipChain: false);
@@ -314,7 +331,8 @@ namespace InsanityWorldMod.Core
         private static Sprite _arrowSpriteCache;
         private static Sprite GetArrowSprite()
         {
-            if (_arrowSpriteCache != null) return _arrowSpriteCache;
+            if (_arrowSpriteCache != null)
+                return _arrowSpriteCache;
 
             int n = 64;
             var tex = new Texture2D(n, n, TextureFormat.RGBA32, mipChain: false);

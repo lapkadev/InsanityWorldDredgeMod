@@ -42,6 +42,7 @@ namespace InsanityWorldMod.Core
 
             if (Channels[0] != PacketReliability.ReliableOrdered)
                 Log.Warn("EosTransport: Channel[0] is not ReliableOrdered, Mirror expects Channel 0 to be ReliableOrdered");
+
             if (Channels[1] != PacketReliability.UnreliableUnordered)
                 Log.Warn("EosTransport: Channel[1] is not UnreliableUnordered, Mirror expects Channel 1 to be UnreliableUnordered");
 

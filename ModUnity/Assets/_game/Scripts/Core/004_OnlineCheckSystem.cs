@@ -24,6 +24,7 @@ namespace InsanityWorldMod.Core
             {
                 if (_runtime != null)
                     return;
+
                 if (creds == null || !creds.IsComplete)
                 {
                     Log.Warn("G.Online.Init: credentials missing/incomplete - staying single-player");

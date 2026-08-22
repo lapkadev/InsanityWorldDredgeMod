@@ -200,8 +200,10 @@ namespace InsanityWorldMod.Core
         {
             if (NetworkServer.active)
                 NetworkServer.Shutdown();
+
             if (NetworkClient.active)
                 NetworkClient.Disconnect();
+
             DevLog.Info("OnlineSession: stopped");
         }
 

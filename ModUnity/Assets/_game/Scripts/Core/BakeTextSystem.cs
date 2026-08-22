@@ -61,10 +61,13 @@ namespace InsanityWorldMod.Core
 
         public static Texture2D[] BakeText(string[] texts)
         {
-            if (texts == null) return new Texture2D[0];
+            if (texts == null)
+                return new Texture2D[0];
+
             var result = new Texture2D[texts.Length];
             for (int i = 0; i < texts.Length; i++)
                 result[i] = BakeText(texts[i]);
+
             return result;
         }
 
@@ -76,13 +79,15 @@ namespace InsanityWorldMod.Core
             var dst = new Color32[src.Length];
             for (int y = 0; y < h; y++)
                 System.Array.Copy(src, y * w, dst, (h - 1 - y) * w, w);
+
             tex.SetPixels32(dst);
             tex.Apply();
         }
 
         private static void EnsureBaker()
         {
-            if (_bakeCam != null && _bakeTmp != null) return;
+            if (_bakeCam != null && _bakeTmp != null)
+                return;
 
             var obj = new GameObject("InsanityTextBaker") { hideFlags = HideFlags.HideAndDontSave };
             obj.layer = BAKE_TEXT_LAYER;

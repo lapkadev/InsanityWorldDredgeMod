@@ -17,12 +17,20 @@ namespace InsanityWorldMod.Core
     {
         public static void Save()
         {
-            if (G.Game == null || G.Save == null) { Log.Warn("Save: state not initialized"); return; }
+            if (G.Game == null || G.Save == null)
+            {
+                Log.Warn("Save: state not initialized");
+                return;
+            }
 
             G.Game.CaptureFromDredge();
 
             var slot = ResolveSlot("last");
-            if (slot < 0) { Log.Debug("Save: no active slot yet, skipping"); return; }
+            if (slot < 0)
+            {
+                Log.Debug("Save: no active slot yet, skipping");
+                return;
+            }
 
             try
             {
@@ -40,7 +48,11 @@ namespace InsanityWorldMod.Core
         public static void Load(string save = "last")
         {
             var slot = ResolveSlot(save);
-            if (slot < 0) { Log.Warn($"Load: cannot resolve slot from '{save}'"); return; }
+            if (slot < 0)
+            {
+                Log.Warn($"Load: cannot resolve slot from '{save}'");
+                return;
+            }
 
             JToken token = null;
             var path = GetSaveFilePath(slot);

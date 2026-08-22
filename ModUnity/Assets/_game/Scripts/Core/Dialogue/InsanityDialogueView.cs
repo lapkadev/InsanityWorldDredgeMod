@@ -160,7 +160,9 @@ namespace InsanityWorldMod.Core.Dialogue
 
         private bool ShouldRender(LocalizedLine line)
         {
-            if (USE_DREDGE_DIALOGUE_ALWAYS) return false;
+            if (USE_DREDGE_DIALOGUE_ALWAYS)
+                return false;
+
             var currentNode = GetCurrentDialogueNode();
             bool isOurNode = currentNode.StartsWith(PREFIX);
             bool hasDredgeTag = HasTag(line, TAG_DREDGE_UI);
@@ -190,9 +192,12 @@ namespace InsanityWorldMod.Core.Dialogue
 
         public override void RunOptions(DialogueOption[] dialogueOptions, Action<int> onOptionSelected)
         {
-            if (USE_DREDGE_DIALOGUE_ALWAYS) return;
+            if (USE_DREDGE_DIALOGUE_ALWAYS)
+                return;
+
             var currentNode = GetCurrentDialogueNode();
-            if (!currentNode.StartsWith(PREFIX)) return;
+            if (!currentNode.StartsWith(PREFIX))
+                return;
 
             ShowContainer();
             _continueButton.gameObject.SetActive(false);
@@ -217,13 +222,16 @@ namespace InsanityWorldMod.Core.Dialogue
         public override void DialogueStarted()
         {
             var currentNode = GetCurrentDialogueNode();
-            if (!currentNode.StartsWith(PREFIX)) return;
+            if (!currentNode.StartsWith(PREFIX))
+                return;
+
             ForceCursorVisible();
         }
 
         private void Update()
         {
-            if (_container != null && _container.activeSelf) ForceCursorVisible();
+            if (_container != null && _container.activeSelf)
+                ForceCursorVisible();
         }
 
         private static void ForceCursorVisible()

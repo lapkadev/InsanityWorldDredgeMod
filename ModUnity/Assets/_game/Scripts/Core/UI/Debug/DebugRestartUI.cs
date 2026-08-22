@@ -13,7 +13,11 @@ namespace InsanityWorldMod.Core
         public void Start()
         {
             var gameCanvas = GameObject.Find("GameCanvases/GameCanvas");
-            if (gameCanvas == null) { Log.Warn("DebugRestartUI: GameCanvas not found"); return; }
+            if (gameCanvas == null)
+            {
+                Log.Warn("DebugRestartUI: GameCanvas not found");
+                return;
+            }
 
             _buttonObject = new GameObject("InsanityDebugRestartButton");
             _buttonObject.transform.SetParent(gameCanvas.transform, false);
@@ -51,7 +55,8 @@ namespace InsanityWorldMod.Core
 
         public void OnDestroy()
         {
-            if (_buttonObject != null) Destroy(_buttonObject);
+            if (_buttonObject != null)
+                Destroy(_buttonObject);
         }
     }
 }

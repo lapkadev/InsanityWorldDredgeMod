@@ -42,6 +42,7 @@ namespace InsanityWorldMod.Core
 
             if (G.LastSession != null)
                 AddSubmenuButton("Continue", OnContinue);
+
             AddSubmenuButton("Load/New World (Offline)", OnLoadNewOffline);
             AddSubmenuButton("Load/New World (Online)", OnLoadNewOnline);
             AddSubmenuButton("Mod Settings", OnModSettings);
@@ -56,11 +57,13 @@ namespace InsanityWorldMod.Core
 
             foreach (var button in _submenuButtons)
                 Destroy(button);
+
             _submenuButtons.Clear();
 
             foreach (var button in _hiddenButtons)
                 if (button != null)
                     button.SetActive(true);
+
             _hiddenButtons.Clear();
         }
 
@@ -70,6 +73,7 @@ namespace InsanityWorldMod.Core
             {
                 if (!child.gameObject.activeSelf)
                     continue;
+
                 child.gameObject.SetActive(false);
                 _hiddenButtons.Add(child.gameObject);
             }
@@ -113,8 +117,10 @@ namespace InsanityWorldMod.Core
             var inputBg = _profileNameInput.GetComponent<Image>();
             if (inputBg != null)
                 inputBg.color = Color.black;
+
             if (_profileNameInput.textComponent != null)
                 _profileNameInput.textComponent.color = Color.white;
+
             _profileNameInput.caretColor = Color.white;
         }
 

@@ -108,6 +108,7 @@ namespace InsanityWorldMod.Core
             LoadConfig();
             if (G.Config.IsTransitionPhaseCompleted)
                 LoadLastGameSession();
+
             Log.Info($"ConfigSystem: IsTransitionPhaseCompleted={G.Config.IsTransitionPhaseCompleted}, IsDev={G.Config.IsDev}");
         }
     }

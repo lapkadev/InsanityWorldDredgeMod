@@ -37,7 +37,11 @@ namespace InsanityWorldMod.Core
             Log.Info($"Current locale: '{current?.Identifier.Code}' ({current?.LocaleName})");
 
             var availableLocales = LocalizationSettings.AvailableLocales?.Locales;
-            if (availableLocales == null) { Log.Warn("AvailableLocales is null at Awake (init not complete?)"); return; }
+            if (availableLocales == null)
+            {
+                Log.Warn("AvailableLocales is null at Awake (init not complete?)");
+                return;
+            }
 
             foreach (var loc in availableLocales)
                 Log.Info($"  - Available locale: '{loc?.Identifier.Code}' ({loc?.LocaleName})");
