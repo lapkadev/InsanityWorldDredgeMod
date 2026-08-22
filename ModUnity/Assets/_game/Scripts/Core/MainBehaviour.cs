@@ -5,6 +5,11 @@ using static InsanityWorldMod.Core.Funcs;
 
 namespace InsanityWorldMod.Core
 {
+    public static partial class Constants
+    {
+        public const float AUTO_SAVE_INTERVAL_SEC = 60f;
+    }
+
     // public static partial class Constants
     // {
     //     public const string  YARN_TEST_HELLO_NODE        = "lapkadev_test_hello";

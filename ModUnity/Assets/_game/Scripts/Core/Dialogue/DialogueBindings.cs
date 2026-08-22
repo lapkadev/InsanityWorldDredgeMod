@@ -7,7 +7,13 @@ namespace InsanityWorldMod.Core
 {
     public static partial class Constants
     {
-        public const string YARN_CMD_LOG = "lapkadev_log";
+        public const string YARN_CMD_LOG                = "lapkadev_log";
+        public const bool   USE_VANILLA_DIALOGUE_ALWAYS = true;
+    }
+
+    public static partial class G
+    {
+        public static InsanityDialogueView DialogueView;
     }
 
     public static partial class Funcs

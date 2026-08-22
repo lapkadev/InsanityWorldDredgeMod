@@ -2,6 +2,11 @@ using UnityEngine;
 
 namespace InsanityWorldMod.Core
 {
+    public static partial class G
+    {
+        public static GameState Game;
+    }
+
     public class GameState
     {
         public float SessionStartTime;

@@ -2,6 +2,11 @@ using System;
 
 namespace InsanityWorldMod.Core
 {
+    public static partial class G
+    {
+        public static SaveState Save;
+    }
+
     [Serializable]
     public class SaveState
     {
