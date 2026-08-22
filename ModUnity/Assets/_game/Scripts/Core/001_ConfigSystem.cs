@@ -28,8 +28,15 @@ namespace InsanityWorldMod.Core
             return dir;
         }
 
-        public static string GetConfigFilePath() => Path.Combine(GetModDataDir(), CONFIG_FILE_NAME);
-        public static string GetLastGameSessionFilePath() => Path.Combine(GetModDataDir(), LAST_SESSION_FILE_NAME);
+        public static string GetConfigFilePath()
+        {
+            return Path.Combine(GetModDataDir(), CONFIG_FILE_NAME);
+        }
+
+        public static string GetLastGameSessionFilePath()
+        {
+            return Path.Combine(GetModDataDir(), LAST_SESSION_FILE_NAME);
+        }
 
         public static void LoadConfig()
         {
