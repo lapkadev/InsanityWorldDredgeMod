@@ -2,12 +2,17 @@ using System;
 
 namespace InsanityWorldMod.Core
 {
+    public static partial class G
+    {
+        public static SaveState Save;
+    }
+
     [Serializable]
     public class SaveState
     {
-        public const int CurrentSchemaVersion = 1;
+        public const int CURRENT_VERSION = 2;
 
-        public int SchemaVersion = CurrentSchemaVersion;
+        public int Version = CURRENT_VERSION;
 
         public int TotalRuns;
         public int TotalDeathsIntercepted;

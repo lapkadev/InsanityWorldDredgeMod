@@ -15,8 +15,8 @@ namespace InsanityWorldMod.Core
 
     public static partial class G
     {
-        public static InsanityWorldConfig Config      { get; set; }
-        public static LastGameSession     LastSession { get; set; }
+        public static InsanityWorldConfig Config;
+        public static LastGameSession     LastSession;
     }
 
     public static partial class Funcs
@@ -28,8 +28,15 @@ namespace InsanityWorldMod.Core
             return dir;
         }
 
-        public static string GetConfigFilePath() => Path.Combine(GetModDataDir(), CONFIG_FILE_NAME);
-        public static string GetLastGameSessionFilePath() => Path.Combine(GetModDataDir(), LAST_SESSION_FILE_NAME);
+        public static string GetConfigFilePath()
+        {
+            return Path.Combine(GetModDataDir(), CONFIG_FILE_NAME);
+        }
+
+        public static string GetLastGameSessionFilePath()
+        {
+            return Path.Combine(GetModDataDir(), LAST_SESSION_FILE_NAME);
+        }
 
         public static void LoadConfig()
         {
@@ -101,6 +108,7 @@ namespace InsanityWorldMod.Core
             LoadConfig();
             if (G.Config.IsTransitionPhaseCompleted)
                 LoadLastGameSession();
+
             Log.Info($"ConfigSystem: IsTransitionPhaseCompleted={G.Config.IsTransitionPhaseCompleted}, IsDev={G.Config.IsDev}");
         }
     }

@@ -16,6 +16,7 @@ namespace InsanityWorldMod.Core
         public const float MINIMAP_LABEL_FONT_SIZE_FALLBACK = 22f;
         public const float MINIMAP_TABS_BELOW_GAP_PX        = 10f;                      // small gap between minimap bottom and shifted tabs
         public const int   MINIMAP_CIRCLE_SPRITE_SIZE_PX    = 256;                      // generated mask texture resolution
+        public const int   MINIMAP_ARROW_SPRITE_SIZE_PX     = 64;                       // generated ship-arrow texture resolution
         public const float MINIMAP_SHIP_ARROW_SIZE_PX       = 16f;                      // player triangle marker in minimap center
     }
 
@@ -50,9 +51,9 @@ namespace InsanityWorldMod.Core
         private Vector3 _lastPlayerPos;                     // previous frame's player position, for speed calc
         private bool _hasLastPlayerPos;                     // false until first valid sample captured
 
-        private static TMPro.TMP_FontAsset _vanillaFont;
-        private static float _vanillaFontSize;
-        private static bool _vanillaStyleResolved;
+        private static TMPro.TMP_FontAsset _dredgeFont;
+        private static float _dredgeFontSize;
+        private static bool _dredgeStyleResolved;
 
         public void EmbedInto(RectTransform parent)
         {
@@ -65,11 +66,16 @@ namespace InsanityWorldMod.Core
             Transform parent = _embedParent;
             if (parent == null)
             {
-                if (G.GameCanvas == null) { Log.Warn("MinimapWidget: game canvas not available"); return; }
+                if (G.GameCanvas == null)
+                {
+                    Log.Warn("MinimapWidget: game canvas not available");
+                    return;
+                }
+
                 parent = G.GameCanvas;
             }
 
-            TryResolveVanillaCompassStyle();
+            TryResolveDredgeCompassStyle();
 
             var root = new GameObject("MinimapRoot", typeof(RectTransform));
             root.transform.SetParent(parent, false);
@@ -78,7 +84,7 @@ namespace InsanityWorldMod.Core
 
             if (_embedParent == null)
             {
-                // Render BEHIND all vanilla HUD elements in the same canvas (cargo panel, inventory grid, etc.).
+                // Render BEHIND all Dredge HUD elements in the same canvas (cargo panel, inventory grid, etc.).
                 // SetSiblingIndex(0) = first child = drawn first = covered by later siblings when they overlap.
                 root.transform.SetAsFirstSibling();
                 AnchorToCorner(rootRt, MINIMAP_CORNER, MINIMAP_MARGIN_PX);
@@ -90,29 +96,29 @@ namespace InsanityWorldMod.Core
             }
 
             // Background circle
-            var bgGo = new GameObject("Background", typeof(RectTransform), typeof(Image), typeof(Mask));
-            bgGo.transform.SetParent(root.transform, false);
-            var bgRt = bgGo.GetComponent<RectTransform>();
+            var objBg = new GameObject("Background", typeof(RectTransform), typeof(Image), typeof(Mask));
+            objBg.transform.SetParent(root.transform, false);
+            var bgRt = objBg.GetComponent<RectTransform>();
             bgRt.anchorMin = bgRt.anchorMax = new Vector2(0.5f, 0.5f);
             bgRt.pivot = new Vector2(0.5f, 0.5f);
             bgRt.sizeDelta = new Vector2(_diameter, _diameter);
-            var bgImage = bgGo.GetComponent<Image>();
+            var bgImage = objBg.GetComponent<Image>();
 
             // Use a runtime-generated circular sprite for map mask (alpha=0 outside circle).
             bgImage.sprite = GetCircleSprite();
             bgImage.color = new Color(0.05f, 0.05f, 0.05f, 0.7f);
-            bgGo.GetComponent<Mask>().showMaskGraphic = true;
+            objBg.GetComponent<Mask>().showMaskGraphic = true;
 
-            // Clone vanilla MapContents under Background so it's clipped by the Mask.
+            // Clone Dredge MapContents under Background so it's clipped by the Mask.
             // Position/rotation/scale are driven each Update() to keep player at center
             // and minimap heading-up relative to camera yaw.
-            TryCloneVanillaMap(bgGo.transform);
+            TryCloneDredgeMap(objBg.transform);
 
             // Rotating dial - holds the four cardinal labels. Rotating this transform
             // moves all labels together; the background stays static.
-            var dialGo = new GameObject("Dial", typeof(RectTransform));
-            dialGo.transform.SetParent(root.transform, false);
-            _rotatingDial = dialGo.GetComponent<RectTransform>();
+            var objDial = new GameObject("Dial", typeof(RectTransform));
+            objDial.transform.SetParent(root.transform, false);
+            _rotatingDial = objDial.GetComponent<RectTransform>();
             _rotatingDial.anchorMin = _rotatingDial.anchorMax = new Vector2(0.5f, 0.5f);
             _rotatingDial.pivot = new Vector2(0.5f, 0.5f);
             _rotatingDial.sizeDelta = new Vector2(_diameter, _diameter);
@@ -125,15 +131,15 @@ namespace InsanityWorldMod.Core
             AddCardinal("W", new Vector2(-labelRadius, 0f), Color.white);
 
             // Ship direction arrow at the very center of the minimap. 
-            var arrowGo = new GameObject("ShipArrow", typeof(RectTransform), typeof(Image));
-            arrowGo.transform.SetParent(root.transform, false);
-            _shipArrow = arrowGo.GetComponent<RectTransform>();
+            var objArrow = new GameObject("ShipArrow", typeof(RectTransform), typeof(Image));
+            objArrow.transform.SetParent(root.transform, false);
+            _shipArrow = objArrow.GetComponent<RectTransform>();
             _shipArrow.anchorMin = _shipArrow.anchorMax = new Vector2(0.5f, 0.5f);
             _shipArrow.pivot = new Vector2(0.5f, 0.5f);
             float arrowSize = MINIMAP_SHIP_ARROW_SIZE_PX * Scale;
             _shipArrow.sizeDelta = new Vector2(arrowSize, arrowSize);
             _shipArrow.anchoredPosition = Vector2.zero;
-            var arrowImg = arrowGo.GetComponent<Image>();
+            var arrowImg = objArrow.GetComponent<Image>();
             arrowImg.sprite = GetArrowSprite();
             arrowImg.color = Color.white;
 
@@ -153,14 +159,15 @@ namespace InsanityWorldMod.Core
         private void ShiftSlidePanelTabBelowMinimap()
         {
 #pragma warning disable CS0162
-            if (MINIMAP_CORNER != HudCorner.TopRight) return;
+            if (MINIMAP_CORNER != HudCorner.TopRight)
+                return;
 #pragma warning restore CS0162
 
             float minimapBottomY = Screen.height - MINIMAP_MARGIN_PX - MINIMAP_SIZE_PX;
             ShiftHudTabBelow(minimapBottomY - MINIMAP_TABS_BELOW_GAP_PX);
         }
 
-        private void TryCloneVanillaMap(Transform parent)
+        private void TryCloneDredgeMap(Transform parent)
         {
             _mapClone = CreateMapClone();
             if (_mapClone == null)
@@ -182,7 +189,9 @@ namespace InsanityWorldMod.Core
         public void Update()
         {
             var cam = Camera.main;
-            if (cam == null) return;
+            if (cam == null)
+                return;
+
             var camYaw = cam.transform.eulerAngles.y;
 
             if (_rotatingDial != null)
@@ -201,7 +210,9 @@ namespace InsanityWorldMod.Core
         /// </summary>
         private void UpdateShipArrow(float camYaw)
         {
-            if (_shipArrow == null) return;
+            if (_shipArrow == null)
+                return;
+
             var player = GetPlayerTransform();
             if (player == null)
                 return;
@@ -215,7 +226,9 @@ namespace InsanityWorldMod.Core
         /// </summary>
         private void UpdateMapClone(float camYaw)
         {
-            if (_mapClone == null) return;
+            if (_mapClone == null)
+                return;
+
             var player = GetPlayerTransform();
             if (player == null)
                 return;
@@ -251,38 +264,43 @@ namespace InsanityWorldMod.Core
 
         private void AddCardinal(string letter, Vector2 anchoredPos, Color color)
         {
-            var go = new GameObject(letter, typeof(RectTransform), typeof(TextMeshProUGUI));
-            go.transform.SetParent(_rotatingDial, false);
-            var rt = go.GetComponent<RectTransform>();
+            var obj = new GameObject(letter, typeof(RectTransform), typeof(TextMeshProUGUI));
+            obj.transform.SetParent(_rotatingDial, false);
+            var rt = obj.GetComponent<RectTransform>();
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.pivot = new Vector2(0.5f, 0.5f);
             rt.sizeDelta = new Vector2(30f, 30f) * Scale;
             rt.anchoredPosition = anchoredPos;
 
-            var tmp = go.GetComponent<TextMeshProUGUI>();
+            var tmp = obj.GetComponent<TextMeshProUGUI>();
             tmp.text = letter;
-            if (_vanillaFont != null) tmp.font = _vanillaFont;
-            tmp.fontSize = (_vanillaFontSize > 0f ? _vanillaFontSize : MINIMAP_LABEL_FONT_SIZE_FALLBACK) * Scale;
+            if (_dredgeFont != null)
+                tmp.font = _dredgeFont;
+
+            tmp.fontSize = (_dredgeFontSize > 0f ? _dredgeFontSize : MINIMAP_LABEL_FONT_SIZE_FALLBACK) * Scale;
             tmp.fontStyle = FontStyles.Bold;
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.color = color;
         }
 
-        private static void TryResolveVanillaCompassStyle()
+        private static void TryResolveDredgeCompassStyle()
         {
-            if (_vanillaStyleResolved) return;
-            _vanillaStyleResolved = true;
+            if (_dredgeStyleResolved)
+                return;
 
-            _vanillaFont = GetVanillaCompassFont();
-            _vanillaFontSize = GetVanillaCompassFontSize();
+            _dredgeStyleResolved = true;
 
-            Log.Debug($"MinimapWidget: matched vanilla font '{(_vanillaFont != null ? _vanillaFont.name : "?")}', size {_vanillaFontSize}");
+            _dredgeFont = GetDredgeCompassFont();
+            _dredgeFontSize = GetDredgeCompassFontSize();
+
+            Log.Debug($"MinimapWidget: matched Dredge font '{(_dredgeFont != null ? _dredgeFont.name : "?")}', size {_dredgeFontSize}");
         }
 
         private static Sprite _circleSpriteCache;
         private static Sprite GetCircleSprite()
         {
-            if (_circleSpriteCache != null) return _circleSpriteCache;
+            if (_circleSpriteCache != null)
+                return _circleSpriteCache;
 
             int n = MINIMAP_CIRCLE_SPRITE_SIZE_PX;
             var tex = new Texture2D(n, n, TextureFormat.RGBA32, mipChain: false);
@@ -314,9 +332,10 @@ namespace InsanityWorldMod.Core
         private static Sprite _arrowSpriteCache;
         private static Sprite GetArrowSprite()
         {
-            if (_arrowSpriteCache != null) return _arrowSpriteCache;
+            if (_arrowSpriteCache != null)
+                return _arrowSpriteCache;
 
-            int n = 64;
+            int n = MINIMAP_ARROW_SPRITE_SIZE_PX;
             var tex = new Texture2D(n, n, TextureFormat.RGBA32, mipChain: false);
             tex.wrapMode = TextureWrapMode.Clamp;
             tex.filterMode = FilterMode.Bilinear;

@@ -29,21 +29,21 @@ title: lapkadev_val_run
 <<lapkadev_log "VAL-start">>
 <<if GetTemporalMarkerExists("lapkadev_val_done")>>
     <<lapkadev_log "VAL-already-branch">>
-    Mystic: You have already brought what I asked. #vanilla_ui
+    Mystic: You have already brought what I asked. #dredge_ui
 <<else>>
     <<lapkadev_log "VAL-status-branch">>
-    Mystic: Place 3 cod on the grid, then click Done. #vanilla_ui
+    Mystic: Place 3 cod on the grid, then click Done. #dredge_ui
     <<lapkadev_clear_expected>>
     <<lapkadev_set_expected "cod" 3>>
     <<ShowQuestGrid lapkadev_mystic_q1_grid>>
     <<if lapkadev_was_submitted() and lapkadev_get_last_grid_item_count("cod") >= 3>>
         <<lapkadev_log "VAL-success-branch">>
-        Mystic: Excellent. #vanilla_ui
+        Mystic: Excellent. #dredge_ui
         <<SetTemporalMarker lapkadev_val_done false>>
         <<jump lapkadev_val_reward>>
     <<else>>
         <<lapkadev_log "VAL-fail-branch">>
-        Mystic: You have not brought what I asked. #vanilla_ui
+        Mystic: You have not brought what I asked. #dredge_ui
     <<endif>>
 <<endif>>
 ===
@@ -51,7 +51,7 @@ title: lapkadev_val_run
 title: lapkadev_val_reward
 ---
 <<lapkadev_log "VAL-reward-node-reached">>
-Mystic: Here is a coin for your trouble. #vanilla_ui
+Mystic: Here is a coin for your trouble. #dredge_ui
 <<ChangeFunds 1>>
 ===
 
@@ -66,7 +66,7 @@ title: lapkadev_smoke_interpolation
 <<set $count = 3>>
 <<set $name = "cod">>
 <<lapkadev_log "T5a-cmd-arg-interp count={$count} name={$name}">>
-Mystic: Place {$count} {$name} on the grid. #vanilla_ui
+Mystic: Place {$count} {$name} on the grid. #dredge_ui
 <<lapkadev_log "T5b-after-line-PASS-if-Mystic-said-Place-3-cod">>
 ===
 

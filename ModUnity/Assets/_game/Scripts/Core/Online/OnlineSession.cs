@@ -11,6 +11,11 @@ namespace InsanityWorldMod.Core
     {
         public const string EOS_TEST_HOST_FILE = "eos_test_host.txt";
         public const int NET_MAX_CONNECTIONS = int.MaxValue;
+
+        public static readonly string[] NET_ASSEMBLY_PREFIXES =
+        {
+            "Mirror", "Telepathy", "kcp2k", "SimpleWebTransport", "InsanityWorldMod."
+        };
     }
 
     public struct PingMessage : NetworkMessage
@@ -27,11 +32,6 @@ namespace InsanityWorldMod.Core
     {
         private static EosTransport _transport;
         private static bool _loopInstalled;
-
-        private static readonly string[] NET_ASSEMBLY_PREFIXES =
-        {
-            "Mirror", "Telepathy", "kcp2k", "SimpleWebTransport", "InsanityWorldMod."
-        };
 
         public static void EnsureNetworkLoop()
         {
@@ -200,8 +200,10 @@ namespace InsanityWorldMod.Core
         {
             if (NetworkServer.active)
                 NetworkServer.Shutdown();
+
             if (NetworkClient.active)
                 NetworkClient.Disconnect();
+
             DevLog.Info("OnlineSession: stopped");
         }
 

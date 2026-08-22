@@ -271,6 +271,7 @@ namespace InsanityWorldMod.Core
 
                     for (int i = 0; i < emptyPacketLists.Count; i++)
                         keyValuePair.Value.Remove(emptyPacketLists[i]);
+
                     emptyPacketLists.Clear();
                 }
             }

@@ -3,9 +3,15 @@ using static InsanityWorldMod.Core.Funcs;
 
 namespace InsanityWorldMod.Core
 {
+    public static partial class Constants
+    {
+        public const string PREFIX = "lapkadev_";
+    }
+
     public static partial class G
     {
         public static RectTransform GameCanvas;
+        public static string        ModBasePath;
     }
 
     /// <summary>
@@ -39,13 +45,20 @@ namespace InsanityWorldMod.Core
         {
             // Reset transient operation flags that may have been left stuck if the player
             // exited to main menu mid-operation (e.g. _isTeleporting in Funcs).
-            Funcs.ResetTransientState();
+            ResetTransientState();
             InitKeyBindings();
 
-            // if (_debugUiHost != null)       Object.Destroy(_debugUiHost);
-            // if (_pauseButtonHost != null)   Object.Destroy(_pauseButtonHost);
-            if (_minimapWidgetHost != null) Object.Destroy(_minimapWidgetHost);
-            if (_compassWidgetHost != null) Object.Destroy(_compassWidgetHost);
+            // if (_debugUiHost != null)
+            //     Object.Destroy(_debugUiHost);
+
+            // if (_pauseButtonHost != null)
+            //     Object.Destroy(_pauseButtonHost);
+
+            if (_minimapWidgetHost != null)
+                Object.Destroy(_minimapWidgetHost);
+
+            if (_compassWidgetHost != null)
+                Object.Destroy(_compassWidgetHost);
 
             // _debugUiHost = new GameObject("InsanityDebugRestartUI");
             // _debugUiHost.AddComponent<DebugRestartUI>();

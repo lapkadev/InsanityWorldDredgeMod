@@ -14,7 +14,7 @@ namespace InsanityWorldMod.DredgeRuntime
             [HarmonyPrefix]
             public static bool Prefix(LocalizedLine dialogueLine, Action onDialogueLineFinished)
             {
-                if (ShouldVanillaRenderLine(dialogueLine.Metadata))
+                if (ShouldDredgeRenderLine(dialogueLine.Metadata))
                     return true;
 
                 onDialogueLineFinished();
@@ -28,7 +28,7 @@ namespace InsanityWorldMod.DredgeRuntime
             [HarmonyPrefix]
             public static bool Prefix(DialogueOption[] dialogueOptions, Action<int> onOptionSelected)
             {
-                return ShouldVanillaRenderOptions();
+                return ShouldDredgeRenderOptions();
             }
         }
     }

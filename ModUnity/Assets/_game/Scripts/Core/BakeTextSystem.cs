@@ -1,3 +1,4 @@
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -12,14 +13,13 @@ namespace InsanityWorldMod.Core
         public const int BAKE_TEXT_LAYER = 31;
     }
 
+    public static partial class G
+    {
+        public static TextBakerState TextBaker = new TextBakerState();
+    }
+
     public static partial class Funcs
     {
-        private static Camera _bakeCam;
-        private static TextMeshPro _bakeTmp;
-        private static Renderer _bakeRenderer;
-        private static float _emWorld;
-        private static float _worldWidth;
-
         public static Texture2D BakeText(string text)
         {
             if (G.InsanityFont == null)
@@ -29,22 +29,23 @@ namespace InsanityWorldMod.Core
             }
 
             EnsureBaker();
-            
+
+            var baker = G.TextBaker;
             string raw = text ?? string.Empty;
             int count = Mathf.Max(raw.Length, 1);
-            float cellEm = (_worldWidth / count) / _emWorld;
-            _bakeTmp.text = $"<mspace={cellEm.ToString(System.Globalization.CultureInfo.InvariantCulture)}em>{raw}";
-            _bakeTmp.ForceMeshUpdate();
+            float cellEm = (baker.WorldWidth / count) / baker.EmWorld;
+            baker.Text.text = $"<mspace={cellEm.ToString(CultureInfo.InvariantCulture)}em>{raw}";
+            baker.Text.ForceMeshUpdate();
 
             var rt = RenderTexture.GetTemporary(BAKE_TEXT_WIDTH, BAKE_TEXT_HEIGHT, 0, RenderTextureFormat.ARGB32);
             var prevActive = RenderTexture.active;
 
-            var gpuProj = GL.GetGPUProjectionMatrix(_bakeCam.projectionMatrix, true);
+            var gpuProj = GL.GetGPUProjectionMatrix(baker.Cam.projectionMatrix, true);
             var cmd = new CommandBuffer();
             cmd.SetRenderTarget(rt);
             cmd.ClearRenderTarget(true, true, new Color(0f, 0f, 0f, 0f));
-            cmd.SetViewProjectionMatrices(_bakeCam.worldToCameraMatrix, gpuProj);
-            cmd.DrawMesh(_bakeTmp.mesh, Matrix4x4.identity, _bakeTmp.fontSharedMaterial, 0, -1);
+            cmd.SetViewProjectionMatrices(baker.Cam.worldToCameraMatrix, gpuProj);
+            cmd.DrawMesh(baker.Text.mesh, Matrix4x4.identity, baker.Text.fontSharedMaterial, 0, -1);
             Graphics.ExecuteCommandBuffer(cmd);
             cmd.Release();
 
@@ -61,14 +62,17 @@ namespace InsanityWorldMod.Core
 
         public static Texture2D[] BakeText(string[] texts)
         {
-            if (texts == null) return new Texture2D[0];
+            if (texts == null)
+                return new Texture2D[0];
+
             var result = new Texture2D[texts.Length];
             for (int i = 0; i < texts.Length; i++)
                 result[i] = BakeText(texts[i]);
+
             return result;
         }
 
-        private static void FlipVertical(Texture2D tex)
+        public static void FlipVertical(Texture2D tex)
         {
             int w = tex.width;
             int h = tex.height;
@@ -76,56 +80,67 @@ namespace InsanityWorldMod.Core
             var dst = new Color32[src.Length];
             for (int y = 0; y < h; y++)
                 System.Array.Copy(src, y * w, dst, (h - 1 - y) * w, w);
+
             tex.SetPixels32(dst);
             tex.Apply();
         }
 
-        private static void EnsureBaker()
+        public static void EnsureBaker()
         {
-            if (_bakeCam != null && _bakeTmp != null) return;
+            var baker = G.TextBaker;
+            if (baker.Cam != null && baker.Text != null)
+                return;
 
             var obj = new GameObject("InsanityTextBaker") { hideFlags = HideFlags.HideAndDontSave };
             obj.layer = BAKE_TEXT_LAYER;
             Object.DontDestroyOnLoad(obj);
 
-            _bakeTmp = obj.AddComponent<TextMeshPro>();
-            _bakeTmp.font = G.InsanityFont;
-            _bakeTmp.color = Color.white;
-            _bakeTmp.richText = true;
-            _bakeTmp.enableWordWrapping = false;
-            _bakeTmp.fontSize = 10f;
-            _bakeTmp.alignment = TextAlignmentOptions.Center;
+            baker.Text = obj.AddComponent<TextMeshPro>();
+            baker.Text.font = G.InsanityFont;
+            baker.Text.color = Color.white;
+            baker.Text.richText = true;
+            baker.Text.enableWordWrapping = false;
+            baker.Text.fontSize = 10f;
+            baker.Text.alignment = TextAlignmentOptions.Center;
 
-            _bakeRenderer = obj.GetComponent<MeshRenderer>();
-            _bakeRenderer.enabled = false;
+            var renderer = obj.GetComponent<MeshRenderer>();
+            renderer.enabled = false;
 
             var cam = new GameObject("InsanityTextBakerCam") { hideFlags = HideFlags.HideAndDontSave };
             cam.transform.SetParent(obj.transform, false);
             cam.transform.localPosition = new Vector3(0f, 0f, -10f);
 
-            _bakeCam = cam.AddComponent<Camera>();
-            _bakeCam.enabled = false;
-            _bakeCam.orthographic = true;
-            _bakeCam.cullingMask = 1 << BAKE_TEXT_LAYER;
-            _bakeCam.clearFlags = CameraClearFlags.SolidColor;
-            _bakeCam.backgroundColor = new Color(0f, 0f, 0f, 0f);
-            _bakeCam.nearClipPlane = 0.1f;
-            _bakeCam.farClipPlane = 100f;
+            baker.Cam = cam.AddComponent<Camera>();
+            baker.Cam.enabled = false;
+            baker.Cam.orthographic = true;
+            baker.Cam.cullingMask = 1 << BAKE_TEXT_LAYER;
+            baker.Cam.clearFlags = CameraClearFlags.SolidColor;
+            baker.Cam.backgroundColor = new Color(0f, 0f, 0f, 0f);
+            baker.Cam.nearClipPlane = 0.1f;
+            baker.Cam.farClipPlane = 100f;
 
-            _bakeTmp.text = "<mspace=100em>AA";
-            _bakeTmp.ForceMeshUpdate();
-            var ci = _bakeTmp.textInfo.characterInfo;
-            _emWorld = ci.Length >= 2 ? (ci[1].origin - ci[0].origin) / 100f : _bakeTmp.fontSize;
+            baker.Text.text = "<mspace=100em>AA";
+            baker.Text.ForceMeshUpdate();
+            var ci = baker.Text.textInfo.characterInfo;
+            baker.EmWorld = ci.Length >= 2 ? (ci[1].origin - ci[0].origin) / 100f : baker.Text.fontSize;
 
-            _bakeTmp.text = "M";
-            _bakeTmp.ForceMeshUpdate();
-            float lineHeight = _bakeTmp.textBounds.size.y;
+            baker.Text.text = "M";
+            baker.Text.ForceMeshUpdate();
+            float lineHeight = baker.Text.textBounds.size.y;
 
             float aspect = (float)BAKE_TEXT_WIDTH / BAKE_TEXT_HEIGHT;
-            _bakeCam.aspect = aspect;
-            _bakeCam.orthographicSize = lineHeight * 0.5f * 1.1f;
-            _worldWidth = _bakeCam.orthographicSize * 2f * aspect;
-            _bakeTmp.rectTransform.sizeDelta = new Vector2(_worldWidth, lineHeight * 2f);
+            baker.Cam.aspect = aspect;
+            baker.Cam.orthographicSize = lineHeight * 0.5f * 1.1f;
+            baker.WorldWidth = baker.Cam.orthographicSize * 2f * aspect;
+            baker.Text.rectTransform.sizeDelta = new Vector2(baker.WorldWidth, lineHeight * 2f);
         }
+    }
+
+    public class TextBakerState
+    {
+        public Camera Cam;
+        public TextMeshPro Text;
+        public float EmWorld;
+        public float WorldWidth;
     }
 }

@@ -4,6 +4,9 @@ namespace InsanityWorldMod.Core
 {
     public static partial class Constants
     {
+        public const int    INSANITY_CELL_MAX_CHARGE       = 100;
+        public const int    INSANITY_CHARGE_PER_ABERRATION = 10;
+
         public const string YARN_FN_GET_CHARGE                 = "lapkadev_get_charge";
         public const string YARN_FN_GET_MAX_CHARGE             = "lapkadev_get_max_charge";
         public const string YARN_FN_IS_CELL_FULL               = "lapkadev_is_cell_full";

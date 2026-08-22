@@ -22,7 +22,6 @@ public static partial class Funcs
         if (unityRc != 0) return unityRc;
 
         var binDir = Path.Combine(G.repoRoot, G.cfg.BuildDir, "bin", BuildConfiguration.Release.ToString());
-
         if (!Directory.Exists(binDir))
         {
             LogError($"{G.cfg.BuildDir}/bin/Release folder not found: {binDir}");

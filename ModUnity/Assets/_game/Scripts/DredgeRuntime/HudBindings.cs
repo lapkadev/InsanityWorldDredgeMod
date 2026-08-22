@@ -30,8 +30,8 @@ namespace InsanityWorldMod.DredgeRuntime
         public static void AddHooksHud()
         {
             DredgeHooks.GetPlayerTransform = () => G.DredgePlayer?.transform;
-            DredgeHooks.GetVanillaCompassFont = () => FindDredgeCompassText()?.font;
-            DredgeHooks.GetVanillaCompassFontSize = () => FindDredgeCompassText() is TextMeshProUGUI ugui ? ugui.fontSize : 0f;
+            DredgeHooks.GetDredgeCompassFont = () => FindDredgeCompassText()?.font;
+            DredgeHooks.GetDredgeCompassFontSize = () => FindDredgeCompassText() is TextMeshProUGUI ugui ? ugui.fontSize : 0f;
             DredgeHooks.GetMapPixelsPerWorldUnit = () => ReadDredgeMapRectWidth() / MAP_WORLD_SIZE;
 
             DredgeHooks.CreateMapClone = () =>

@@ -2,6 +2,7 @@ using System.IO;
 using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
+using static InsanityWorldMod.Editor.Constants;
 
 namespace InsanityWorldMod.Editor
 {
@@ -90,19 +91,19 @@ namespace InsanityWorldMod.Editor
             Debug.Log($"[InsanityWorld] BuildAll: built {bundleCount} bundle(s) into {bundlesDir}");
 
             // --- Compiled DLLs (Api, Core) ---
-            var apiSrc  = $"Library/ScriptAssemblies/{Constants.API_ASSEMBLY_NAME}.dll";
-            var coreSrc = $"Library/ScriptAssemblies/{Constants.CORE_ASSEMBLY_NAME}.dll";
+            var apiSrc  = $"Library/ScriptAssemblies/{API_ASSEMBLY_NAME}.dll";
+            var coreSrc = $"Library/ScriptAssemblies/{CORE_ASSEMBLY_NAME}.dll";
             if (!File.Exists(apiSrc) || !File.Exists(coreSrc))
             {
                 Debug.LogError($"[InsanityWorld] BuildAll: source DLLs not found:\n  {apiSrc}\n  {coreSrc}\nFix compile errors first.");
                 return false;
             }
-            File.Copy(apiSrc,  Path.Combine(outputDir, $"{Constants.API_ASSEMBLY_NAME}.dll"),  overwrite: true);
-            File.Copy(coreSrc, Path.Combine(outputDir, $"{Constants.CORE_ASSEMBLY_NAME}.dll"), overwrite: true);
-            Debug.Log($"[InsanityWorld] BuildAll: copied {Constants.API_ASSEMBLY_NAME}.dll + {Constants.CORE_ASSEMBLY_NAME}.dll into {outputDir}");
+            File.Copy(apiSrc,  Path.Combine(outputDir, $"{API_ASSEMBLY_NAME}.dll"),  overwrite: true);
+            File.Copy(coreSrc, Path.Combine(outputDir, $"{CORE_ASSEMBLY_NAME}.dll"), overwrite: true);
+            Debug.Log($"[InsanityWorld] BuildAll: copied {API_ASSEMBLY_NAME}.dll + {CORE_ASSEMBLY_NAME}.dll into {outputDir}");
 
             // --- Mirror runtime DLLs ---
-            foreach (var asm in Constants.MIRROR_RUNTIME_ASSEMBLIES)
+            foreach (var asm in MIRROR_RUNTIME_ASSEMBLIES)
             {
                 var mirrorSrc = $"Library/ScriptAssemblies/{asm}.dll";
                 if (!File.Exists(mirrorSrc))
@@ -112,14 +113,14 @@ namespace InsanityWorldMod.Editor
                 }
                 File.Copy(mirrorSrc, Path.Combine(outputDir, $"{asm}.dll"), overwrite: true);
             }
-            Debug.Log($"[InsanityWorld] BuildAll: copied {Constants.MIRROR_RUNTIME_ASSEMBLIES.Length} Mirror runtime DLL(s) into {outputDir}");
+            Debug.Log($"[InsanityWorld] BuildAll: copied {MIRROR_RUNTIME_ASSEMBLIES.Length} Mirror runtime DLL(s) into {outputDir}");
 
             if (args.BuildConfiguration == "Debug")
             {
-                var apiPdb  = $"Library/ScriptAssemblies/{Constants.API_ASSEMBLY_NAME}.pdb";
-                var corePdb = $"Library/ScriptAssemblies/{Constants.CORE_ASSEMBLY_NAME}.pdb";
-                if (File.Exists(apiPdb))  File.Copy(apiPdb,  Path.Combine(outputDir, $"{Constants.API_ASSEMBLY_NAME}.pdb"),  overwrite: true);
-                if (File.Exists(corePdb)) File.Copy(corePdb, Path.Combine(outputDir, $"{Constants.CORE_ASSEMBLY_NAME}.pdb"), overwrite: true);
+                var apiPdb  = $"Library/ScriptAssemblies/{API_ASSEMBLY_NAME}.pdb";
+                var corePdb = $"Library/ScriptAssemblies/{CORE_ASSEMBLY_NAME}.pdb";
+                if (File.Exists(apiPdb))  File.Copy(apiPdb,  Path.Combine(outputDir, $"{API_ASSEMBLY_NAME}.pdb"),  overwrite: true);
+                if (File.Exists(corePdb)) File.Copy(corePdb, Path.Combine(outputDir, $"{CORE_ASSEMBLY_NAME}.pdb"), overwrite: true);
                 Debug.Log($"[InsanityWorld] BuildAll: copied .pdb files for Debug into {outputDir}");
             }
 

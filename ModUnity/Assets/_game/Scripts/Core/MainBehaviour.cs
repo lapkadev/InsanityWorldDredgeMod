@@ -5,21 +5,10 @@ using static InsanityWorldMod.Core.Funcs;
 
 namespace InsanityWorldMod.Core
 {
-    // public static partial class Constants
-    // {
-    //     public const string  YARN_TEST_HELLO_NODE        = "lapkadev_test_hello";
-    //     public const KeyCode TEST_DIALOGUE_KEY           = KeyCode.F10;
-    //
-    //     public const KeyCode SMOKE_KEY_VAL_RUN           = KeyCode.F2;
-    //     public const KeyCode SMOKE_KEY_INTERPOLATION     = KeyCode.F6;
-    //     public const KeyCode SMOKE_KEY_NESTED_IF         = KeyCode.F9;
-    //     public const KeyCode SMOKE_KEY_JUMP_ONE_WAY      = KeyCode.F8;
-    //
-    //     public const string YARN_SMOKE_VAL_RUN           = "lapkadev_val_run";
-    //     public const string YARN_SMOKE_INTERPOLATION     = "lapkadev_smoke_interpolation";
-    //     public const string YARN_SMOKE_NESTED_IF         = "lapkadev_smoke_nested_if";
-    //     public const string YARN_SMOKE_JUMP_ONE_WAY      = "lapkadev_smoke_jump_one_way";
-    // }
+    public static partial class Constants
+    {
+        public const float AUTO_SAVE_INTERVAL_SEC = 60f;
+    }
 
     /// <summary>
     /// MonoBehaviour host for periodic Core ticks (auto-save loop, Run.Tick).
@@ -48,7 +37,11 @@ namespace InsanityWorldMod.Core
             Log.Info($"Current locale: '{current?.Identifier.Code}' ({current?.LocaleName})");
 
             var availableLocales = LocalizationSettings.AvailableLocales?.Locales;
-            if (availableLocales == null) { Log.Warn("AvailableLocales is null at Awake (init not complete?)"); return; }
+            if (availableLocales == null)
+            {
+                Log.Warn("AvailableLocales is null at Awake (init not complete?)");
+                return;
+            }
 
             foreach (var loc in availableLocales)
                 Log.Info($"  - Available locale: '{loc?.Identifier.Code}' ({loc?.LocaleName})");
@@ -63,27 +56,6 @@ namespace InsanityWorldMod.Core
             }
 
             G.Run?.Tick(Time.deltaTime);
-
-            // Dev hotkeys for Yarn nodes. Kept for future use - they need a vanilla
-            // DialogueRunner, so re-enabling them means adding a hook first.
-            //
-            // if (Input.GetKeyDown(TEST_DIALOGUE_KEY))
-            // {
-            //     Log.Info($"{TEST_DIALOGUE_KEY} pressed - starting test dialogue '{YARN_TEST_HELLO_NODE}'");
-            //     G.GameVanilla?.DialogueRunner?.StartDialogue(YARN_TEST_HELLO_NODE);
-            // }
-            //
-            // CheckSmokeTestKey(SMOKE_KEY_VAL_RUN,         YARN_SMOKE_VAL_RUN);
-            // CheckSmokeTestKey(SMOKE_KEY_INTERPOLATION,   YARN_SMOKE_INTERPOLATION);
-            // CheckSmokeTestKey(SMOKE_KEY_NESTED_IF,       YARN_SMOKE_NESTED_IF);
-            // CheckSmokeTestKey(SMOKE_KEY_JUMP_ONE_WAY,    YARN_SMOKE_JUMP_ONE_WAY);
         }
-
-        // private static void CheckSmokeTestKey(KeyCode key, string node)
-        // {
-        //     if (!Input.GetKeyDown(key)) return;
-        //     Log.Info($"[SMOKE] {key} pressed - starting node '{node}'");
-        //     G.GameVanilla?.DialogueRunner?.StartDialogue(node);
-        // }
     }
 }

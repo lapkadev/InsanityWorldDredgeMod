@@ -36,6 +36,7 @@ namespace InsanityWorldMod.Core
 
             if (!LoadNativeLibrary())
                 return;
+
             if (!InitializePlatform())
                 return;
 

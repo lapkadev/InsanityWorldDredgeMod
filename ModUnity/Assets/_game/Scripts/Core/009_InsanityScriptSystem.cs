@@ -15,7 +15,7 @@ namespace InsanityWorldMod.Core
 
     public static partial class G
     {
-        public static TMP_FontAsset InsanityFont { get; set; }
+        public static TMP_FontAsset InsanityFont;
     }
 
     public static partial class Funcs
@@ -27,10 +27,12 @@ namespace InsanityWorldMod.Core
 
         public static string Vig(string text, string key)
         {
-            if (string.IsNullOrEmpty(text)) return string.Empty;
+            if (string.IsNullOrEmpty(text))
+                return string.Empty;
 
             string k = VigSanitizeKey(key);
-            if (k.Length == 0) return text.ToUpperInvariant();
+            if (k.Length == 0)
+                return text.ToUpperInvariant();
 
             int n = SCRIPT_ALPHABET.Length;
             var sb = new StringBuilder(text.Length);
@@ -53,13 +55,17 @@ namespace InsanityWorldMod.Core
             return sb.ToString();
         }
 
-        private static string VigSanitizeKey(string key)
+        public static string VigSanitizeKey(string key)
         {
-            if (string.IsNullOrEmpty(key)) return string.Empty;
+            if (string.IsNullOrEmpty(key))
+                return string.Empty;
+
             string up = key.ToUpperInvariant();
             var sb = new StringBuilder(up.Length);
             for (int i = 0; i < up.Length; i++)
-                if (SCRIPT_ALPHABET.IndexOf(up[i]) >= 0) sb.Append(up[i]);
+                if (SCRIPT_ALPHABET.IndexOf(up[i]) >= 0)
+                    sb.Append(up[i]);
+
             return sb.ToString();
         }
     }

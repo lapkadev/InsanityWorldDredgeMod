@@ -13,6 +13,17 @@ namespace InsanityWorldMod.Core
     {
         public const string SETTINGS_TAB_PROFILE  = "Profile";
         public const string SETTINGS_WINDOW_NAME  = "InsanityWorldSettings";
+        public const string SETTINGS_PANEL_NAME   = "InsanityModSettings";
+
+        public const string MENU_TEXT_INSANITY_WORLD = "Insanity World";
+        public const string MENU_TEXT_CONTINUE       = "Continue";
+        public const string MENU_TEXT_LOAD_OFFLINE   = "Load/New World (Offline)";
+        public const string MENU_TEXT_LOAD_ONLINE    = "Load/New World (Online)";
+        public const string MENU_TEXT_MOD_SETTINGS   = "Mod Settings";
+        public const string MENU_TEXT_PLAYER_NAME    = "Player Name";
+        public const string MENU_TEXT_BACK           = "Back";
+        public const string MENU_TEXT_SAVE           = "Save";
+        public const string MENU_TEXT_CANCEL         = "Cancel";
     }
 
     [AddToMainMenuScene]
@@ -33,7 +44,7 @@ namespace InsanityWorldMod.Core
             if (G.Config == null || !G.Config.IsTransitionPhaseCompleted)
                 return;
 
-            AddMainMenuButton("Insanity World", OpenSubmenu, 0);
+            AddMainMenuButton(MENU_TEXT_INSANITY_WORLD, OpenSubmenu, 0);
         }
 
         private void OpenSubmenu()
@@ -41,12 +52,13 @@ namespace InsanityWorldMod.Core
             HideExistingButtons();
 
             if (G.LastSession != null)
-                AddSubmenuButton("Continue", OnContinue);
-            AddSubmenuButton("Load/New World (Offline)", OnLoadNewOffline);
-            AddSubmenuButton("Load/New World (Online)", OnLoadNewOnline);
-            AddSubmenuButton("Mod Settings", OnModSettings);
-            AddSubmenuButton("Player Name", OnPlayerNameOld);
-            AddSubmenuButton("Back", CloseSubmenu);
+                AddSubmenuButton(MENU_TEXT_CONTINUE, OnContinue);
+
+            AddSubmenuButton(MENU_TEXT_LOAD_OFFLINE, OnLoadNewOffline);
+            AddSubmenuButton(MENU_TEXT_LOAD_ONLINE, OnLoadNewOnline);
+            AddSubmenuButton(MENU_TEXT_MOD_SETTINGS, OnModSettings);
+            AddSubmenuButton(MENU_TEXT_PLAYER_NAME, OnPlayerNameOld);
+            AddSubmenuButton(MENU_TEXT_BACK, CloseSubmenu);
             RegisterSubmenuBack();
         }
 
@@ -56,11 +68,13 @@ namespace InsanityWorldMod.Core
 
             foreach (var button in _submenuButtons)
                 Destroy(button);
+
             _submenuButtons.Clear();
 
             foreach (var button in _hiddenButtons)
                 if (button != null)
                     button.SetActive(true);
+
             _hiddenButtons.Clear();
         }
 
@@ -70,6 +84,7 @@ namespace InsanityWorldMod.Core
             {
                 if (!child.gameObject.activeSelf)
                     continue;
+
                 child.gameObject.SetActive(false);
                 _hiddenButtons.Add(child.gameObject);
             }
@@ -107,14 +122,16 @@ namespace InsanityWorldMod.Core
                 return;
 
             var controlList = tabs[0];
-            AddLabel(controlList, "Player Name", 26f);
+            AddLabel(controlList, MENU_TEXT_PLAYER_NAME, 26f);
             _profileNameInput = AddInputField(controlList, G.Config.PlayerName);
 
             var inputBg = _profileNameInput.GetComponent<Image>();
             if (inputBg != null)
                 inputBg.color = Color.black;
+
             if (_profileNameInput.textComponent != null)
                 _profileNameInput.textComponent.color = Color.white;
+
             _profileNameInput.caretColor = Color.white;
         }
 
@@ -172,17 +189,17 @@ namespace InsanityWorldMod.Core
 
         private void OpenSettings()
         {
-            _settingsPanel = AddPanel("InsanityModSettings", new Vector2(560f, 420f), Vector2.zero);
-            AddLabel(_settingsPanel.transform, "Mod Settings", 40f);
-            AddLabel(_settingsPanel.transform, "Player Name", 26f);
+            _settingsPanel = AddPanel(SETTINGS_PANEL_NAME, new Vector2(560f, 420f), Vector2.zero);
+            AddLabel(_settingsPanel.transform, MENU_TEXT_MOD_SETTINGS, 40f);
+            AddLabel(_settingsPanel.transform, MENU_TEXT_PLAYER_NAME, 26f);
 
             _playerNameInput = AddInputField(_settingsPanel.transform, G.Config.PlayerName);
             var inputLayout = _playerNameInput.gameObject.AddComponent<LayoutElement>();
             inputLayout.preferredHeight = 50f;
             inputLayout.preferredWidth = 460f;
 
-            AddButton(_settingsPanel.transform, "Save", SaveSettings);
-            AddButton(_settingsPanel.transform, "Cancel", CancelSettings);
+            AddButton(_settingsPanel.transform, MENU_TEXT_SAVE, SaveSettings);
+            AddButton(_settingsPanel.transform, MENU_TEXT_CANCEL, CancelSettings);
         }
 
         private void SaveSettings()

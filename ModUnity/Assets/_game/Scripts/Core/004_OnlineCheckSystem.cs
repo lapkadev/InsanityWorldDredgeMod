@@ -13,10 +13,10 @@ namespace InsanityWorldMod.Core
         /// </summary>
         public static class Online
         {
-            public static EosCredentials Credentials { get; set; }
-            public static bool           IsInited    { get; set; }
-            public static ProductUserId  LocalUserId { get; set; }
-            public static P2PInterface   P2P         { get; set; }
+            public static EosCredentials Credentials;
+            public static bool           IsInited;
+            public static ProductUserId  LocalUserId;
+            public static P2PInterface   P2P;
 
             private static EosRuntime _runtime;
 
@@ -24,6 +24,7 @@ namespace InsanityWorldMod.Core
             {
                 if (_runtime != null)
                     return;
+
                 if (creds == null || !creds.IsComplete)
                 {
                     Log.Warn("G.Online.Init: credentials missing/incomplete - staying single-player");
@@ -46,12 +47,11 @@ namespace InsanityWorldMod.Core
         {
             if (!G.Config.IsTransitionPhaseCompleted)
             {
-                Log.Info("OnlineCheckSystem: vanilla phase - online not started");
+                Log.Info("OnlineCheckSystem: Dredge phase - online not started");
                 return;
             }
 
             var creds = G.Online.Credentials;
-
             if (creds == null || !creds.IsComplete)
             {
                 Log.Info("OnlineCheckSystem: online disabled");

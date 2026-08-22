@@ -7,9 +7,9 @@ namespace InsanityWorldMod.Core
     [Serializable]
     public class InsanityWorldConfig
     {
-        public const int CurrentVersion = 1;
+        public const int CURRENT_VERSION = 1;
 
-        public int Version = CurrentVersion;
+        public int Version = CURRENT_VERSION;
 
         public bool IsTransitionPhaseCompleted;
 
@@ -28,9 +28,9 @@ namespace InsanityWorldMod.Core
     [Serializable]
     public class LastGameSession
     {
-        public const int CurrentVersion = 1;
+        public const int CURRENT_VERSION = 1;
 
-        public int Version = CurrentVersion;
+        public int Version = CURRENT_VERSION;
 
         public string WorldId;
 

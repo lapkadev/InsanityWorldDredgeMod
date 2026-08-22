@@ -13,7 +13,11 @@ namespace InsanityWorldMod.Core
         public void Start()
         {
             var gameCanvas = GameObject.Find("GameCanvases/GameCanvas");
-            if (gameCanvas == null) { Log.Warn("DebugRestartUI: GameCanvas not found"); return; }
+            if (gameCanvas == null)
+            {
+                Log.Warn("DebugRestartUI: GameCanvas not found");
+                return;
+            }
 
             _buttonObject = new GameObject("InsanityDebugRestartButton");
             _buttonObject.transform.SetParent(gameCanvas.transform, false);
@@ -32,15 +36,15 @@ namespace InsanityWorldMod.Core
             var button = _buttonObject.AddComponent<Button>();
             button.onClick.AddListener(() => TeleportToLastDock());
 
-            var labelGO = new GameObject("Label");
-            labelGO.transform.SetParent(_buttonObject.transform, false);
-            var labelRT = labelGO.AddComponent<RectTransform>();
+            var objLabel = new GameObject("Label");
+            objLabel.transform.SetParent(_buttonObject.transform, false);
+            var labelRT = objLabel.AddComponent<RectTransform>();
             labelRT.anchorMin = Vector2.zero;
             labelRT.anchorMax = Vector2.one;
             labelRT.offsetMin = Vector2.zero;
             labelRT.offsetMax = Vector2.zero;
 
-            var label = labelGO.AddComponent<TextMeshProUGUI>();
+            var label = objLabel.AddComponent<TextMeshProUGUI>();
             label.text = "RESTART";
             label.fontSize = 18;
             label.alignment = TextAlignmentOptions.Center;
@@ -51,7 +55,8 @@ namespace InsanityWorldMod.Core
 
         public void OnDestroy()
         {
-            if (_buttonObject != null) Destroy(_buttonObject);
+            if (_buttonObject != null)
+                Destroy(_buttonObject);
         }
     }
 }

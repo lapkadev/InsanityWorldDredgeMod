@@ -100,7 +100,6 @@ public static partial class Funcs
     {
         string yarnDir = Path.Combine(G.repoRoot, BOOTSTRAP_YARN_REL_DIR.Replace('/', Path.DirectorySeparatorChar));
         string sentinelAsmdef = Path.Combine(yarnDir, "Runtime", "YarnSpinner.Unity.asmdef");
-
         if (File.Exists(sentinelAsmdef))
         {
             LogInfo($"Bootstrap: Yarn package already in {yarnDir} - skipping.");
@@ -168,7 +167,6 @@ public static partial class Funcs
     public static int BootstrapMirror()
     {
         string mirrorDir = Path.Combine(G.repoRoot, BOOTSTRAP_MIRROR_REL_DIR.Replace('/', Path.DirectorySeparatorChar));
-
         if (Directory.Exists(mirrorDir) && Directory.EnumerateFileSystemEntries(mirrorDir).Any())
         {
             LogInfo($"Bootstrap: Mirror package already in {mirrorDir} - skipping.");
