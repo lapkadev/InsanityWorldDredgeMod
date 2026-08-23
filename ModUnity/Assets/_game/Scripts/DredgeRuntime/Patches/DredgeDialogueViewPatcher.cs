@@ -3,6 +3,7 @@ using HarmonyLib;
 using InsanityWorldMod.Core;
 using Yarn.Unity;
 using static InsanityWorldMod.Core.Funcs;
+using static InsanityWorldMod.DredgeRuntime.Constants;
 
 namespace InsanityWorldMod.DredgeRuntime
 {
@@ -20,6 +21,15 @@ namespace InsanityWorldMod.DredgeRuntime
                 onDialogueLineFinished();
                 return false;
             }
+
+            [HarmonyPostfix]
+            public static void Postfix(DredgeDialogueView __instance, LocalizedLine dialogueLine)
+            {
+                if (!ShouldDredgeRenderLine(dialogueLine.Metadata))
+                    return;
+
+                DialogueQuickExit.Arm(__instance, dialogueLine);
+            }
         }
 
         [HarmonyPatch(typeof(DredgeDialogueView), nameof(DredgeDialogueView.RunOptions))]
@@ -28,7 +38,28 @@ namespace InsanityWorldMod.DredgeRuntime
             [HarmonyPrefix]
             public static bool Prefix(DialogueOption[] dialogueOptions, Action<int> onOptionSelected)
             {
+                DialogueQuickExit.Disarm();
                 return ShouldDredgeRenderOptions();
+            }
+        }
+
+        [HarmonyPatch(typeof(DredgeDialogueView), DIALOGUE_EXIT_PRESS_METHOD)]
+        public static class ExitLinePressPatch
+        {
+            [HarmonyPrefix]
+            public static bool Prefix(DredgeDialogueView __instance)
+            {
+                return !DialogueQuickExit.TryHandlePress(__instance);
+            }
+        }
+
+        [HarmonyPatch(typeof(DredgeDialogueView), nameof(DredgeDialogueView.Hide))]
+        public static class HidePatch
+        {
+            [HarmonyPostfix]
+            public static void Postfix()
+            {
+                DialogueQuickExit.Disarm();
             }
         }
     }

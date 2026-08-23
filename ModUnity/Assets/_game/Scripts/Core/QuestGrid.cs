@@ -6,13 +6,15 @@ namespace InsanityWorldMod.Core
 {
     public static partial class Constants
     {
-        public const string YARN_FN_GET_LAST_GRID_ABERRATION_COUNT = "lapkadev_get_last_grid_aberration_count";
-        public const string YARN_FN_GET_LAST_GRID_ITEM_COUNT       = "lapkadev_get_last_grid_item_count";
-        public const string YARN_FN_WAS_SUBMITTED                  = "lapkadev_was_submitted";
+        public const string YARN_FN_GET_LAST_GRID_ABERRATION_COUNT = "insanity_get_last_grid_aberration_count";
+        public const string YARN_FN_GET_LAST_GRID_ITEM_COUNT       = "insanity_get_last_grid_item_count";
+        public const string YARN_FN_WAS_SUBMITTED                  = "insanity_was_submitted";
+        public const string YARN_FN_DISTINCT_ABERRATIONS_MET       = "insanity_distinct_aberrations_met";
 
-        public const string YARN_CMD_SET_EXPECTED                  = "lapkadev_set_expected";
-        public const string YARN_CMD_CLEAR_EXPECTED                = "lapkadev_clear_expected";
-        public const string YARN_CMD_SET_CONSUME_ABERRATIONS       = "lapkadev_set_consume_aberrations";
+        public const string YARN_CMD_SET_EXPECTED                  = "insanity_set_expected";
+        public const string YARN_CMD_CLEAR_EXPECTED                = "insanity_clear_expected";
+        public const string YARN_CMD_SET_CONSUME_ABERRATIONS       = "insanity_set_consume_aberrations";
+        public const string YARN_CMD_SET_REQUIRED_DISTINCT_ABERRATIONS = "insanity_set_required_distinct_aberrations";
     }
 
     public static partial class G
@@ -37,6 +39,7 @@ namespace InsanityWorldMod.Core
         {
             G.QuestGrid.ExpectedItems.Clear();
             G.QuestGrid.ConsumeAberrations = false;
+            G.QuestGrid.RequiredDistinctAberrations = 0;
             Log.Debug("ClearExpectedItems: expectations and aberration consumption cleared");
         }
 
@@ -44,6 +47,19 @@ namespace InsanityWorldMod.Core
         {
             G.QuestGrid.ConsumeAberrations = true;
             Log.Debug("SetConsumeAberrations: aberrations will be consumed on submit");
+        }
+
+        public static void SetRequiredDistinctAberrations(int count)
+        {
+            G.QuestGrid.RequiredDistinctAberrations = count;
+            Log.Debug($"SetRequiredDistinctAberrations: {count} distinct aberrations required");
+        }
+
+        public static bool AreDistinctAberrationsMet()
+        {
+            var state = G.QuestGrid;
+            return state.RequiredDistinctAberrations > 0
+                && state.LastDistinctAberrationCount >= state.RequiredDistinctAberrations;
         }
 
         public static int GetLastGridAberrationCount()
@@ -66,6 +82,7 @@ namespace InsanityWorldMod.Core
             G.QuestGrid.WasSubmitted = false;
             G.QuestGrid.LastItemCounts.Clear();
             G.QuestGrid.LastAberrationCount = 0;
+            G.QuestGrid.LastDistinctAberrationCount = 0;
         }
 
         public static void OnQuestGridSubmitted()
@@ -97,9 +114,24 @@ namespace InsanityWorldMod.Core
 
             bool consumeExpected = state.WasSubmitted && expectedFulfilled;
 
+            bool distinctFulfilled = state.RequiredDistinctAberrations <= 0 || AreDistinctAberrationsMet();
+            bool consumeAberrations = state.WasSubmitted && state.ConsumeAberrations && distinctFulfilled;
+
             var expectedConsumed = new Dictionary<string, int>();
+            var aberrationsTaken = new HashSet<string>();
             int returned = 0;
             int aberrationsConsumed = 0;
+
+            bool TakeAberration(string id)
+            {
+                if (state.RequiredDistinctAberrations <= 0)
+                    return true;
+
+                if (aberrationsTaken.Count >= state.RequiredDistinctAberrations)
+                    return false;
+
+                return aberrationsTaken.Add(id);
+            }
 
             for (int i = 0; i < items.Length; i++)
             {
@@ -121,7 +153,7 @@ namespace InsanityWorldMod.Core
                     }
                 }
 
-                if (!consume && state.ConsumeAberrations && items[i].IsAberration)
+                if (!consume && consumeAberrations && items[i].IsAberration && TakeAberration(items[i].Id))
                 {
                     consume = true;
                     aberrationsConsumed++;
@@ -134,7 +166,7 @@ namespace InsanityWorldMod.Core
                 returned++;
             }
 
-            Log.Info($"ResolveQuestGridExit: submitted={state.WasSubmitted}, expectedFulfilled={expectedFulfilled}, returned {returned}, consumedExpected {expectedConsumed.Sum(entry => entry.Value)}, consumedAberrations {aberrationsConsumed}");
+            Log.Info($"ResolveQuestGridExit: submitted={state.WasSubmitted}, expectedFulfilled={expectedFulfilled}, distinctFulfilled={distinctFulfilled}, returned {returned}, consumedExpected {expectedConsumed.Sum(entry => entry.Value)}, consumedAberrations {aberrationsConsumed}");
             return keep;
         }
 
@@ -144,15 +176,23 @@ namespace InsanityWorldMod.Core
 
             state.LastItemCounts.Clear();
             state.LastAberrationCount = 0;
+            state.LastDistinctAberrationCount = 0;
+
+            var distinctAberrations = new HashSet<string>();
 
             foreach (var item in items)
             {
                 state.LastItemCounts.TryGetValue(item.Id, out int existing);
                 state.LastItemCounts[item.Id] = existing + 1;
 
-                if (item.IsAberration)
-                    state.LastAberrationCount++;
+                if (!item.IsAberration)
+                    continue;
+
+                state.LastAberrationCount++;
+                distinctAberrations.Add(item.Id);
             }
+
+            state.LastDistinctAberrationCount = distinctAberrations.Count;
         }
     }
 
@@ -169,6 +209,8 @@ namespace InsanityWorldMod.Core
 
         public bool ConsumeAberrations;
         public bool WasSubmitted;
+        public int RequiredDistinctAberrations;
         public int LastAberrationCount;
+        public int LastDistinctAberrationCount;
     }
 }

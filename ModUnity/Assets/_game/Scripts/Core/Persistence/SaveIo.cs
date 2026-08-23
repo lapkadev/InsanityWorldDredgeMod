@@ -77,7 +77,7 @@ namespace InsanityWorldMod.Core
             G.Game.InitFromSave();
             G.Game.ApplyToDredge();
 
-            Log.Info($"Load: slot={slot}, TotalRuns={G.Save.TotalRuns}, TotalDeathsIntercepted={G.Save.TotalDeathsIntercepted}");
+            Log.Info($"Load: slot={slot}, CompassGranted={G.Save.CompassGranted}, Deaths={G.Save.Stats.Deaths}");
         }
 
         public static string GetSaveFilePath(int slot)

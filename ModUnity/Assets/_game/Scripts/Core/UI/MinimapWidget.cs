@@ -10,6 +10,8 @@ namespace InsanityWorldMod.Core
 {
     public static partial class Constants
     {
+        public const bool MINIMAP_CORNER_WIDGET_ENABLED     = false;
+
         // Layout - fixed at UI creation time; not tunable at runtime (UI is built once in Start()).
         public const float MINIMAP_SIZE_PX                  = 280f;
         public const float MINIMAP_MARGIN_PX                = 20f;                      // gap from screen edges - wide enough for cardinal labels (15px half) + ~5px breathing room

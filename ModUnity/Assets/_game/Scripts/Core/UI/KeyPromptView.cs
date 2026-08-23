@@ -8,5 +8,6 @@ namespace InsanityWorldMod.Core
         public Image Back;
         public Image Icon;
         public Image Key;
+        public Image Alert;
     }
 }

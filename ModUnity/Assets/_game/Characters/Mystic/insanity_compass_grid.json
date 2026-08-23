@@ -1,0 +1,13 @@
+{
+    "titleString": "insanity_compass_title",
+    "isSaved": false,
+    "allowEquipmentInstallation": false,
+    "allowManualExit": true,
+    "allowStorageAccess": true,
+    "gridConfiguration": "insanity_aberration_grid",
+    "gridKey": "NONE",
+    "presetGridMode": "NONE",
+    "questGridExitMode": "REVISITABLE",
+    "startingDurabilityProportion": 1.0,
+    "completeConditions": []
+}

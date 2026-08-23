@@ -1,11 +1,12 @@
 using UnityEngine;
+using static InsanityWorldMod.Core.Constants;
 using static InsanityWorldMod.Core.Funcs;
 
 namespace InsanityWorldMod.Core
 {
     public static partial class Constants
     {
-        public const string PREFIX = "lapkadev_";
+        public const string PREFIX = "insanity_";
     }
 
     public static partial class G
@@ -34,7 +35,6 @@ namespace InsanityWorldMod.Core
         {
             G.Save = new SaveState();
             G.Game = new GameState();
-            G.Run  = new RunState();
             Log.Info("GameController: state initialized");
         }
 
@@ -68,14 +68,16 @@ namespace InsanityWorldMod.Core
             // _pauseButtonHost.AddComponent<PauseMenuRestartButton>();
             // Object.DontDestroyOnLoad(_pauseButtonHost);
 
-            _minimapWidgetHost = new GameObject("InsanityMinimapWidget");
-            _minimapWidgetHost.AddComponent<MinimapWidget>();
-            Object.DontDestroyOnLoad(_minimapWidgetHost);
+            if (MINIMAP_CORNER_WIDGET_ENABLED)
+            {
+                _minimapWidgetHost = new GameObject("InsanityMinimapWidget");
+                _minimapWidgetHost.AddComponent<MinimapWidget>();
+                Object.DontDestroyOnLoad(_minimapWidgetHost);
+            }
 
             _compassWidgetHost = CompassWidget.TryCreate();
 
             Load("last");
-            StartNewRun();
 
             Log.Info("GameController: OnGameLoaded done");
         }

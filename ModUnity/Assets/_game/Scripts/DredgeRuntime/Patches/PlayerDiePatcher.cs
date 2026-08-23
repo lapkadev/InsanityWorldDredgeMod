@@ -14,11 +14,11 @@ namespace InsanityWorldMod.DredgeRuntime
             if (__instance.IsGodModeEnabled || !__instance.IsAlive)
                 return true;
 
-            Log.Info("Death intercepted - restarting run.");
+            Log.Info("Death intercepted - repairing and returning to the last dock.");
 
             RepairFull();
             TeleportToLastDock();
-            OnDeathIntercepted();
+            OnDeath();
 
             return false;
         }

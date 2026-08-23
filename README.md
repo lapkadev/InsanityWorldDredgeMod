@@ -19,3 +19,11 @@ You can't die anymore - it's INSANE ... but something feels wrong ...
 ![InsanityWorld minimap](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/minimap.png)  
 
 3. More features and contents in development.
+
+---
+
+## A note on translations
+
+Text for other languages is AI-generated.
+
+Pull requests and issues are welcome if you find mistakes and suggest a better translation.

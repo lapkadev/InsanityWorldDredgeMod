@@ -11,7 +11,7 @@ namespace InsanityWorldMod.Core
     }
 
     /// <summary>
-    /// MonoBehaviour host for periodic Core ticks (auto-save loop, Run.Tick).
+    /// MonoBehaviour host for periodic Core ticks (auto-save loop).
     /// Spawned and parented to a DontDestroyOnLoad GameObject by <c>EntrySystem.OnLoad()</c>.
     /// </summary>
     public class MainBehaviour : MonoBehaviour
@@ -54,8 +54,6 @@ namespace InsanityWorldMod.Core
                 _nextAutoSaveAt = Time.time + AUTO_SAVE_INTERVAL_SEC;
                 Save();
             }
-
-            G.Run?.Tick(Time.deltaTime);
         }
     }
 }

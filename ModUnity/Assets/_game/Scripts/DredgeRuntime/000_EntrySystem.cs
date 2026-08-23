@@ -46,6 +46,7 @@ namespace InsanityWorldMod.DredgeRuntime
             AddHooksItems();
             AddHooksSave();
             AddHooksDialogue();
+            AddHooksNpcCamera();
             AddHooksFont();
             AddHooksText();
             AddHooksMenu();

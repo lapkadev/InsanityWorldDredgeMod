@@ -12,7 +12,7 @@ namespace InsanityWorldMod.Core
     public static partial class Constants
     {
         public const string TAG_DREDGE_UI   = "dredge_ui";
-        public const string TAG_LAPKADEV_UI = "lapkadev_ui";
+        public const string TAG_INSANITY_UI = "insanity_ui";
     }
 
     public class InsanityDialogueView : DialogueViewBase
@@ -163,8 +163,8 @@ namespace InsanityWorldMod.Core
             var currentNode = GetCurrentDialogueNode();
             bool isOurNode = currentNode.StartsWith(PREFIX);
             bool hasDredgeTag = HasTag(line, TAG_DREDGE_UI);
-            bool hasLapkadevTag = HasTag(line, TAG_LAPKADEV_UI);
-            return (isOurNode && !hasDredgeTag) || hasLapkadevTag;
+            bool hasInsanityTag = HasTag(line, TAG_INSANITY_UI);
+            return (isOurNode && !hasDredgeTag) || hasInsanityTag;
         }
 
         private static bool HasTag(LocalizedLine line, string tag)

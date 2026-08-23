@@ -7,13 +7,21 @@ namespace InsanityWorldMod.Core
 {
     public static partial class Constants
     {
-        public const string COMPASS_PREFAB_NAME            = "pfb_insanity_compas_map";
+        public const string PFB_INSANITY_COMPAS_MAP        = "pfb_insanity_compas_map";
         public const string COMPASS_ROOT_NAME              = "InsanityCompassRoot";
         public const string COMPASS_MINIMAP_HOST_NAME      = "CompassMinimap";
+        public const string YARN_FN_HAS_COMPASS            = "insanity_has_compass";
+        public const string YARN_CMD_GRANT_COMPASS         = "insanity_grant_compass";
         public const float  COMPASS_MARGIN_PX              = 0f;
         public const bool   COMPASS_VISIBLE_ON_START       = false;
         public const float  COMPASS_OFFSCREEN_PADDING_PX   = 40f;
         public const float  COMPASS_SLIDE_SPEED_PX_PER_SEC = 2200f;
+    }
+
+    public static partial class Params
+    {
+        public static float P_COMPASS_ALERT_BLINK_RATE = 3.2f;
+        public static float P_COMPASS_ALERT_MIN_ALPHA  = 0.15f;
     }
 
     public static partial class Funcs
@@ -22,6 +30,45 @@ namespace InsanityWorldMod.Core
         {
             foreach (Transform child in root)
                 child.gameObject.SetActive(active);
+        }
+
+        public static bool HasCompass()
+        {
+            return G.Save != null && G.Save.CompassGranted;
+        }
+
+        public static void SetCompassGranted(bool granted)
+        {
+            if (G.Save == null)
+            {
+                Log.Warn($"SetCompassGranted: save state is null, '{granted}' dropped");
+                return;
+            }
+
+            G.Save.CompassGranted = granted;
+            G.Save.CompassIsNew = granted;
+            Log.Info($"SetCompassGranted: {granted}");
+            Save();
+        }
+
+        public static void GrantCompass()
+        {
+            SetCompassGranted(true);
+        }
+
+        public static bool IsCompassNew()
+        {
+            return G.Save != null && G.Save.CompassIsNew;
+        }
+
+        public static void ClearCompassNew()
+        {
+            if (G.Save == null || !G.Save.CompassIsNew)
+                return;
+
+            G.Save.CompassIsNew = false;
+            Log.Info("ClearCompassNew: compass opened for the first time");
+            Save();
         }
     }
 
@@ -45,9 +92,9 @@ namespace InsanityWorldMod.Core
                 return null;
             }
 
-            if (!G.Prefabs.TryGetValue(COMPASS_PREFAB_NAME, out var prefab) || prefab == null)
+            if (!G.Prefabs.TryGetValue(PFB_INSANITY_COMPAS_MAP, out var prefab) || prefab == null)
             {
-                Log.Warn($"CompassWidget: prefab '{COMPASS_PREFAB_NAME}' not found among loaded bundles");
+                Log.Warn($"CompassWidget: prefab '{PFB_INSANITY_COMPAS_MAP}' not found among loaded bundles");
                 return null;
             }
 
@@ -91,9 +138,12 @@ namespace InsanityWorldMod.Core
             if (_root == null)
                 return;
 
-            bool sailing = IsPlayerSailing();
+            bool sailing = HasCompass() && IsPlayerSailing();
             if (sailing && G.Bindings.ToggleCompass.WasPressed)
+            {
                 _wantedByPlayer = !_wantedByPlayer;
+                ClearCompassNew();
+            }
 
             if (_prompt != null && _prompt.activeSelf != sailing)
                 _prompt.SetActive(sailing);

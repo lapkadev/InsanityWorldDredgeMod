@@ -13,6 +13,7 @@ namespace InsanityWorldMod.Core
     {
         public static Dictionary<string, GameObject>    Prefabs = new Dictionary<string, GameObject>();
         public static Dictionary<string, TMP_FontAsset> Fonts   = new Dictionary<string, TMP_FontAsset>();
+        public static Dictionary<string, Sprite>        Sprites = new Dictionary<string, Sprite>();
     }
 
     public static partial class Funcs
@@ -24,6 +25,16 @@ namespace InsanityWorldMod.Core
 
             LoadPrefabs(bundle);
             LoadFonts(bundle);
+            LoadSprites(bundle);
+        }
+
+        public static void LoadSprites(AssetBundle bundle)
+        {
+            var assets = bundle.LoadAllAssets<Sprite>();
+            foreach (var asset in assets)
+                G.Sprites[asset.name] = asset;
+
+            Log.Info($"LoadSprites: cached {assets.Length} from '{bundle.name}'");
         }
 
         public static void LoadPrefabs(AssetBundle bundle)

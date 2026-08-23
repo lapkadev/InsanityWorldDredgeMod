@@ -1,0 +1,16 @@
+{
+    "insanity_mystic_name":                 "Mystique",
+    "insanity_compass_title":               "Apporte 5 poissons étranges différents",
+
+    "line:insanity_mystic_greeting":        "insanity_mystic: Je sens la folie en toi, chercheur.",
+
+    "line:insanity_mystic_opt_ask":         "Que veux-tu de moi ?",
+    "line:insanity_mystic_compass_already": "insanity_mystic: Rien pour l'instant. La boussole est déjà entre tes mains.",
+    "line:insanity_mystic_compass_intro":   "insanity_mystic: Je garde ici une chose. Elle attend une main qui en soit digne.",
+    "line:insanity_mystic_compass_offer":   "insanity_mystic: Si tu m'apportes 5 poissons étranges, je te donnerai quelque chose d'intéressant. Mais sache-le - je ne tolère pas les doublons.",
+    "line:insanity_mystic_compass_done":    "insanity_mystic: Tu as bien fait, chercheur. Pour cela, prends la boussole. Elle indique là où la carte se tait.",
+    "line:insanity_mystic_compass_fail":    "insanity_mystic: Cinq poissons étranges différents. Tu ne les as pas apportés.",
+
+    "line:insanity_mystic_opt_leave":       "Je dois y aller.",
+    "line:insanity_mystic_opt_leave_resp":  "insanity_mystic: Comme tu voudras."
+}

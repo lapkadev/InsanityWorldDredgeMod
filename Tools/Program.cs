@@ -5,6 +5,7 @@ const string Usage =
     "Commands:\n" +
     "  bootstrap                              Fetch DREDGE DLLs from NuGet to ModUnity/Assets/Plugins/Dredge (skipped if Winch.dll already present).\n" +
     "  build-all                              Build all Unity projects (DLLs and Bundles).\n" +
+    "  merge-localization                     Merge Localization fragments into one file per locale in the build output.\n" +
     "  deploy                                 Build + deploy mod to DREDGE/Mods.\n" +
     "  release-zip                            Build + zip Release artifacts for GitHub.\n" +
     "  bump-patch | bump-minor | bump-major   Bump sem-ver in all VersionFiles from config.";
@@ -23,14 +24,15 @@ G.skipUnityProject = ParseSkipUnityProject(args);
 
 return args[0] switch
 {
-    "bootstrap"  => Bootstrap(),
-    "build-all"  => BuildAll(),
-    "deploy"     => DeployToDredge(),
-    "release-zip" => ReleaseZip(),
-    "bump-patch" => BumpVersion(componentIndex: 2),
-    "bump-minor" => BumpVersion(componentIndex: 1),
-    "bump-major" => BumpVersion(componentIndex: 0),
-    _            => Fail($"Unknown command: {args[0]}"),
+    "bootstrap"          => Bootstrap(),
+    "build-all"          => BuildAll(),
+    "merge-localization" => MergeLocalization(),
+    "deploy"             => DeployToDredge(),
+    "release-zip"        => ReleaseZip(),
+    "bump-patch"         => BumpVersion(componentIndex: 2),
+    "bump-minor"         => BumpVersion(componentIndex: 1),
+    "bump-major"         => BumpVersion(componentIndex: 0),
+    _                    => Fail($"Unknown command: {args[0]}"),
 };
 
 static int Fail(string msg)
