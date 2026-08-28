@@ -19,7 +19,7 @@ namespace InsanityWorldMod.DredgeRuntime
             DredgeHooks.RegisterNpcCamera = RegisterNpcCamera;
         }
 
-        public static void RegisterNpcCamera(string dockId, string speakerId, CinemachineVirtualCamera camera)
+        public static void RegisterNpcCamera(string dockId, string npcId, CinemachineVirtualCamera camera)
         {
             var dock = DockUtil.GetDock(dockId);
             if (dock == null)
@@ -35,8 +35,8 @@ namespace InsanityWorldMod.DredgeRuntime
                 return;
             }
 
-            vcams[speakerId] = camera;
-            Log.Info($"RegisterNpcCamera: '{speakerId}' registered at '{dockId}'");
+            vcams[npcId] = camera;
+            Log.Info($"RegisterNpcCamera: '{npcId}' registered at '{dockId}'");
         }
     }
 }

@@ -12,6 +12,7 @@ public class Config
     public VersionFile[] VersionFiles = Array.Empty<VersionFile>();
     public UnityEditorBuildItem[] UnityEditorBuildItems = Array.Empty<UnityEditorBuildItem>();
     public DotNetBuildItem[] DotNetBuildItems = Array.Empty<DotNetBuildItem>();
+    public string[] PackageExcludedFileNames = Array.Empty<string>();
 }
 
 public enum VersionFileType

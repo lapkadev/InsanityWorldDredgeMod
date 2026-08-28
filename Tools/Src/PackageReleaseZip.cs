@@ -75,6 +75,7 @@ public static partial class Funcs
         {
             var ext = Path.GetExtension(filePath).ToLowerInvariant();
             if (excludeExtensions.Contains(ext)) continue;
+            if (G.cfg.PackageExcludedFileNames.Contains(Path.GetFileName(filePath), StringComparer.OrdinalIgnoreCase)) continue;
             var entryName = string.IsNullOrEmpty(entryPrefix)
                 ? Path.GetFileName(filePath)
                 : entryPrefix + "/" + Path.GetFileName(filePath);

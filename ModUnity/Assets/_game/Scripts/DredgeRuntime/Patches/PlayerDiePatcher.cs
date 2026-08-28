@@ -1,6 +1,7 @@
 using System;
 using HarmonyLib;
 using InsanityWorldMod.Core;
+using static InsanityWorldMod.Core.DredgeHooks;
 using static InsanityWorldMod.Core.Funcs;
 
 namespace InsanityWorldMod.DredgeRuntime
@@ -16,7 +17,7 @@ namespace InsanityWorldMod.DredgeRuntime
 
             Log.Info("Death intercepted - repairing and returning to the last dock.");
 
-            RepairFull();
+            RepairHull(1);
             TeleportToLastDock();
             OnDeath();
 

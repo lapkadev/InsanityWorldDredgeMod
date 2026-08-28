@@ -7,7 +7,7 @@ namespace InsanityWorldMod.DredgeRuntime
     {
         public static void AddHooksItems()
         {
-            DredgeHooks.RepairHull = () =>
+            DredgeHooks.RepairHullAll = () =>
             {
                 var items = G.DredgeGame?.ItemManager;
                 if (items == null)
@@ -19,7 +19,7 @@ namespace InsanityWorldMod.DredgeRuntime
                 items.RepairHullDamage(free: true);
             };
 
-            DredgeHooks.RepairAllItems = () =>
+            DredgeHooks.RepairItemsDurability = () =>
             {
                 var items = G.DredgeGame?.ItemManager;
                 if (items == null)
@@ -29,6 +29,36 @@ namespace InsanityWorldMod.DredgeRuntime
                 }
 
                 items.RepairAllItemDurability();
+            };
+
+            DredgeHooks.RepairHull = count =>
+            {
+                var inventory = G.DredgeGame?.SaveData?.Inventory;
+                if (inventory == null)
+                {
+                    Log.Warn("Items: inventory is null");
+                    return;
+                }
+
+                var damage = inventory.spatialUnderlayItems
+                    .FindAll(i => i.GetItemData<SpatialItemData>().itemType == ItemType.DAMAGE);
+
+                int repaired = 0;
+                for (int i = 0; i < damage.Count && repaired < count; i++)
+                {
+                    inventory.RemoveObjectFromGridData(damage[i], true);
+                    repaired++;
+                }
+
+                if (repaired == 0)
+                    return;
+
+                var events = G.DredgeGameEvents;
+                events.TriggerFocusedGridCellChanged(G.DredgeGame.GridManager.LastSelectedCell);
+                events.TriggerOnPlayerDamageChanged();
+                events.TriggerItemInventoryChanged(null);
+
+                Log.Info($"Items: repaired {repaired} hull cell(s)");
             };
 
             DredgeHooks.GetAberrationFishIds = () =>

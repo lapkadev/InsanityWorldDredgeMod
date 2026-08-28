@@ -37,9 +37,11 @@ namespace InsanityWorldMod.Core
 
         public static Action<NotificationKind, string, NotificationColor> ShowNotification;
 
-        public static Action RepairHull;
+        public static Action RepairHullAll;
 
-        public static Action RepairAllItems;
+        public static Action RepairItemsDurability;
+
+        public static Action<int> RepairHull;
 
         public static Func<string[]> GetAberrationFishIds;
 

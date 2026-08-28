@@ -16,5 +16,6 @@
     ],
     "DotNetBuildItems": [
         { "Path": "ModLoader/InsanityWorldMod/InsanityWorldMod.csproj" }
-    ]
+    ],
+    "PackageExcludedFileNames": []
 }
