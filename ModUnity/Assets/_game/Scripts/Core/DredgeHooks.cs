@@ -57,6 +57,8 @@ namespace InsanityWorldMod.Core
 
         public static Func<Transform> GetPlayerTransform;
 
+        public static Action<List<MinimapMark>> CollectThreats;
+
         public static Func<bool> IsInGame;
 
         public static Action<TextMeshProUGUI> UseLocalizedFont;

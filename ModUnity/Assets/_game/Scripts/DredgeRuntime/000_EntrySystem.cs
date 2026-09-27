@@ -40,6 +40,7 @@ namespace InsanityWorldMod.DredgeRuntime
             AddHooksWinch();
             AddHooksInput();
             AddHooksHud();
+            AddHooksThreats();
             AddHooksNotifications();
             AddHooksDocks();
             AddHooksPlayer();
