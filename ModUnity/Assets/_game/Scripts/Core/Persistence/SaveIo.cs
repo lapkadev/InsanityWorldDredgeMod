@@ -23,6 +23,12 @@ namespace InsanityWorldMod.Core
                 return;
             }
 
+            if (!G.IsInGame)
+            {
+                Log.Debug("Save: not in game, skipping");
+                return;
+            }
+
             G.Game.CaptureFromDredge();
 
             var slot = ResolveSlot("last");
