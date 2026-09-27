@@ -14,11 +14,13 @@ You can't die anymore - it's INSANE ... but something feels wrong ...
 1. **Respawn at last checkpoint** - the player respawns at the last visited dock instead of game over.  
 ![Respawn in action](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/respawn.webp)
 
-2. **Minimap widget**  
-![Minimap in action](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/minimap.webp)  
-![InsanityWorld minimap](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/minimap.png)  
+2. **New NPC with a quest: the Mystic**  
+![The Mystic](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/mystic.png)
 
-3. More features and contents in development.
+3. **Compass minimap item**  
+![Compass minimap](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/compass_minimap.png)
+
+4. More features and content in development.
 
 ---
 
