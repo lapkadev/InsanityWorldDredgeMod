@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using UnityEditor;
+using UnityEditor.Build.Player;
 using UnityEngine;
 using static InsanityWorldMod.Editor.Constants;
 
@@ -12,6 +13,8 @@ namespace InsanityWorldMod.Editor
         public const string API_ASSEMBLY_NAME       = "InsanityWorldMod.DredgeRuntime";
         public const string CORE_ASSEMBLY_NAME      = "InsanityWorldMod.Core";
         public const string TRANSLATIONS_DIR_NAME   = "tr";
+        public const string PLAYER_SCRIPTS_DIR      = "Library/InsanityWorldPlayerScripts";
+        public const string EDITOR_SCRIPTS_DIR      = "Library/ScriptAssemblies";
 
         public static readonly string[] MIRROR_RUNTIME_ASSEMBLIES =
         {
@@ -92,9 +95,13 @@ namespace InsanityWorldMod.Editor
             int bundleCount = manifest != null ? manifest.GetAllAssetBundles().Length : 0;
             Debug.Log($"[InsanityWorld] BuildAll: built {bundleCount} bundle(s) into {bundlesDir}");
 
+            var playerDir = CompilePlayerAssemblies(args.BuildConfiguration == "Release");
+            if (playerDir == null)
+                return false;
+
             // --- Compiled DLLs (Api, Core) ---
-            var apiSrc  = $"Library/ScriptAssemblies/{API_ASSEMBLY_NAME}.dll";
-            var coreSrc = $"Library/ScriptAssemblies/{CORE_ASSEMBLY_NAME}.dll";
+            var apiSrc  = $"{EDITOR_SCRIPTS_DIR}/{API_ASSEMBLY_NAME}.dll";
+            var coreSrc = $"{playerDir}/{CORE_ASSEMBLY_NAME}.dll";
             if (!File.Exists(apiSrc) || !File.Exists(coreSrc))
             {
                 Debug.LogError($"[InsanityWorld] BuildAll: source DLLs not found:\n  {apiSrc}\n  {coreSrc}\nFix compile errors first.");
@@ -107,7 +114,7 @@ namespace InsanityWorldMod.Editor
             // --- Mirror runtime DLLs ---
             foreach (var asm in MIRROR_RUNTIME_ASSEMBLIES)
             {
-                var mirrorSrc = $"Library/ScriptAssemblies/{asm}.dll";
+                var mirrorSrc = $"{playerDir}/{asm}.dll";
                 if (!File.Exists(mirrorSrc))
                 {
                     Debug.LogError($"[InsanityWorld] BuildAll: Mirror runtime assembly not found: {mirrorSrc}\nDid bootstrap install Mirror and did it compile?");
@@ -119,8 +126,8 @@ namespace InsanityWorldMod.Editor
 
             if (args.BuildConfiguration == "Debug")
             {
-                var apiPdb  = $"Library/ScriptAssemblies/{API_ASSEMBLY_NAME}.pdb";
-                var corePdb = $"Library/ScriptAssemblies/{CORE_ASSEMBLY_NAME}.pdb";
+                var apiPdb  = $"{EDITOR_SCRIPTS_DIR}/{API_ASSEMBLY_NAME}.pdb";
+                var corePdb = $"{playerDir}/{CORE_ASSEMBLY_NAME}.pdb";
                 if (File.Exists(apiPdb))  File.Copy(apiPdb,  Path.Combine(outputDir, $"{API_ASSEMBLY_NAME}.pdb"),  overwrite: true);
                 if (File.Exists(corePdb)) File.Copy(corePdb, Path.Combine(outputDir, $"{CORE_ASSEMBLY_NAME}.pdb"), overwrite: true);
                 Debug.Log($"[InsanityWorld] BuildAll: copied .pdb files for Debug into {outputDir}");
@@ -131,6 +138,40 @@ namespace InsanityWorldMod.Editor
 
             Debug.Log("[InsanityWorld] BuildAll: DONE.");
             return true;
+        }
+
+        public static string CompilePlayerAssemblies(bool release)
+        {
+            var playerDir = Path.GetFullPath(PLAYER_SCRIPTS_DIR);
+            if (Directory.Exists(playerDir))
+                Directory.Delete(playerDir, recursive: true);
+
+            Directory.CreateDirectory(playerDir);
+
+            var settings = new ScriptCompilationSettings
+            {
+                group   = BuildTargetGroup.Standalone,
+                target  = BuildTarget.StandaloneWindows,
+                options = release ? ScriptCompilationOptions.None : ScriptCompilationOptions.DevelopmentBuild,
+            };
+
+            var result = PlayerBuildInterface.CompilePlayerScripts(settings, playerDir);
+            if (result.assemblies == null || result.assemblies.Count == 0)
+            {
+                Debug.LogError($"[InsanityWorld] CompilePlayerAssemblies: player script compilation produced no assemblies in {playerDir}");
+                return null;
+            }
+
+            var found = Directory.GetFiles(playerDir, $"{CORE_ASSEMBLY_NAME}.dll", SearchOption.AllDirectories);
+            if (found.Length == 0)
+            {
+                Debug.LogError($"[InsanityWorld] CompilePlayerAssemblies: {CORE_ASSEMBLY_NAME}.dll not found under {playerDir}. Reported assemblies: {string.Join(", ", result.assemblies)}");
+                return null;
+            }
+
+            var assembliesDir = Path.GetDirectoryName(found[0]);
+            Debug.Log($"[InsanityWorld] CompilePlayerAssemblies: compiled {result.assemblies.Count} player assembly(ies) into {assembliesDir}");
+            return assembliesDir;
         }
 
         public static bool CopyGameAssets(string outputDir)
