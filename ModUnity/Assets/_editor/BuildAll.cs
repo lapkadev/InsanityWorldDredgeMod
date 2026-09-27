@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using UnityEditor;
@@ -8,8 +9,9 @@ namespace InsanityWorldMod.Editor
 {
     public static partial class Constants
     {
-        public const string API_ASSEMBLY_NAME  = "InsanityWorldMod.DredgeRuntime";
-        public const string CORE_ASSEMBLY_NAME = "InsanityWorldMod.Core";
+        public const string API_ASSEMBLY_NAME       = "InsanityWorldMod.DredgeRuntime";
+        public const string CORE_ASSEMBLY_NAME      = "InsanityWorldMod.Core";
+        public const string TRANSLATIONS_DIR_NAME   = "tr";
 
         public static readonly string[] MIRROR_RUNTIME_ASSEMBLIES =
         {
@@ -124,86 +126,107 @@ namespace InsanityWorldMod.Editor
                 Debug.Log($"[InsanityWorld] BuildAll: copied .pdb files for Debug into {outputDir}");
             }
 
-            // --- Localization JSONs ---
-            var locSrc = Path.Combine(Application.dataPath, "Localization");
-            if (Directory.Exists(locSrc))
-            {
-                var locDst = Path.Combine(outputDir, "Assets", "Localization");
-                Directory.CreateDirectory(locDst);
-                int locCount = 0;
-                foreach (var jsonFile in Directory.GetFiles(locSrc, "*.json"))
-                {
-                    File.Copy(jsonFile, Path.Combine(locDst, Path.GetFileName(jsonFile)), overwrite: true);
-                    locCount++;
-                }
-                Debug.Log($"[InsanityWorld] BuildAll: copied {locCount} localization JSON(s) into {locDst}");
-            }
-
-            // --- GridConfigs (.json) ---
-            var gridSrc = Path.Combine(Application.dataPath, "_game", "GridConfigs");
-            if (Directory.Exists(gridSrc))
-            {
-                var gridDst = Path.Combine(outputDir, "Assets", "GridConfigs");
-                Directory.CreateDirectory(gridDst);
-                int gridCount = 0;
-                foreach (var file in Directory.GetFiles(gridSrc, "*.json"))
-                {
-                    File.Copy(file, Path.Combine(gridDst, Path.GetFileName(file)), overwrite: true);
-                    gridCount++;
-                }
-                Debug.Log($"[InsanityWorld] BuildAll: copied {gridCount} grid config(s) into {gridDst}");
-            }
-
-            // --- Quests/GridConfigs (.json) ---
-            var questGridSrc = Path.Combine(Application.dataPath, "_game", "Quests", "GridConfigs");
-            if (Directory.Exists(questGridSrc))
-            {
-                var questGridDst = Path.Combine(outputDir, "Assets", "Quests", "GridConfigs");
-                Directory.CreateDirectory(questGridDst);
-                int questGridCount = 0;
-                foreach (var file in Directory.GetFiles(questGridSrc, "*.json"))
-                {
-                    File.Copy(file, Path.Combine(questGridDst, Path.GetFileName(file)), overwrite: true);
-                    questGridCount++;
-                }
-                Debug.Log($"[InsanityWorld] BuildAll: copied {questGridCount} quest grid config(s) into {questGridDst}");
-            }
-
-            // --- Characters (.json) ---
-            var charSrc = Path.Combine(Application.dataPath, "_game", "Characters");
-            if (Directory.Exists(charSrc))
-            {
-                var charDst = Path.Combine(outputDir, "Assets", "Characters");
-                Directory.CreateDirectory(charDst);
-                int charCount = 0;
-                foreach (var file in Directory.GetFiles(charSrc, "*.json"))
-                {
-                    File.Copy(file, Path.Combine(charDst, Path.GetFileName(file)), overwrite: true);
-                    charCount++;
-                }
-                Debug.Log($"[InsanityWorld] BuildAll: copied {charCount} character file(s) into {charDst}");
-            }
-
-            // --- Dialogues (.yarn + .csv) ---
-            var dialSrc = Path.Combine(Application.dataPath, "_game", "Dialogues");
-            if (Directory.Exists(dialSrc))
-            {
-                var dialDst = Path.Combine(outputDir, "Assets", "Dialogues");
-                Directory.CreateDirectory(dialDst);
-                int dialCount = 0;
-                foreach (var pattern in new[] { "*.yarn", "*.csv" })
-                {
-                    foreach (var file in Directory.GetFiles(dialSrc, pattern))
-                    {
-                        File.Copy(file, Path.Combine(dialDst, Path.GetFileName(file)), overwrite: true);
-                        dialCount++;
-                    }
-                }
-                Debug.Log($"[InsanityWorld] BuildAll: copied {dialCount} dialogue file(s) into {dialDst}");
-            }
+            if (!CopyGameAssets(outputDir))
+                return false;
 
             Debug.Log("[InsanityWorld] BuildAll: DONE.");
             return true;
+        }
+
+        public static bool CopyGameAssets(string outputDir)
+        {
+            var srcRoot = Path.Combine(Application.dataPath, "_game");
+            if (!Directory.Exists(srcRoot))
+            {
+                Debug.Log($"[InsanityWorld] CopyGameAssets: no folder at {srcRoot}, nothing to copy");
+                return true;
+            }
+
+            var scriptsRoot = Path.Combine(srcRoot, "Scripts") + Path.DirectorySeparatorChar;
+            var claimedBy = new Dictionary<string, string>();
+            int copied = 0;
+
+            foreach (var file in Directory.GetFiles(srcRoot, "*", SearchOption.AllDirectories))
+            {
+                if (file.StartsWith(scriptsRoot, System.StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var subDir = ResolveAssetSubDir(file);
+                if (subDir == null)
+                    continue;
+
+                if (subDir.Length == 0)
+                {
+                    Debug.LogError($"[InsanityWorld] CopyGameAssets: cannot tell asset type of '{file}'. Expected character, quest grid config, grid config, dialogue or localization fragment.");
+                    return false;
+                }
+
+                var fileName = Path.GetFileName(file);
+                var key = Path.Combine(subDir, fileName);
+                if (claimedBy.TryGetValue(key, out var taken))
+                {
+                    Debug.LogError($"[InsanityWorld] CopyGameAssets: '{key}' is produced twice:\n  {taken}\n  {file}\nRename one of them.");
+                    return false;
+                }
+
+                claimedBy[key] = file;
+                var dstDir = Path.Combine(outputDir, "Assets", subDir);
+                Directory.CreateDirectory(dstDir);
+                File.Copy(file, Path.Combine(dstDir, fileName), overwrite: true);
+                copied++;
+            }
+
+            Debug.Log($"[InsanityWorld] CopyGameAssets: copied {copied} asset(s) into {Path.Combine(outputDir, "Assets")}");
+            return true;
+        }
+
+        public static string ResolveAssetSubDir(string path)
+        {
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            if (ext == ".yarn" || ext == ".csv")
+                return "Dialogues";
+
+            if (ext != ".json")
+                return null;
+
+            if (IsInTranslationsFolder(path))
+                return null;
+
+            return ResolveJsonSubDir(path);
+        }
+
+        public static bool IsInTranslationsFolder(string path)
+        {
+            var parent = Path.GetFileName(Path.GetDirectoryName(path));
+            return string.Equals(parent, TRANSLATIONS_DIR_NAME, System.StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static string ResolveJsonSubDir(string path)
+        {
+            Dictionary<string, object> fields;
+            try
+            {
+                fields = JsonConvert.DeserializeObject<Dictionary<string, object>>(File.ReadAllText(path));
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[InsanityWorld] ResolveJsonSubDir: '{path}' is not valid JSON: {ex.Message}");
+                return "";
+            }
+
+            if (fields == null)
+                return "";
+
+            if (fields.ContainsKey("yarnRootNode") || fields.ContainsKey("speakerNameKey"))
+                return "Characters";
+
+            if (fields.ContainsKey("questGridExitMode"))
+                return Path.Combine("Quests", "GridConfigs");
+
+            if (fields.ContainsKey("columns") && fields.ContainsKey("rows"))
+                return "GridConfigs";
+
+            return "";
         }
 
         private static BuildAllArgs ParseArgsFromCommandLine()

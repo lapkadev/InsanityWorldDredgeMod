@@ -3,6 +3,7 @@
     "rootNamespace": "InsanityWorldMod.DredgeRuntime",
     "references": [
         "InsanityWorldMod.Core",
+        "Cinemachine",
         "Unity.Localization",
         "YarnSpinner.Unity",
         "Unity.TextMeshPro",

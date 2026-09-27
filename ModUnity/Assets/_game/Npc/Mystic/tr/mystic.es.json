@@ -1,0 +1,16 @@
+{
+    "insanity_mystic_name":                 "Místico",
+    "insanity_compass_title":               "Lleva 5 peces extraños distintos",
+
+    "line:insanity_mystic_greeting":        "insanity_mystic: Percibo la locura en ti, buscador.",
+
+    "line:insanity_mystic_opt_ask":         "¿Qué quieres de mí?",
+    "line:insanity_mystic_compass_already": "insanity_mystic: Por ahora nada. La brújula ya está en tus manos.",
+    "line:insanity_mystic_compass_intro":   "insanity_mystic: Aquí guardo una cosa. Espera una mano digna de ella.",
+    "line:insanity_mystic_compass_offer":   "insanity_mystic: Si me traes 5 peces extraños, te daré algo interesante. Pero que quede claro - no tolero los repetidos.",
+    "line:insanity_mystic_compass_done":    "insanity_mystic: Lo has hecho bien, buscador. Por ello, toma la brújula. Señala donde el mapa calla.",
+    "line:insanity_mystic_compass_fail":    "insanity_mystic: Cinco peces extraños distintos. No los has traído.",
+
+    "line:insanity_mystic_opt_leave":       "Debo irme.",
+    "line:insanity_mystic_opt_leave_resp":  "insanity_mystic: Como quieras."
+}

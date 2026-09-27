@@ -32,7 +32,7 @@ namespace InsanityWorldMod.Core
         public KeyBindings()
         {
             ToggleCompass = CreatePlayerAction(ACTION_TOGGLE_COMPASS);
-            ToggleCompass.AddDefaultBinding(Key.C);
+            ToggleCompass.AddDefaultBinding(Key.V);
             ToggleCompass.AddDefaultBinding(InputControlType.LeftStickButton);
         }
     }

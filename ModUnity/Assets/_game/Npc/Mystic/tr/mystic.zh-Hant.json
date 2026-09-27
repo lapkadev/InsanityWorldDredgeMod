@@ -1,0 +1,16 @@
+{
+    "insanity_mystic_name":                 "神秘者",
+    "insanity_compass_title":               "帶來5條不同的怪魚",
+
+    "line:insanity_mystic_greeting":        "insanity_mystic: 我在你身上嗅到了瘋狂，求索者。",
+
+    "line:insanity_mystic_opt_ask":         "你想從我這裡得到什麼？",
+    "line:insanity_mystic_compass_already": "insanity_mystic: 眼下沒有。羅盤已經在你手裡了。",
+    "line:insanity_mystic_compass_intro":   "insanity_mystic: 我這裡存著一樣東西。它在等一雙配得上它的手。",
+    "line:insanity_mystic_compass_offer":   "insanity_mystic: 你若給我帶來5條怪魚，我就給你些有意思的東西。但記住，我不容重複。",
+    "line:insanity_mystic_compass_done":    "insanity_mystic: 幹得好，求索者。作為回報，拿走羅盤。它指向地圖沉默之處。",
+    "line:insanity_mystic_compass_fail":    "insanity_mystic: 五條不同的怪魚。你沒有帶來。",
+
+    "line:insanity_mystic_opt_leave":       "我該走了。",
+    "line:insanity_mystic_opt_leave_resp":  "insanity_mystic: 如你所願。"
+}

@@ -10,7 +10,6 @@ namespace InsanityWorldMod.Core
     public class GameState
     {
         public float SessionStartTime;
-        public bool IsRestartInProgress;
 
         public void InitFromSave()
         {

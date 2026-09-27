@@ -1,6 +1,7 @@
 using System;
 using HarmonyLib;
 using InsanityWorldMod.Core;
+using static InsanityWorldMod.Core.DredgeHooks;
 using static InsanityWorldMod.Core.Funcs;
 
 namespace InsanityWorldMod.DredgeRuntime
@@ -14,11 +15,11 @@ namespace InsanityWorldMod.DredgeRuntime
             if (__instance.IsGodModeEnabled || !__instance.IsAlive)
                 return true;
 
-            Log.Info("Death intercepted - restarting run.");
+            Log.Info("Death intercepted - repairing and returning to the last dock.");
 
-            RepairFull();
+            RepairHull(1);
             TeleportToLastDock();
-            OnDeathIntercepted();
+            OnDeath();
 
             return false;
         }

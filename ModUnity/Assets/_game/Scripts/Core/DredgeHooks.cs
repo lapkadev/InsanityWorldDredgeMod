@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cinemachine;
 using InControl;
 using TMPro;
 using UnityEngine;
@@ -28,11 +29,23 @@ namespace InsanityWorldMod.Core
 
         public static Func<DialogueRunner> GetDialogueRunner;
 
+        public static Action<string, string, CinemachineVirtualCamera> RegisterNpcCamera;
+
+        public static Func<string, bool> IsDialogueNodeVisited;
+
+        public static Action<string, bool> SetDialogueNodeVisited;
+
         public static Action<NotificationKind, string, NotificationColor> ShowNotification;
 
-        public static Action RepairHull;
+        public static Action RepairHullAll;
 
-        public static Action RepairAllItems;
+        public static Action RepairItemsDurability;
+
+        public static Action<int> RepairHull;
+
+        public static Func<string[]> GetAberrationFishIds;
+
+        public static Func<string, bool> GiveFishToPlayer;
 
         public static Func<int> GetActiveSaveSlot;
 
@@ -43,6 +56,8 @@ namespace InsanityWorldMod.Core
         public static Action CancelPendingTeleport;
 
         public static Func<Transform> GetPlayerTransform;
+
+        public static Action<List<MinimapMark>> CollectThreats;
 
         public static Func<bool> IsInGame;
 

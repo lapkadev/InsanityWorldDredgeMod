@@ -14,8 +14,14 @@ namespace InsanityWorldMod.Core
 
         public int Version = CURRENT_VERSION;
 
-        public int TotalRuns;
-        public int TotalDeathsIntercepted;
-        public int InsanityCellCharge;
+        public bool CompassGranted;
+        public bool CompassIsNew;
+
+        private Statistics _stats;
+        public Statistics Stats
+        {
+            get => _stats ??= new Statistics();
+            set => _stats = value ?? new Statistics();
+        }
     }
 }

@@ -2,6 +2,7 @@
     "name": "InsanityWorldMod.Core",
     "rootNamespace": "InsanityWorldMod.Core",
     "references": [
+        "Cinemachine",
         "Unity.TextMeshPro",
         "UnityEngine.UI",
         "Unity.Localization",

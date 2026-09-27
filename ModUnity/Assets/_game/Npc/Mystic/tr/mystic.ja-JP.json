@@ -1,0 +1,16 @@
+{
+    "insanity_mystic_name":                 "神秘者",
+    "insanity_compass_title":               "異なる奇妙な魚を5匹届ける",
+
+    "line:insanity_mystic_greeting":        "insanity_mystic: お前の中に狂気を感じる、探求者よ。",
+
+    "line:insanity_mystic_opt_ask":         "私に何を求める？",
+    "line:insanity_mystic_compass_already": "insanity_mystic: 今は何もない。羅針盤はすでにお前の手の中にある。",
+    "line:insanity_mystic_compass_intro":   "insanity_mystic: ここにしまってあるものがある。ふさわしい手を待っているのだ。",
+    "line:insanity_mystic_compass_offer":   "insanity_mystic: 奇妙な魚を5匹持ってくれば、面白いものをやろう。ただし覚えておけ、同じものは認めん。",
+    "line:insanity_mystic_compass_done":    "insanity_mystic: よくやった、探求者よ。褒美に羅針盤を取れ。地図が黙る場所を指し示す。",
+    "line:insanity_mystic_compass_fail":    "insanity_mystic: 異なる奇妙な魚を五匹だ。お前は持ってきていない。",
+
+    "line:insanity_mystic_opt_leave":       "もう行く。",
+    "line:insanity_mystic_opt_leave_resp":  "insanity_mystic: 望むままに。"
+}

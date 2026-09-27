@@ -17,6 +17,7 @@ namespace InsanityWorldMod.DredgeRuntime
             G.DredgeAppEvents.OnGameLoaded += () =>
             {
                 Core.G.GameCanvas = FindUiNode(GAME_CANVAS_PATH, "game canvas");
+                InjectNpcs();
                 GameController.OnGameLoaded();
             };
 

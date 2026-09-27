@@ -12,7 +12,7 @@ public static partial class Constants
 
 public static partial class Funcs
 {
-    private static readonly string[] PackageExcludedExtensions = { ".pdb", ".meta" };
+    private static readonly string[] PackageExcludedExtensions = { ".pdb", ".meta", ".manifest" };
     private static readonly string[] PackageExcludedDirNames = { "saves", ".tmp" };
     private static readonly Regex PackageModMetaVersionRegex = new(@"""Version""\s*:\s*""(\d+)\.(\d+)\.(\d+)""");
 
@@ -75,6 +75,7 @@ public static partial class Funcs
         {
             var ext = Path.GetExtension(filePath).ToLowerInvariant();
             if (excludeExtensions.Contains(ext)) continue;
+            if (G.cfg.PackageExcludedFileNames.Contains(Path.GetFileName(filePath), StringComparer.OrdinalIgnoreCase)) continue;
             var entryName = string.IsNullOrEmpty(entryPrefix)
                 ? Path.GetFileName(filePath)
                 : entryPrefix + "/" + Path.GetFileName(filePath);

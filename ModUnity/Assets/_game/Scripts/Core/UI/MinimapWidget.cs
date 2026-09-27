@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +11,8 @@ namespace InsanityWorldMod.Core
 {
     public static partial class Constants
     {
+        public const bool MINIMAP_CORNER_WIDGET_ENABLED     = false;
+
         // Layout - fixed at UI creation time; not tunable at runtime (UI is built once in Start()).
         public const float MINIMAP_SIZE_PX                  = 280f;
         public const float MINIMAP_MARGIN_PX                = 20f;                      // gap from screen edges - wide enough for cardinal labels (15px half) + ~5px breathing room
@@ -41,6 +44,13 @@ namespace InsanityWorldMod.Core
         private RectTransform _rotatingDial;
         private RectTransform _mapClone;
         private RectTransform _shipArrow;
+        private RectTransform[] _markLayers;
+        private CanvasGroup[] _markGroups;
+        private List<Image>[] _markBlips;
+        private RectTransform[] _outlineLayers;
+        private List<Image>[] _outlineBlips;
+        private int[] _shownPerLayer;
+        private float _nextThreatScanTime;
         private float _worldToMapProportion;
 
         private RectTransform _embedParent;
@@ -48,6 +58,7 @@ namespace InsanityWorldMod.Core
 
         // Dynamic-zoom state. Seeded from the static initial value; updated each frame.
         private float _currentZoom = P_MINIMAP_ZOOM_AT_REST;
+        private float _currentSpeed;
         private Vector3 _lastPlayerPos;                     // previous frame's player position, for speed calc
         private bool _hasLastPlayerPos;                     // false until first valid sample captured
 
@@ -113,6 +124,8 @@ namespace InsanityWorldMod.Core
             // Position/rotation/scale are driven each Update() to keep player at center
             // and minimap heading-up relative to camera yaw.
             TryCloneDredgeMap(objBg.transform);
+
+            CreateMarkLayers(objBg.transform);
 
             // Rotating dial - holds the four cardinal labels. Rotating this transform
             // moves all labels together; the background stays static.
@@ -203,6 +216,152 @@ namespace InsanityWorldMod.Core
 
             UpdateMapClone(camYaw);
             UpdateShipArrow(camYaw);
+            UpdateThreatBlips(camYaw);
+        }
+
+        private void CreateMarkLayers(Transform parent)
+        {
+            int count = MARK_LAYER_NAMES.Length;
+            _markLayers = new RectTransform[count];
+            _markGroups = new CanvasGroup[count];
+            _markBlips = new List<Image>[count];
+            _outlineLayers = new RectTransform[count];
+            _outlineBlips = new List<Image>[count];
+            _shownPerLayer = new int[count];
+
+            for (int i = 0; i < count; i++)
+            {
+                _outlineLayers[i] = CreateBlipLayer(parent, MARK_LAYER_NAMES[i] + MARK_OUTLINE_LAYER_SUFFIX, out _);
+                _outlineBlips[i] = new List<Image>();
+                _markLayers[i] = CreateBlipLayer(parent, MARK_LAYER_NAMES[i], out _markGroups[i]);
+                _markBlips[i] = new List<Image>();
+            }
+        }
+
+        private RectTransform CreateBlipLayer(Transform parent, string layerName, out CanvasGroup group)
+        {
+            var objLayer = new GameObject(layerName, typeof(RectTransform), typeof(CanvasGroup));
+            objLayer.transform.SetParent(parent, false);
+
+            var layerRt = objLayer.GetComponent<RectTransform>();
+            layerRt.anchorMin = layerRt.anchorMax = layerRt.pivot = new Vector2(0.5f, 0.5f);
+            layerRt.sizeDelta = new Vector2(_diameter, _diameter);
+            layerRt.anchoredPosition = Vector2.zero;
+
+            group = objLayer.GetComponent<CanvasGroup>();
+            group.interactable = false;
+            group.blocksRaycasts = false;
+
+            return layerRt;
+        }
+
+        private static Image GetPooledBlip(List<Image> pool, RectTransform layer, string blipName, int index)
+        {
+            while (pool.Count <= index)
+            {
+                var obj = new GameObject(blipName, typeof(RectTransform), typeof(Image));
+                obj.transform.SetParent(layer, false);
+
+                var rt = obj.GetComponent<RectTransform>();
+                rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
+
+                var img = obj.GetComponent<Image>();
+                img.sprite = GetCircleSprite();
+                img.raycastTarget = false;
+
+                obj.SetActive(false);
+                pool.Add(img);
+            }
+
+            return pool[index];
+        }
+
+        private void UpdateThreatBlips(float camYaw)
+        {
+            if (_markLayers == null || _worldToMapProportion <= 0f)
+                return;
+
+            var player = GetPlayerTransform();
+            if (player == null)
+                return;
+
+            if (Time.unscaledTime >= _nextThreatScanTime)
+            {
+                _nextThreatScanTime = Time.unscaledTime + THREAT_SCAN_INTERVAL_SEC;
+                RefreshThreats();
+            }
+
+            for (int i = 0; i < _markGroups.Length; i++)
+            {
+                _markGroups[i].alpha = GetMarkLayerBlinkAlpha(i);
+                _shownPerLayer[i] = 0;
+            }
+
+            float pixelsPerWorldUnit = _worldToMapProportion / 0.95f * _currentZoom;
+            float radius = _diameter * 0.5f;
+
+            float angleRad = camYaw * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(angleRad), sin = Mathf.Sin(angleRad);
+            var playerPos = player.position;
+            float radiusSq = radius * radius;
+
+            for (int i = 0; i < G.Threats.Count; i++)
+            {
+                var mark = G.Threats[i];
+                var node = mark.Node;
+                if (node == null)
+                    continue;
+
+                var markPos = node.position;
+                float worldDx = markPos.x - playerPos.x;
+                float worldDz = markPos.z - playerPos.z;
+                float distanceM = Mathf.Sqrt(worldDx * worldDx + worldDz * worldDz);
+                float alpha = GetCompassRangeAlpha(distanceM, mark.Kind) * GetCompassClarity(_currentSpeed, mark.Kind);
+                if (alpha <= 0f)
+                    continue;
+
+                float dx = worldDx * pixelsPerWorldUnit;
+                float dz = worldDz * pixelsPerWorldUnit;
+                var local = new Vector2(dx * cos - dz * sin, dx * sin + dz * cos);
+                if (local.sqrMagnitude > radiusSq)
+                    continue;
+
+                int layer = GetMinimapMarkLayer(mark.Kind);
+                int slot = _shownPerLayer[layer]++;
+                var blip = GetPooledBlip(_markBlips[layer], _markLayers[layer], MARK_BLIP_NAME, slot);
+
+                float markSizePx = GetMinimapMarkSizePx(mark.Kind);
+                float markSize = markSizePx * Scale;
+                blip.rectTransform.sizeDelta = new Vector2(markSize, markSize);
+                blip.rectTransform.anchoredPosition = local;
+                var blipColor = GetMinimapMarkColor(mark.Kind);
+                blipColor.a = alpha;
+                blip.color = blipColor;
+                blip.gameObject.SetActive(true);
+
+                float outlineSizePx = markSizePx + MARK_OUTLINE_WIDTH_PX * 2f;
+                float outlineSize = outlineSizePx * Scale;
+                var outline = GetPooledBlip(_outlineBlips[layer], _outlineLayers[layer], MARK_OUTLINE_NAME, slot);
+                outline.sprite = GetRingSprite(markSizePx / outlineSizePx);
+                outline.rectTransform.sizeDelta = new Vector2(outlineSize, outlineSize);
+                outline.rectTransform.anchoredPosition = local;
+                var outlineColor = GetMinimapMarkOutlineColor(mark.Kind);
+                outlineColor.a = alpha;
+                outline.color = outlineColor;
+                outline.gameObject.SetActive(true);
+            }
+
+            for (int i = 0; i < _markBlips.Length; i++)
+            {
+                HideBlipsFrom(_markBlips[i], _shownPerLayer[i]);
+                HideBlipsFrom(_outlineBlips[i], _shownPerLayer[i]);
+            }
+        }
+
+        private static void HideBlipsFrom(List<Image> pool, int start)
+        {
+            for (int i = start; i < pool.Count; i++)
+                pool[i].gameObject.SetActive(false);
         }
 
         /// <summary>
@@ -243,6 +402,7 @@ namespace InsanityWorldMod.Core
                     P_MINIMAP_ZOOM_AT_REST - speed * P_MINIMAP_ZOOM_PER_SPEED_UNIT,
                     P_MINIMAP_ZOOM_MIN_FLOOR);
                 _currentZoom = Mathf.Lerp(_currentZoom, targetZoom, Time.deltaTime * P_MINIMAP_ZOOM_SMOOTH_RATE);
+                _currentSpeed = Mathf.Lerp(_currentSpeed, speed, Time.deltaTime * P_MINIMAP_ZOOM_SMOOTH_RATE);
             }
             _lastPlayerPos = pos;
             _hasLastPlayerPos = true;
@@ -327,6 +487,41 @@ namespace InsanityWorldMod.Core
             tex.Apply(updateMipmaps: false);
             _circleSpriteCache = Sprite.Create(tex, new Rect(0f, 0f, n, n), new Vector2(0.5f, 0.5f));
             return _circleSpriteCache;
+        }
+
+        private static readonly Dictionary<float, Sprite> _ringSpriteCache = new Dictionary<float, Sprite>();
+        private static Sprite GetRingSprite(float innerFraction)
+        {
+            if (_ringSpriteCache.TryGetValue(innerFraction, out var cached))
+                return cached;
+
+            int n = MINIMAP_CIRCLE_SPRITE_SIZE_PX;
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, mipChain: false);
+            tex.wrapMode = TextureWrapMode.Clamp;
+            tex.filterMode = FilterMode.Bilinear;
+
+            var pixels = new Color32[n * n];
+            float center = n * 0.5f;
+            float outer = center - 1f;
+            float inner = outer * innerFraction;
+
+            for (int y = 0; y < n; y++)
+            {
+                for (int x = 0; x < n; x++)
+                {
+                    float dx = x + 0.5f - center;
+                    float dy = y + 0.5f - center;
+                    float dist = Mathf.Sqrt(dx * dx + dy * dy);
+                    float alpha = Mathf.Clamp01(outer - dist) * Mathf.Clamp01(dist - inner);
+                    pixels[y * n + x] = new Color32(255, 255, 255, (byte)(alpha * 255f));
+                }
+            }
+
+            tex.SetPixels32(pixels);
+            tex.Apply(updateMipmaps: false);
+            var sprite = Sprite.Create(tex, new Rect(0f, 0f, n, n), new Vector2(0.5f, 0.5f));
+            _ringSpriteCache[innerFraction] = sprite;
+            return sprite;
         }
 
         private static Sprite _arrowSpriteCache;

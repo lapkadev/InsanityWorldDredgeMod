@@ -79,6 +79,9 @@ public static partial class Funcs
             LogInfo($"All {dotnetItems.Length} DotNet build(s) completed successfully.");
         }
 
+        int localizationRc = MergeLocalization();
+        if (localizationRc != 0) return localizationRc;
+
         return 0;
     }
 
