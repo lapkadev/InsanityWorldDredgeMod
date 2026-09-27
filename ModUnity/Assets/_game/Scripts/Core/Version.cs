@@ -14,6 +14,6 @@ namespace InsanityWorldMod.Core
     /// </summary>
     public static class ModVersion
     {
-        public const string Current = "0.3.0";
+        public const string Current = "0.3.1";
     }
 }
