@@ -15,10 +15,10 @@ You can't die anymore - it's INSANE ... but something feels wrong ...
 ![Respawn in action](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/respawn.webp)
 
 2. **New NPC with a quest: the Mystic**  
-![The Mystic](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/mystic.png)
+![The Mystic](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/mystic.png?v=2)
 
 3. **Compass minimap item**  
-![Compass minimap](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/compass_minimap.png)
+![Compass minimap](https://media.githubusercontent.com/media/lapkadev/InsanityWorldDredgeMod/master/Images/compass_minimap.png?v=2)
 
 4. More features and content in development.
 
