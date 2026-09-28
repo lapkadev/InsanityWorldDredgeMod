@@ -43,21 +43,61 @@ namespace InsanityWorldMod.Core
 
         public static Action<int> RepairHull;
 
+        public static Action<int> DamageHull;
+
+        public static Func<string[]> GetRegularFishIds;
+
         public static Func<string[]> GetAberrationFishIds;
 
         public static Func<string, bool> GiveFishToPlayer;
+
+        public static Func<string, bool> GiveItemToPlayer;
+
+        public static Func<string[]> GetEngineIds;
+
+        public static Func<string, float> GetEngineSpeed;
+
+        public static Func<string, string> GetItemShape;
+
+        public static Func<string, string> GetItemName;
+
+        public static Func<string[]> GetAbilityIds;
+
+        public static Func<string, bool> IsAbilityUnlocked;
+
+        public static Action<string, bool> SetAbilityUnlocked;
 
         public static Func<int> GetActiveSaveSlot;
 
         public static Func<DockSlot?> GetLastDock;
 
-        public static Func<string, int, bool> MoveShipToDock;
+        public static Func<string[]> GetDockIds;
+
+        public static Func<string, string> GetDockName;
+
+        public static Func<string, int, bool> TeleportShipToDock;
+
+        public static Func<Vector3, bool> TeleportShipTo;
 
         public static Action CancelPendingTeleport;
 
         public static Func<Transform> GetPlayerTransform;
 
         public static Action<List<MinimapMark>> CollectThreats;
+
+        public static Action<GameObject> MakeSolid;
+
+        public static Func<Transform, bool> AttachRelicParticles;
+
+        public static Action<bool> SetBoundaryGuardEnabled;
+
+        public static Func<string, bool> StartWorldEvent;
+
+        public static Func<float> GetSanity;
+
+        public static Action<float> ChangeSanity;
+
+        public static Func<float> GetSanityFrameDelta;
 
         public static Func<bool> IsInGame;
 
@@ -66,6 +106,12 @@ namespace InsanityWorldMod.Core
         public static Action<TextMeshProUGUI, string> UseLocalizedText;
 
         public static Action<GameObject, Action> SetMenuButtonClick;
+
+        public static Func<RectTransform> GetModsMenuButton;
+
+        public static Func<List<InstalledModInfo>> GetInstalledMods;
+
+        public static Func<string, RectTransform> GetModsTabEntry;
 
         public static Func<Action, bool, int> AddInputBackAction;
 

@@ -1,34 +1,14 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 using InsanityWorldMod.Core;
 using Winch.Util;
 
 namespace InsanityWorldMod.DredgeRuntime
 {
-    public static partial class G
-    {
-        internal static TeleportState Teleport = new TeleportState();
-    }
-
     public static partial class Funcs
     {
         public static void AddHooksDocks()
         {
-            DredgeHooks.MoveShipToDock = (dockId, slotIndex) =>
-            {
-                if (!CanStartTeleport())
-                    return false;
-
-                var target = GetDockTarget(dockId, slotIndex);
-                if (target == null)
-                    return false;
-
-                BeginTeleport(target);
-                return true;
-            };
-
-            DredgeHooks.CancelPendingTeleport = StopTeleport;
-
             DredgeHooks.GetLastDock = () =>
             {
                 var saveData = G.DredgeGame?.SaveData;
@@ -37,30 +17,31 @@ namespace InsanityWorldMod.DredgeRuntime
 
                 return new DockSlot { DockId = saveData.dockId, SlotIndex = saveData.dockSlotIndex };
             };
-        }
 
-        public static bool CanStartTeleport()
-        {
-            if (G.Teleport.IsRunning)
+            DredgeHooks.GetDockIds = () =>
             {
-                Log.Debug("CanStartTeleport: already teleporting, request ignored");
-                return false;
-            }
+                var docks = DockUtil.GetAllDocks();
+                var ids = new List<string>();
+                foreach (var dock in docks)
+                {
+                    if (dock != null && dock.Data != null && !string.IsNullOrEmpty(dock.Data.Id))
+                        ids.Add(dock.Data.Id);
+                }
 
-            var player = G.DredgePlayer;
-            if (player == null)
+                return ids.ToArray();
+            };
+
+            DredgeHooks.GetDockName = dockId =>
             {
-                Log.Warn("CanStartTeleport: Player is null");
-                return false;
-            }
+                var data = DockUtil.GetDockData(dockId);
+                if (data == null || data.DockNameKey == null || data.DockNameKey.IsEmpty)
+                {
+                    Log.Warn($"Docks: dock '{dockId}' has no name");
+                    return "";
+                }
 
-            if (player.PlayerTeleport == null)
-            {
-                Log.Error("CanStartTeleport: Player.PlayerTeleport is null");
-                return false;
-            }
-
-            return true;
+                return data.DockNameKey.GetLocalizedString();
+            };
         }
 
         public static DockTarget GetDockTarget(string dockId, int slotIndex)
@@ -94,53 +75,13 @@ namespace InsanityWorldMod.DredgeRuntime
             };
         }
 
-        public static void BeginTeleport(DockTarget target)
+        public static void DockShipAt(DockTarget target)
         {
-            G.Teleport.IsRunning = true;
-            G.Teleport.OnComplete = () => CompleteTeleport(target);
-
-            G.DredgeGameEvents.OnTeleportComplete += G.Teleport.OnComplete;
-            G.DredgePlayer.PlayerTeleport.Teleport(target.Slot.position, 0f, null);
-        }
-
-        public static void CompleteTeleport(DockTarget target)
-        {
-            UnsubscribeTeleport();
-
             G.DredgePlayer.transform.rotation = target.Slot.rotation;
             G.DredgePlayer.Dock(target.Dock, target.SlotIndex, false);
-            G.Teleport.IsRunning = false;
 
-            Log.Info($"CompleteTeleport: ship docked at '{target.DockId}' slot {target.SlotIndex} at {target.Slot.position}");
+            Log.Info($"DockShipAt: ship docked at '{target.DockId}' slot {target.SlotIndex} at {target.Slot.position}");
         }
-
-        public static void StopTeleport()
-        {
-            UnsubscribeTeleport();
-
-            if (G.Teleport.IsRunning)
-            {
-                Log.Debug("StopTeleport: clearing stuck teleport flag");
-                G.Teleport.IsRunning = false;
-            }
-        }
-
-        public static void UnsubscribeTeleport()
-        {
-            if (G.Teleport.OnComplete == null)
-                return;
-
-            if (G.DredgeGameEvents != null)
-                G.DredgeGameEvents.OnTeleportComplete -= G.Teleport.OnComplete;
-
-            G.Teleport.OnComplete = null;
-        }
-    }
-
-    internal class TeleportState
-    {
-        public bool IsRunning;
-        public Action OnComplete;
     }
 
     public class DockTarget

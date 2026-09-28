@@ -25,7 +25,7 @@ namespace InsanityWorldMod.Core
 
             if (!G.IsInGame)
             {
-                Log.Debug("Save: not in game, skipping");
+                // Log.Debug("Save: not in game, skipping");
                 return;
             }
 

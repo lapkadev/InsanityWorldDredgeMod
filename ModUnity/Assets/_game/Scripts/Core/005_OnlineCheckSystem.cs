@@ -41,7 +41,7 @@ namespace InsanityWorldMod.Core
 
     public class OnlineCheckSystem : IInsanityWorldSystem
     {
-        public int Order => 4;
+        public int Order => 5;
 
         public void OnLoad()
         {

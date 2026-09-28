@@ -1,59 +1,23 @@
-using static InsanityWorldMod.Core.Constants;
-using static InsanityWorldMod.Core.DredgeHooks;
-
 namespace InsanityWorldMod.Core
 {
-    public static partial class Constants
-    {
-        public const string DEFAULT_RESPAWN_DOCK  = "dock.greater-marrow";
-        public const string LOCALE_PLAYER_RESPAWN = "insanity_player_respawn";
-    }
-
     public static partial class Funcs
     {
-        /// <summary>
-        /// Teleports the ship to a specific dock + slot. Used by respawn.
-        /// </summary>
-        /// <param name="dockId">Dredge dock id (e.g. "dock.greater-marrow").</param>
-        /// <param name="slotIndex">Dock slot index. Out-of-range values are clamped to 0 with a warning.</param>
-        public static void TeleportShipToDock(string dockId, int slotIndex = 0)
+        public static string[] GetDockIds()
         {
-            if (!MoveShipToDock(dockId, slotIndex))
-                return;
-
-            ShowNotification(NotificationKind.SPOOKY_EVENT, LOCALE_PLAYER_RESPAWN, NotificationColor.EMPHASIS);
+            var ids = DredgeHooks.GetDockIds();
+            Log.Debug($"GetDockIds: {ids.Length} found");
+            return ids;
         }
 
-        /// <summary>
-        /// Teleports the ship to the LAST dock the player was parked at
-        /// (DREDGE tracks this in `SaveData.dockId` + `SaveData.dockSlotIndex`, updated on each `Player.Dock(...)` call).
-        /// Falls back to DEFAULT_RESPAWN_DOCK slot 0 if no dock has been visited yet.
-        /// </summary>
-        public static void TeleportToLastDock()
+        public static string GetDockName(string dockId)
         {
-            var lastDock = GetLastDock();
-            if (lastDock == null || string.IsNullOrEmpty(lastDock.Value.DockId))
+            if (string.IsNullOrEmpty(dockId))
             {
-                Log.Info($"TeleportToLastDock: no last dock recorded, falling back to '{DEFAULT_RESPAWN_DOCK}' slot 0");
-                TeleportShipToDock(DEFAULT_RESPAWN_DOCK, 0);
-                return;
+                Log.Warn("GetDockName: empty dock id");
+                return "";
             }
 
-            TeleportShipToDock(lastDock.Value.DockId, lastDock.Value.SlotIndex);
+            return DredgeHooks.GetDockName(dockId);
         }
-
-        /// <summary>
-        /// Resets transient operation flags that should not survive across game-load cycles.
-        /// </summary>
-        public static void ResetTransientState()
-        {
-            CancelPendingTeleport();
-        }
-    }
-
-    public struct DockSlot
-    {
-        public string DockId;
-        public int SlotIndex;
     }
 }

@@ -15,6 +15,13 @@ namespace InsanityWorldMod.DredgeRuntime
             if (__instance.IsGodModeEnabled || !__instance.IsAlive)
                 return true;
 
+            if (G.Teleport.IsRunning)
+            {
+                Log.Info("Death repeated while returning to the dock - repairing only.");
+                RepairHull(1);
+                return false;
+            }
+
             Log.Info("Death intercepted - repairing and returning to the last dock.");
 
             RepairHull(1);

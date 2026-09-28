@@ -49,6 +49,8 @@ namespace InsanityWorldMod.Core
             G.Save.CompassIsNew = granted;
             Log.Info($"SetCompassGranted: {granted}");
             Save();
+            RefreshPortalIsland();
+            RefreshBoundaryGuard();
         }
 
         public static void GrantCompass()

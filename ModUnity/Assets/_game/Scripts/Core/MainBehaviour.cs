@@ -49,6 +49,10 @@ namespace InsanityWorldMod.Core
 
         public void Update()
         {
+            TickInsanity();
+            TickPortalIsland(Time.deltaTime);
+            TickInsanityField(Time.deltaTime);
+
             if (Time.time >= _nextAutoSaveAt)
             {
                 _nextAutoSaveAt = Time.time + AUTO_SAVE_INTERVAL_SEC;

@@ -2,6 +2,13 @@ namespace InsanityWorldMod.Core
 {
     public static partial class Funcs
     {
+        public static string[] GetRegularFishIds()
+        {
+            var ids = DredgeHooks.GetRegularFishIds();
+            Log.Debug($"GetRegularFishIds: {ids.Length} found");
+            return ids;
+        }
+
         public static string[] GetAberrationFishIds()
         {
             var ids = DredgeHooks.GetAberrationFishIds();

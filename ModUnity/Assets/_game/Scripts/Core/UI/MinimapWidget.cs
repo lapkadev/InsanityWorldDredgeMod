@@ -44,6 +44,14 @@ namespace InsanityWorldMod.Core
         private RectTransform _rotatingDial;
         private RectTransform _mapClone;
         private RectTransform _shipArrow;
+        private Image _islandPointer;
+        private Image _islandMark;
+        private RawImage _fieldLayer;
+        private Texture2D _fieldTexture;
+        private Color32[] _fieldPixels;
+        private Vector3 _fieldCenter;
+        private float _fieldSideM;
+        private float _nextFieldRefreshTime;
         private RectTransform[] _markLayers;
         private CanvasGroup[] _markGroups;
         private List<Image>[] _markBlips;
@@ -125,7 +133,9 @@ namespace InsanityWorldMod.Core
             // and minimap heading-up relative to camera yaw.
             TryCloneDredgeMap(objBg.transform);
 
+            _fieldLayer = CreateFieldLayer(objBg.transform);
             CreateMarkLayers(objBg.transform);
+            _islandMark = CreateIslandImage(objBg.transform, ISLAND_MARK_NAME, GetCircleSprite(), ISLAND_MARK_SIZE_PX);
 
             // Rotating dial - holds the four cardinal labels. Rotating this transform
             // moves all labels together; the background stays static.
@@ -155,6 +165,8 @@ namespace InsanityWorldMod.Core
             var arrowImg = objArrow.GetComponent<Image>();
             arrowImg.sprite = GetArrowSprite();
             arrowImg.color = Color.white;
+
+            _islandPointer = CreateIslandImage(root.transform, ISLAND_POINTER_NAME, GetIslandPointerSprite(), ISLAND_POINTER_SIZE_PX);
 
             if (_embedParent == null)
             {
@@ -215,8 +227,143 @@ namespace InsanityWorldMod.Core
             }
 
             UpdateMapClone(camYaw);
+            UpdateFieldLayer(camYaw);
             UpdateShipArrow(camYaw);
             UpdateThreatBlips(camYaw);
+            UpdateIslandPointer(camYaw);
+        }
+
+        private RawImage CreateFieldLayer(Transform parent)
+        {
+            var obj = new GameObject(FIELD_LAYER_NAME, typeof(RectTransform), typeof(RawImage));
+            obj.transform.SetParent(parent, false);
+
+            var rt = obj.GetComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
+
+            int n = FIELD_LAYER_TEXTURE_PX;
+            _fieldTexture = new Texture2D(n, n, TextureFormat.RGBA32, false);
+            _fieldTexture.wrapMode = TextureWrapMode.Clamp;
+            _fieldTexture.filterMode = FilterMode.Bilinear;
+            _fieldPixels = new Color32[n * n];
+
+            var img = obj.GetComponent<RawImage>();
+            img.texture = _fieldTexture;
+            img.raycastTarget = false;
+
+            obj.SetActive(false);
+            return img;
+        }
+
+        private void UpdateFieldLayer(float camYaw)
+        {
+            if (_fieldLayer == null || _worldToMapProportion <= 0f)
+                return;
+
+            var player = GetPlayerTransform();
+            if (player == null || !IsInsanityFieldActive())
+            {
+                _fieldLayer.gameObject.SetActive(false);
+                return;
+            }
+
+            float pixelsPerWorldUnit = _worldToMapProportion / 0.95f * _currentZoom;
+            if (pixelsPerWorldUnit <= 0f)
+                return;
+
+            var pos = player.position;
+            float neededSideM = _diameter / pixelsPerWorldUnit * FIELD_LAYER_MARGIN;
+            float recenterM = _fieldSideM * FIELD_LAYER_RECENTER_SHARE;
+            bool stale = Time.unscaledTime >= _nextFieldRefreshTime
+                || neededSideM > _fieldSideM
+                || Mathf.Abs(pos.x - _fieldCenter.x) > recenterM
+                || Mathf.Abs(pos.z - _fieldCenter.z) > recenterM;
+
+            if (stale)
+            {
+                _nextFieldRefreshTime = Time.unscaledTime + FIELD_LAYER_REFRESH_SEC;
+                _fieldCenter = pos;
+                _fieldSideM = neededSideM;
+                FillInsanityFieldTexture(_fieldPixels, FIELD_LAYER_TEXTURE_PX, _fieldCenter, _fieldSideM);
+                _fieldTexture.SetPixels32(_fieldPixels);
+                _fieldTexture.Apply(false);
+            }
+
+            float angleRad = camYaw * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(angleRad), sin = Mathf.Sin(angleRad);
+            float dx = (_fieldCenter.x - pos.x) * pixelsPerWorldUnit;
+            float dz = (_fieldCenter.z - pos.z) * pixelsPerWorldUnit;
+
+            var rt = _fieldLayer.rectTransform;
+            rt.sizeDelta = Vector2.one * _fieldSideM * pixelsPerWorldUnit;
+            rt.anchoredPosition = new Vector2(dx * cos - dz * sin, dx * sin + dz * cos);
+            rt.localEulerAngles = new Vector3(0f, 0f, camYaw);
+
+            _fieldLayer.color = new Color(1f, 1f, 1f, GetInsanityFieldLayerClarity(_currentSpeed));
+            _fieldLayer.gameObject.SetActive(true);
+        }
+
+        private Image CreateIslandImage(Transform parent, string objName, Sprite sprite, float sizePx)
+        {
+            var obj = new GameObject(objName, typeof(RectTransform), typeof(Image));
+            obj.transform.SetParent(parent, false);
+
+            var rt = obj.GetComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(sizePx, sizePx) * Scale;
+
+            var img = obj.GetComponent<Image>();
+            img.sprite = sprite;
+            img.raycastTarget = false;
+
+            obj.SetActive(false);
+            return img;
+        }
+
+        private void UpdateIslandPointer(float camYaw)
+        {
+            if (_islandPointer == null || _islandMark == null)
+                return;
+
+            var player = GetPlayerTransform();
+            if (G.PortalIsland == null || player == null)
+            {
+                _islandPointer.gameObject.SetActive(false);
+                _islandMark.gameObject.SetActive(false);
+                return;
+            }
+
+            var islandPos = G.PortalIsland.transform.position;
+            var playerPos = player.position;
+            float worldDx = islandPos.x - playerPos.x;
+            float worldDz = islandPos.z - playerPos.z;
+
+            float angleRad = camYaw * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(angleRad), sin = Mathf.Sin(angleRad);
+            var local = new Vector2(worldDx * cos - worldDz * sin, worldDx * sin + worldDz * cos);
+
+            float radius = _diameter * 0.5f;
+            float pixelsPerWorldUnit = _worldToMapProportion / 0.95f * _currentZoom;
+            bool inside = pixelsPerWorldUnit > 0f && local.magnitude * pixelsPerWorldUnit <= radius;
+
+            var color = ISLAND_POINTER_COLOR;
+            color.a = GetIslandPointerClarity(_currentSpeed);
+
+            _islandMark.gameObject.SetActive(inside);
+            _islandPointer.gameObject.SetActive(!inside);
+
+            if (inside)
+            {
+                _islandMark.rectTransform.anchoredPosition = local * pixelsPerWorldUnit;
+                _islandMark.color = color;
+                return;
+            }
+
+            var direction = local.normalized;
+            float pointerYaw = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
+            _islandPointer.rectTransform.anchoredPosition = direction * (radius - ISLAND_POINTER_INSET_PX * Scale);
+            _islandPointer.rectTransform.localEulerAngles = new Vector3(0f, 0f, pointerYaw);
+            _islandPointer.color = color;
         }
 
         private void CreateMarkLayers(Transform parent)

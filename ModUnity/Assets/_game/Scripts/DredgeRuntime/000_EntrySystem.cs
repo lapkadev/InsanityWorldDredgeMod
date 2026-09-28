@@ -9,7 +9,6 @@ namespace InsanityWorldMod.DredgeRuntime
 {
     public static partial class Constants
     {
-        public const string MOD_GUID   = "lapkadev.InsanityWorldMod";
         public const string HARMONY_ID = "lapkadev.InsanityWorldMod";
     }
 
@@ -42,6 +41,7 @@ namespace InsanityWorldMod.DredgeRuntime
             AddHooksHud();
             AddHooksThreats();
             AddHooksNotifications();
+            AddHooksTeleport();
             AddHooksDocks();
             AddHooksPlayer();
             AddHooksItems();
@@ -53,6 +53,8 @@ namespace InsanityWorldMod.DredgeRuntime
             AddHooksMenu();
             AddHooksPause();
             AddHooksSettings();
+            AddHooksWorld();
+            AddHooksAbilities();
 
             Log.Info("EntrySystem.OnLoad: hooks added");
 

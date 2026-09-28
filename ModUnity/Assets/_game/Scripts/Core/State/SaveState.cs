@@ -17,6 +17,14 @@ namespace InsanityWorldMod.Core
         public bool CompassGranted;
         public bool CompassIsNew;
 
+        public bool  IslandPlaced;
+        public float IslandX;
+        public float IslandZ;
+        public float IslandHeadingDeg;
+        public float IslandJumpTimeLeft;
+
+        public float? InsanityLevel;
+
         private Statistics _stats;
         public Statistics Stats
         {

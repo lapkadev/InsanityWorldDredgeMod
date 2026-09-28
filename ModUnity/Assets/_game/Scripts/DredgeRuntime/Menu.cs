@@ -14,6 +14,7 @@ namespace InsanityWorldMod.DredgeRuntime
         public const string MENU_CANVAS_PATH           = "Canvases/MenuCanvas";
         public const string MENU_SOURCE_BUTTON_NAME    = "Settings";
         public const string MENU_BUTTON_TEMPLATE_NAME  = "MenuButtonTemplate";
+        public const string MENU_MODS_BUTTON_NAME      = "Mods";
         public const string TITLE_SCENE_NAME           = "Title";
     }
 
@@ -31,6 +32,18 @@ namespace InsanityWorldMod.DredgeRuntime
                 }
 
                 wrapper.OnClick = onClick;
+            };
+
+            DredgeHooks.GetModsMenuButton = () =>
+            {
+                var button = GameObject.Find($"{MENU_BUTTON_CONTAINER_PATH}/{MENU_MODS_BUTTON_NAME}");
+                if (button == null)
+                {
+                    // Log.Warn("GetModsMenuButton: mods button not found in main menu");
+                    return null;
+                }
+
+                return button.GetComponent<RectTransform>();
             };
         }
 

@@ -79,6 +79,11 @@ namespace InsanityWorldMod.Core
 
             Load("last");
 
+            ResetInsanitySync();
+            ResetInsanityField();
+            RefreshPortalIsland();
+            RefreshBoundaryGuard();
+
             Log.Info("GameController: OnGameLoaded done");
         }
     }
