@@ -15,7 +15,7 @@ You can't die anymore - it's INSANE ... but something feels wrong ...
 
 - [GitHub Releases](https://github.com/lapkadev/InsanityWorldDredgeMod/releases/latest)
 - [Nexus Mods](https://www.nexusmods.com/dredge/mods/52?tab=files)
-- [~~dredgemods.com~~ (RIP 01.10.2026)](https://dredgemods.com/mods/insanity_world)
+- [~~dredgemods.com~~ (RIP Oct 1, 2026)](https://dredgemods.com/mods/insanity_world)
 
 ---
 
