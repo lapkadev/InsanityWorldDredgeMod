@@ -113,6 +113,18 @@ namespace InsanityWorldMod.Core
 
         public static Func<string, RectTransform> GetModsTabEntry;
 
+        public static Func<TMP_Text> GetModsTabTitle;
+
+        public static Func<RectTransform> GetModsTabListArea;
+
+        public static Action<bool> SetModsTabShortcutsEnabled;
+
+        public static Func<string, bool> IsModEnabled;
+
+        public static Action<string, bool> SetModEnabled;
+
+        public static Func<string> GetModsDir;
+
         public static Func<Action, bool, int> AddInputBackAction;
 
         public static Action<int> RemoveInputBackAction;

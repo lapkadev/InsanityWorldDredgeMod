@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace InsanityWorldMod.Core
@@ -35,6 +36,53 @@ namespace InsanityWorldMod.Core
             return DredgeHooks.GetModsTabEntry(modGuid);
         }
 
+        public static TMP_Text GetModsTabTitle()
+        {
+            return DredgeHooks.GetModsTabTitle();
+        }
+
+        public static RectTransform GetModsTabListArea()
+        {
+            return DredgeHooks.GetModsTabListArea();
+        }
+
+        public static void SetModsTabShortcutsEnabled(bool isEnabled)
+        {
+            DredgeHooks.SetModsTabShortcutsEnabled(isEnabled);
+        }
+
+        public static bool IsModEnabled(string modGuid)
+        {
+            try
+            {
+                return DredgeHooks.IsModEnabled(modGuid);
+            }
+            catch (Exception ex)
+            {
+                // Log.Warn($"IsModEnabled: failed to read state of '{modGuid}': {ex.Message}");
+                return true;
+            }
+        }
+
+        public static bool SetModEnabled(string modGuid, bool isEnabled)
+        {
+            try
+            {
+                DredgeHooks.SetModEnabled(modGuid, isEnabled);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log.Warn($"SetModEnabled: failed to save state of '{modGuid}': {ex.Message}");
+                return false;
+            }
+        }
+
+        public static string GetModsDir()
+        {
+            return DredgeHooks.GetModsDir();
+        }
+
         public static void OnModsListShown(RectTransform panel)
         {
             G.ModsTabPanel = panel;
@@ -49,5 +97,6 @@ namespace InsanityWorldMod.Core
         public string Name;
         public string Version;
         public string Dir;
+        public bool IsLoaded;
     }
 }
