@@ -5,6 +5,6 @@
 	"Version": "0.3.4",
 	"ModAssembly": "InsanityWorldMod.dll",
 	"MinWinchVersion": "0.6.1",
-	"Preload": "InsanityWorldMod.Loader/Preload",
-	"Entrypoint": "InsanityWorldMod.Loader/Initialize"
+	"Preload": "InsW.Loader/Preload",
+	"Entrypoint": "InsW.Loader/Initialize"
 }

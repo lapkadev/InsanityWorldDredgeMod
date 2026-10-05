@@ -1,9 +1,9 @@
 using HarmonyLib;
-using InsanityWorldMod.Core;
-using static InsanityWorldMod.Core.Funcs;
-using static InsanityWorldMod.DredgeRuntime.Constants;
+using InsW.Core;
+using static InsW.Core.Funcs;
+using static InsW.DredgeRuntime.Constants;
 
-namespace InsanityWorldMod.DredgeRuntime
+namespace InsW.DredgeRuntime
 {
     public static partial class Constants
     {
@@ -41,7 +41,7 @@ namespace InsanityWorldMod.DredgeRuntime
                 return false;
 
             Log.Info("Leviathan bite intercepted - hull damage, boat model stays visible.");
-            OnLeviathanStrike();
+            DredgeEvents.OnLeviathanStruck?.Invoke();
             return false;
         }
     }

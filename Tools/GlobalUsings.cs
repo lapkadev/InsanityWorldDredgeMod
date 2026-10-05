@@ -1,2 +1,2 @@
-global using static InsanityWorldMod.Tools.Funcs;
-global using static InsanityWorldMod.Tools.Constants;
+global using static InsW.Tools.Funcs;
+global using static InsW.Tools.Constants;

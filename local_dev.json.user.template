@@ -1,21 +1,4 @@
 {
-    "DredgeModsFolder": "C:/Path/To/DREDGE/Mods",
     "UnityExePath": "C:/Program Files/Unity/Hub/Editor/2021.3.5f1/Editor/Unity.exe",
-    "BuildDir": "Build",
-    "EosSdkDir": "C:/Path/To/EOS-SDK-CSharp-47370208-Release-v1.18.1.2",
-    "VersionFiles": [
-        { "Type": "ModMeta",              "Path": "ModLoader/InsanityWorldMod/mod_meta.json" },
-        { "Type": "CsharpConst",          "Path": "ModUnity/Assets/_game/Scripts/Core/Version.cs" },
-        { "Type": "UnityProjectSettings", "Path": "ModUnity/ProjectSettings/ProjectSettings.asset" }
-    ],
-    "UnityEditorBuildItems": [
-        {
-            "Path": "ModUnity",
-            "Method": "InsanityWorldMod.Editor.Funcs.BuildAll"
-        }
-    ],
-    "DotNetBuildItems": [
-        { "Path": "ModLoader/InsanityWorldMod/InsanityWorldMod.csproj" }
-    ],
-    "PackageExcludedFileNames": []
+    "BuildDir": "Build"
 }

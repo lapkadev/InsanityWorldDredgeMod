@@ -1,9 +1,9 @@
 using System;
 using HarmonyLib;
-using InsanityWorldMod.Core;
-using static InsanityWorldMod.Core.Funcs;
+using InsW.Core;
+using static InsW.Core.Funcs;
 
-namespace InsanityWorldMod.DredgeRuntime
+namespace InsW.DredgeRuntime
 {
     public static class QuestGridPanelPatcher
     {
@@ -14,10 +14,10 @@ namespace InsanityWorldMod.DredgeRuntime
             public static void Postfix(QuestGridPanel __instance)
             {
                 var config = AccessTools.Field(typeof(QuestGridPanel), "currentQuestGridConfig").GetValue(__instance) as QuestGridConfig;
-                if (config == null || !IsModQuestGrid(config.name))
+                if (config == null || DredgeEvents.IsModQuestGrid?.Invoke(config.name) != true)
                     return;
 
-                OnQuestGridOpened();
+                DredgeEvents.OnQuestGridOpened?.Invoke();
             }
         }
 
@@ -28,7 +28,7 @@ namespace InsanityWorldMod.DredgeRuntime
             public static void Prefix(QuestGridPanel __instance)
             {
                 var config = AccessTools.Field(typeof(QuestGridPanel), "currentQuestGridConfig").GetValue(__instance) as QuestGridConfig;
-                if (config == null || !IsModQuestGrid(config.name))
+                if (config == null || DredgeEvents.IsModQuestGrid?.Invoke(config.name) != true)
                     return;
 
                 var grid = AccessTools.Field(typeof(QuestGridPanel), "currentGrid").GetValue(__instance) as SerializableGrid;
@@ -36,28 +36,6 @@ namespace InsanityWorldMod.DredgeRuntime
                     return;
 
                 ApplyGridExit(grid);
-            }
-        }
-
-        [HarmonyPatch(typeof(ControlPromptEntryUI), "OnPointerDown")]
-        public static class ControlPromptOnPointerDownPatch
-        {
-            [HarmonyPrefix]
-            public static void Prefix(ControlPromptEntryUI __instance)
-            {
-                var panel = G.DredgeGame?.UI?.QuestGridPanel;
-                if (panel == null || !panel.gameObject.activeSelf)
-                    return;
-
-                var config = AccessTools.Field(typeof(QuestGridPanel), "currentQuestGridConfig").GetValue(panel) as QuestGridConfig;
-                if (config == null || !IsModQuestGrid(config.name))
-                    return;
-
-                var exitPrompt = AccessTools.Field(typeof(QuestGridPanel), "exitControlPromptUI").GetValue(panel) as ControlPromptEntryUI;
-                if (exitPrompt != __instance)
-                    return;
-
-                OnQuestGridSubmitted();
             }
         }
 
@@ -76,7 +54,9 @@ namespace InsanityWorldMod.DredgeRuntime
                 };
             }
 
-            var keep = ResolveQuestGridExit(items);
+            var keep = DredgeEvents.ResolveQuestGridExit?.Invoke(items);
+            if (keep == null)
+                return;
 
             var inventory = G.DredgeGame.SaveData.Inventory;
             var storage = G.DredgeGame.SaveData.Storage;

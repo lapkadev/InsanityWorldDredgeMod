@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json.Nodes;
 
-namespace InsanityWorldMod.Tools;
+namespace InsW.Tools;
 
 public static partial class Funcs
 {

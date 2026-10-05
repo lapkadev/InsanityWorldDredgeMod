@@ -1,9 +1,9 @@
 using System.Reflection;
 
-[assembly: AssemblyVersion(InsanityWorldMod.Core.ModVersion.Current)]
-[assembly: AssemblyFileVersion(InsanityWorldMod.Core.ModVersion.Current)]
+[assembly: AssemblyVersion(InsW.Core.ModVersion.Current)]
+[assembly: AssemblyFileVersion(InsW.Core.ModVersion.Current)]
 
-namespace InsanityWorldMod.Core
+namespace InsW.Core
 {
     /// <summary>
     /// Single source of truth for the mod's version

@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace InsanityWorldMod.Tools;
+namespace InsW.Tools;
 
 public static partial class Funcs
 {

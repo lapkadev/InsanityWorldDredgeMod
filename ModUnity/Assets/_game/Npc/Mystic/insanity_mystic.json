@@ -1,8 +1,0 @@
-{
-    "speakerNameKey": "insanity_mystic_name",
-    "alwaysAvailable": true,
-    "yarnRootNode": "insanity_mystic_root",
-    "highlightConditions": [
-        { "highlightIfNodesUnvisited": [ "insanity_mystic_root" ] }
-    ]
-}

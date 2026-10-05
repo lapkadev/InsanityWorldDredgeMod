@@ -1,0 +1,33 @@
+{
+    "name": "InsW.DredgeRuntime",
+    "rootNamespace": "InsW.DredgeRuntime",
+    "references": [
+        "InsW.Core",
+        "Cinemachine",
+        "Unity.Localization",
+        "YarnSpinner.Unity",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Winch.dll",
+        "WinchCommon.dll",
+        "Assembly-CSharp.dll",
+        "Assembly-CSharp-firstpass.dll",
+        "InControl.dll",
+        "0Harmony.dll",
+        "Newtonsoft.Json.dll",
+        "YarnSpinner.dll",
+        "Sirenix.Serialization.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -15,18 +15,18 @@
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     <OutputPath>..\..\Build\bin\$(Configuration)\</OutputPath>
     <BaseIntermediateOutputPath>..\..\Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <ModBinDir Condition=" '$(ModBinDir)' == '' ">..\..\Build\bin\$(Configuration)\</ModBinDir>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="mod_meta.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="InsanityWorldMod.csproj.user" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="InsanityWorldMod.Core">
-      <HintPath>..\..\Build\bin\$(Configuration)\InsanityWorldMod.Core.dll</HintPath>
+    <Reference Include="InsW.Core">
+      <HintPath>$(ModBinDir)InsW.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
 

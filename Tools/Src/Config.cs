@@ -1,25 +1,12 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace InsanityWorldMod.Tools;
+namespace InsW.Tools;
 
 public class Config
 {
-    public string DredgeModsFolder = "";
     public string UnityExePath = "";
     public string BuildDir = "Build";
-    public string EosSdkDir = "";
-    public VersionFile[] VersionFiles = Array.Empty<VersionFile>();
-    public UnityEditorBuildItem[] UnityEditorBuildItems = Array.Empty<UnityEditorBuildItem>();
-    public DotNetBuildItem[] DotNetBuildItems = Array.Empty<DotNetBuildItem>();
-    public string[] PackageExcludedFileNames = Array.Empty<string>();
-}
-
-public enum VersionFileType
-{
-    ModMeta,
-    CsharpConst,
-    UnityProjectSettings,
 }
 
 public enum BuildConfiguration
@@ -35,27 +22,9 @@ public enum ErrorCode
     UnityProjectLocked = 2,
 }
 
-public class VersionFile
-{
-    public VersionFileType Type;
-    public string Path = "";
-}
-
-public class UnityEditorBuildItem
-{
-    public string Path = "";
-    public string Method = "";
-}
-
-public class DotNetBuildItem
-{
-    public string Path = "";
-}
-
 public static partial class Constants
 {
-    public const string CONFIG_FILE_NAME          = "local_dev.json.user";
-    public const string CONFIG_TEMPLATE_FILE_NAME = "local_dev.json.user.template";
+    public const string CONFIG_FILE_NAME = "local_dev.json.user";
 }
 
 public static partial class Funcs

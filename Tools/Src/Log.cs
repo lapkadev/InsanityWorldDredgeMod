@@ -1,4 +1,4 @@
-namespace InsanityWorldMod.Tools;
+namespace InsW.Tools;
 
 public static partial class Constants
 {

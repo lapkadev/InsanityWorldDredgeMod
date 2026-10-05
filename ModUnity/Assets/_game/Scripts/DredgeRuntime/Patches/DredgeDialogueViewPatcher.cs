@@ -1,11 +1,11 @@
 using System;
 using HarmonyLib;
-using InsanityWorldMod.Core;
+using InsW.Core;
 using Yarn.Unity;
-using static InsanityWorldMod.Core.Funcs;
-using static InsanityWorldMod.DredgeRuntime.Constants;
+using static InsW.Core.Funcs;
+using static InsW.DredgeRuntime.Constants;
 
-namespace InsanityWorldMod.DredgeRuntime
+namespace InsW.DredgeRuntime
 {
     public static class DredgeDialogueViewPatcher
     {
@@ -15,7 +15,7 @@ namespace InsanityWorldMod.DredgeRuntime
             [HarmonyPrefix]
             public static bool Prefix(LocalizedLine dialogueLine, Action onDialogueLineFinished)
             {
-                if (ShouldDredgeRenderLine(dialogueLine.Metadata))
+                if (DredgeEvents.ShouldDredgeRenderLine?.Invoke(dialogueLine.Metadata) != false)
                     return true;
 
                 onDialogueLineFinished();
@@ -25,7 +25,7 @@ namespace InsanityWorldMod.DredgeRuntime
             [HarmonyPostfix]
             public static void Postfix(DredgeDialogueView __instance, LocalizedLine dialogueLine)
             {
-                if (!ShouldDredgeRenderLine(dialogueLine.Metadata))
+                if (DredgeEvents.ShouldDredgeRenderLine?.Invoke(dialogueLine.Metadata) == false)
                     return;
 
                 DialogueQuickExit.Arm(__instance, dialogueLine);
@@ -39,7 +39,7 @@ namespace InsanityWorldMod.DredgeRuntime
             public static bool Prefix(DialogueOption[] dialogueOptions, Action<int> onOptionSelected)
             {
                 DialogueQuickExit.Disarm();
-                return ShouldDredgeRenderOptions();
+                return DredgeEvents.ShouldDredgeRenderOptions?.Invoke() != false;
             }
         }
 

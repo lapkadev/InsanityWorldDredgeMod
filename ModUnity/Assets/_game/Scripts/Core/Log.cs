@@ -1,6 +1,6 @@
 using System;
 
-namespace InsanityWorldMod.Core
+namespace InsW.Core
 {
     /// <summary>
     /// Logger delegates. Default implementation uses UnityEngine.Debug.
@@ -16,34 +16,34 @@ namespace InsanityWorldMod.Core
     }
 
     /// <summary>
-    /// Dev-only logger: same channels as Log, but suppressed unless Config.IsDev.
+    /// Dev-only logger: same channels as Log, but suppressed unless IsEnabled.
     /// </summary>
     public static class DevLog
     {
         public static void Info(string msg)
         {
-            if (Enabled)
+            if (IsEnabled)
                 Log.Info($"[DEV] {msg}");
         }
 
         public static void Warn(string msg)
         {
-            if (Enabled)
+            if (IsEnabled)
                 Log.Warn($"[DEV] {msg}");
         }
 
         public static void Error(string msg)
         {
-            if (Enabled)
+            if (IsEnabled)
                 Log.Error($"[DEV] {msg}");
         }
 
         public static void Debug(string msg)
         {
-            if (Enabled)
+            if (IsEnabled)
                 Log.Debug($"[DEV] {msg}");
         }
 
-        private static bool Enabled => G.Config != null && G.Config.IsDev;
+        public static bool IsEnabled;
     }
 }

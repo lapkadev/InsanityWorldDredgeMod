@@ -5,8 +5,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>InsanityWorldMod.Tools</RootNamespace>
-    <AssemblyName>InsanityWorldMod.Tools</AssemblyName>
+    <RootNamespace>InsW.Tools</RootNamespace>
+    <AssemblyName>InsW.Tools</AssemblyName>
     <NoWarn>NU1701</NoWarn>
   </PropertyGroup>
 

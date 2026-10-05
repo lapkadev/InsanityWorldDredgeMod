@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using Yarn.Unity;
 
-namespace InsanityWorldMod.Core
+namespace InsW.Core
 {
     /// <summary>
     /// Delegates for DREDGE / Winch APIs that Core cannot reference at compile time.
@@ -20,20 +20,19 @@ namespace InsanityWorldMod.Core
     /// </summary>
     public static class DredgeHooks
     {
-        /// <summary>
-        /// Returns every AssetBundle Winch has loaded.
-        /// </summary>
-        public static Func<IEnumerable<AssetBundle>> GetAllBundles;
-
         public static Func<bool> IsPlayerSailing;
 
         public static Func<DialogueRunner> GetDialogueRunner;
+
+        public static Func<string, GameObject, Sprite, string[], bool> RegisterNpc;
 
         public static Action<string, string, CinemachineVirtualCamera> RegisterNpcCamera;
 
         public static Func<string, bool> IsDialogueNodeVisited;
 
         public static Action<string, bool> SetDialogueNodeVisited;
+
+        public static Action<bool> SetQuestGridHelpVisible;
 
         public static Action<NotificationKind, string, NotificationColor> ShowNotification;
 
@@ -109,22 +108,6 @@ namespace InsanityWorldMod.Core
 
         public static Func<RectTransform> GetModsMenuButton;
 
-        public static Func<List<InstalledModInfo>> GetInstalledMods;
-
-        public static Func<string, RectTransform> GetModsTabEntry;
-
-        public static Func<TMP_Text> GetModsTabTitle;
-
-        public static Func<RectTransform> GetModsTabListArea;
-
-        public static Action<bool> SetModsTabShortcutsEnabled;
-
-        public static Func<string, bool> IsModEnabled;
-
-        public static Action<string, bool> SetModEnabled;
-
-        public static Func<string> GetModsDir;
-
         public static Func<Action, bool, int> AddInputBackAction;
 
         public static Action<int> RemoveInputBackAction;
@@ -156,5 +139,73 @@ namespace InsanityWorldMod.Core
         public static Action<Action<BindingSourceType, InputDeviceStyle>> SubscribeInputChanged;
 
         public static Action<Action<BindingSourceType, InputDeviceStyle>> UnsubscribeInputChanged;
+    }
+
+    public struct DockSlot
+    {
+        public string DockId;
+        public int SlotIndex;
+    }
+
+    public enum MinimapMarkKind
+    {
+        SmallMonster,
+        MediumMonster,
+        BigMonster,
+        Fish,
+        Loot,
+        PlayerItem,
+    }
+
+    public struct MinimapMark
+    {
+        public Transform Node;
+        public MinimapMarkKind Kind;
+
+        public MinimapMark(Transform node, MinimapMarkKind kind)
+        {
+            Node = node;
+            Kind = kind;
+        }
+    }
+
+    public enum NotificationKind
+    {
+        NONE,
+        MONEY_GAINED,
+        MONEY_LOST,
+        BOOK_ADDED,
+        BOOK_COMPLETED,
+        ITEM_ADDED,
+        ITEM_REMOVED,
+        ERROR,
+        SPOOKY_EVENT,
+        QUEST_STARTED,
+        QUEST_UPDATED,
+        QUEST_COMPLETED,
+        EQUIPMENT_DAMAGED,
+        EQUIPMENT_REPAIRED,
+        DURABILITY_LOST,
+        CRAB_POT_DEPLOYED,
+        DAMAGE_TAKEN,
+        ITEM_HANDED_IN,
+        DEBT_REPAID,
+        ROT,
+        TELEPORT_ANCHOR_PLACED,
+        TELEPORT_ANCHOR_RETRIEVED,
+        DARK_SPLASH_ADDED,
+        ANY_REPAIR_KIT_USED,
+    }
+
+    public enum NotificationColor
+    {
+        NEUTRAL,
+        EMPHASIS,
+        POSITIVE,
+        NEGATIVE,
+        CRITICAL,
+        WARNING,
+        VALUABLE,
+        DISABLED,
     }
 }

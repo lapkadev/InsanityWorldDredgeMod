@@ -1,11 +1,11 @@
 using System.Reflection;
 using HarmonyLib;
-using InsanityWorldMod.Core;
+using InsW.Core;
 using UnityEngine;
-using static InsanityWorldMod.Core.Funcs;
-using static InsanityWorldMod.DredgeRuntime.Constants;
+using static InsW.Core.Funcs;
+using static InsW.DredgeRuntime.Constants;
 
-namespace InsanityWorldMod.DredgeRuntime
+namespace InsW.DredgeRuntime
 {
     public static partial class Constants
     {
@@ -40,7 +40,7 @@ namespace InsanityWorldMod.DredgeRuntime
         public static void Postfix(object __instance)
         {
             var panel = Traverse.Create(__instance).Field(WINCH_MODS_TAB_PANEL_FIELD).GetValue<Component>();
-            OnModsListShown(panel != null ? panel.transform as RectTransform : null);
+            WinchEvents.OnModsListRebuilt?.Invoke(panel != null ? panel.transform as RectTransform : null);
         }
     }
 }

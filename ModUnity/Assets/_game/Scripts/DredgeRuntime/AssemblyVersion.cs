@@ -1,4 +1,4 @@
 using System.Reflection;
 
-[assembly: AssemblyVersion(InsanityWorldMod.Core.ModVersion.Current)]
-[assembly: AssemblyFileVersion(InsanityWorldMod.Core.ModVersion.Current)]
+[assembly: AssemblyVersion(InsW.Core.ModVersion.Current)]
+[assembly: AssemblyFileVersion(InsW.Core.ModVersion.Current)]
