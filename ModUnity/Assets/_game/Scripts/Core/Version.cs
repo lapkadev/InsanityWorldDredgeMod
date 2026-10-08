@@ -14,6 +14,6 @@ namespace InsW.Core
     /// </summary>
     public static class ModVersion
     {
-        public const string Current = "0.4.0";
+        public const string Current = "0.4.1";
     }
 }
